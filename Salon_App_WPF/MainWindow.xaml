@@ -11,6 +11,7 @@
         AllowsTransparency="True"
         Background="Transparent"
         WindowStartupLocation="CenterScreen">
+    
 
     <!--// Main Grid //
     // Transparent to be able to apply individual borders //-->
@@ -45,7 +46,7 @@
         <Grid Grid.Row="1">
             <!--// Menu | Forms //-->
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="125"/>
+                <ColumnDefinition Width="auto"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
@@ -66,6 +67,50 @@
                         <RowDefinition Height="45"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="1">
+
+                        <StackPanel x:Name="customerBtn" Orientation="Horizontal" Height="65" MouseLeftButtonDown="customerBtn_MouseLeftButtonDown">
+                            <!--// Grid is placeholder for select indication //-->
+                            <Grid Width="5"/>
+                            <fa:IconBlock x:Name="customerIcon" Icon="User" Foreground="Gainsboro" FontSize="35" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,10,0"/>
+                            <TextBlock x:Name="custonmerText" Text="Πελάτης" Foreground="Gainsboro" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,10,0"/>
+
+                            <!--// Change color on mouse over //-->
+                            <StackPanel.Resources>
+                                <Style TargetType="StackPanel">
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" Value="#41425e"/>
+                                            <Setter Property="Cursor" Value="Hand"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+
+                            </StackPanel.Resources>
+                        </StackPanel>
+
+                        <StackPanel x:Name="customersBtn" Orientation="Horizontal" Height="65" MouseLeftButtonDown="customersBtn_MouseLeftButtonDown">
+                            <!--// Grid is placeholder for select indication //-->
+                            <Grid Width="5"/>
+                            <fa:IconBlock x:Name="customersIcon" Icon="User" Foreground="Gainsboro" FontSize="35" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,10,0"/>
+                            <TextBlock x:Name="custonmersText" Text="Πελατολόγιο" Foreground="Gainsboro" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,10,0"/>
+
+                            <!--// Change color on mouse over //-->
+                            <StackPanel.Resources>
+                                <Style TargetType="StackPanel">
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" Value="#41425e"/>
+                                            <Setter Property="Cursor" Value="Hand"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+
+                            </StackPanel.Resources>
+                        </StackPanel>
+
+                    </StackPanel>
 
                 </Grid>
             </Border>
