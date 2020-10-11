@@ -74,6 +74,9 @@ namespace Salon_App_WPF
         private void customerBtn_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             ActivateButton(sender, new SolidColorBrush(Color.FromRgb(249, 46, 151)));
+
+            CustomerControl customerControl = new CustomerControl();
+            this.formsGrid.Children.Add(customerControl);
         }
 
         private void customersBtn_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)

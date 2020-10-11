@@ -76,7 +76,7 @@
                             <fa:IconBlock x:Name="customerIcon" Icon="User" Foreground="Gainsboro" FontSize="35" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,10,0"/>
                             <TextBlock x:Name="custonmerText" Text="Πελάτης" Foreground="Gainsboro" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,10,0"/>
 
-                            <!--// Change color on mouse over //-->
+                            <!--// Change color and cursor on mouse over //-->
                             <StackPanel.Resources>
                                 <Style TargetType="StackPanel">
                                     <Style.Triggers>
@@ -96,7 +96,7 @@
                             <fa:IconBlock x:Name="customersIcon" Icon="User" Foreground="Gainsboro" FontSize="35" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,10,0"/>
                             <TextBlock x:Name="custonmersText" Text="Πελατολόγιο" Foreground="Gainsboro" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,10,0"/>
 
-                            <!--// Change color on mouse over //-->
+                            <!--// Change color and cursor on mouse over //-->
                             <StackPanel.Resources>
                                 <Style TargetType="StackPanel">
                                     <Style.Triggers>
@@ -131,8 +131,8 @@
                     </Border.BorderBrush>
 
                     <!--// Actual Forms Grid //-->
-                    <Grid Background="#292c3b">
-
+                    <Grid x:Name="formsGrid" Background="#292c3b">
+                        <local:CustomerControl/>
                     </Grid>
                 </Border>
             </Grid>
