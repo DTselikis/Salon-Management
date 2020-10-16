@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:local="clr-namespace:Salon_App_WPF"
         mc:Ignorable="d"
         Title="MainWindow" Height="756" Width="1444"
@@ -35,7 +36,63 @@
 
             <!--// Top Grid //-->
             <Grid Grid.Row="0" Background="#4c4d6b">
+                <Grid HorizontalAlignment="Right">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto" />
+                        <ColumnDefinition Width="auto" />
+                    </Grid.ColumnDefinitions>
 
+                    <Grid Grid.Column="1" HorizontalAlignment="Right">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
+
+
+
+                        <materialDesign:PackIcon Kind="WindowMinimize" Grid.Column="0" Width="44" Height="44" VerticalAlignment="Center" Margin="0, 0, 10, 0">
+                            <materialDesign:PackIcon.Resources>
+                                <Style TargetType="materialDesign:PackIcon">
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Foreground" Value="#FFAF44F9" />
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </materialDesign:PackIcon.Resources>
+                        </materialDesign:PackIcon>
+
+
+                        <materialDesign:PackIcon Kind="WindowMaximize" Grid.Column="1" Width="44" Height="44" VerticalAlignment="Center" Margin="0, 0, 10, 0">
+                            <materialDesign:PackIcon.Resources>
+                                <Style TargetType="materialDesign:PackIcon">
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Foreground" Value="#FFAF44F9" />
+                                            <Setter Property="Cursor" Value="Hand"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </materialDesign:PackIcon.Resources>
+                        </materialDesign:PackIcon>
+
+                        <materialDesign:PackIcon Kind="Close" Grid.Column="2" Width="44" Height="44" VerticalAlignment="Center" Margin="0, 0, 10, 0">
+                            <materialDesign:PackIcon.Resources>
+                                <Style TargetType="materialDesign:PackIcon">
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Foreground" Value="#FFAF44F9" />
+                                            <Setter Property="Cursor" Value="Hand"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </materialDesign:PackIcon.Resources>
+                        </materialDesign:PackIcon>
+                        
+                    </Grid>
+                </Grid>
+                
             </Grid>
 
         </Border>
