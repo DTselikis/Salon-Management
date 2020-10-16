@@ -20,9 +20,15 @@ namespace Salon_App_WPF
     /// </summary>
     public partial class CustomerControl : UserControl
     {
-        public CustomerControl()
+        public CustomerControl(Customer customer)
         {
             InitializeComponent();
+
+            NameTextBox.Text = customer.FirstName;
+            LastNameTextBox.Text = customer.LastName;
+            PhoneTextBox.Text = customer.Phone;
+            EmailTextBox.Text = customer.Email;
+            firstVisitDatePicker.Text = customer.FirstVisit;
         }
     }
 }

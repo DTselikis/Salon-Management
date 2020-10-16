@@ -99,6 +99,7 @@
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                     <materialDesign:PackIcon Kind="Calendar" Foreground="{Binding ElementName=FirstVisitTextBox, Path=BorderBrush}" VerticalAlignment="Center" Margin="0,0,7,0" Width="62" Height="62"/>
                     <DatePicker
+                        x:Name="firstVisitDatePicker"
                         Width="250"
                         materialDesign:HintAssist.Hint="Ημ/νια"
                         FontSize="35"
