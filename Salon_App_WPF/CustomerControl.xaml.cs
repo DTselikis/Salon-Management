@@ -1,3 +1,4 @@
+﻿using MaterialDesignThemes.Wpf;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -25,18 +26,13 @@ namespace Salon_App_WPF
 
         private string connStr = Properties.Settings.Default.DBConnStr;
         private SqlConnection dbConn;
+        private Customer customer;
 
         public CustomerControl()
         {
             InitializeComponent();
 
-            NameTextBox.IsReadOnly = false;
-            LastNameTextBox.IsReadOnly = false;
-            PhoneTextBox.IsReadOnly = false;
-            EmailTextBox.IsReadOnly = false;
-            firstVisitDatePicker.IsEnabled = true;
-            MaleRadioBtn.IsEnabled = true;
-            FemaleRadioBtn.IsEnabled = true;
+            enableControls(null, null);
 
             firstVisitDatePicker.SelectedDate = DateTime.Now;
 
@@ -62,6 +58,8 @@ namespace Salon_App_WPF
         }
         public CustomerControl(Customer customer)
         {
+            this.customer = customer;
+
             InitializeComponent();
 
             NameTextBox.Text = customer.FirstName;
@@ -69,6 +67,82 @@ namespace Salon_App_WPF
             PhoneTextBox.Text = customer.Phone;
             EmailTextBox.Text = customer.Email;
             firstVisitDatePicker.Text = customer.FirstVisit;
+            if (customer.Gender == 'M') MaleRadioBtn.IsChecked = true;
+            else if (customer.Gender == 'F') FemaleRadioBtn.IsChecked = false;
+
+            OptionsLeftBtn.ToolTip = "Ενεργοποίηση επεξεργασίας στοιχείων";
+            OptionsLeftBtn.Content = "Επεξεργασία";
+            OptionsLeftBtn.Click += enableControls;
+            OptionsLeftBtn.Visibility = Visibility.Visible;
+
+            OptionsRightBtn.ToolTip = "Καταχώρηση αλλαγών";
+            OptionsRightBtn.Content = "Αποθήκευση";
+            OptionsRightBtn.Click += submitChanges;
+            OptionsRightBtn.Visibility = Visibility.Visible;
+
+            try
+            {
+                dbConn = new SqlConnection(connStr);
+                dbConn.Open();
+            }
+            catch (SqlException ex)
+            {
+                MessageBox.Show("Παρουσιάστηκε πρόβλημα κατά στη σύνδεση. Παρακαλούμε επικοινωνήστε με το τεχνικό τμήμα.",
+                    "ΠροέκυψεΠπρόβλημα",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error,
+                    MessageBoxResult.OK);
+            }
+        }
+
+        private void submitChanges(object sender, System.EventArgs e)
+        {
+            string query = "UPDATE dbo.Customers SET FirstName = @Name, LastName = @LName, Phone = @Phone, Email = @Email, FirstVisit = @FVisit, Gender = @Gender WHERE CustomerID = @ID";
+
+            SqlCommand command = new SqlCommand(query, dbConn);
+
+            command.Parameters.Add("@Name", System.Data.SqlDbType.NVarChar);
+            command.Parameters.Add("@LName", System.Data.SqlDbType.NVarChar);
+            command.Parameters.Add("@Phone", System.Data.SqlDbType.NVarChar);
+            command.Parameters.Add("@Email", System.Data.SqlDbType.NVarChar);
+            command.Parameters.Add("@FVisit", System.Data.SqlDbType.DateTime2);
+            command.Parameters.Add("@Gender", System.Data.SqlDbType.NChar);
+            command.Parameters.Add("@ID", System.Data.SqlDbType.Int);
+
+            command.Parameters["@Name"].Value = NameTextBox.Text;
+
+            if (!LastNameTextBox.Text.Equals(string.Empty)) command.Parameters["@LName"].Value = LastNameTextBox.Text;
+            else command.Parameters["@LName"].Value = DBNull.Value;
+
+            if (!PhoneTextBox.Text.Equals(string.Empty)) command.Parameters["@Phone"].Value = PhoneTextBox.Text;
+            else command.Parameters["@Phone"].Value = DBNull.Value;
+
+            if (!EmailTextBox.Text.Equals(string.Empty)) command.Parameters["@Email"].Value = EmailTextBox.Text;
+            else command.Parameters["@Email"].Value = DBNull.Value;
+
+            if (firstVisitDatePicker.SelectedDate.HasValue) command.Parameters["@FVisit"].Value = firstVisitDatePicker.SelectedDate;
+            else command.Parameters["@FVisit"].Value = DBNull.Value;
+
+            if (MaleRadioBtn.IsChecked == true) command.Parameters["@Gender"].Value = 'M';
+            else if (FemaleRadioBtn.IsChecked == true) command.Parameters["@Gender"].Value = 'F';
+            else command.Parameters["@Gender"].Value = DBNull.Value;
+
+            command.Parameters["@ID"].Value = customer.CustomerID;
+
+            SqlDataAdapter adapter = new SqlDataAdapter();
+
+            adapter.UpdateCommand = command;
+            adapter.UpdateCommand.ExecuteNonQuery();
+
+            adapter.Dispose();
+            dbConn.Close();
+
+            MessageBox.Show(
+                "Επιτυχής αλλαγή στοιχείων!",
+                "Επιτυχία",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information,
+                MessageBoxResult.OK);
         }
 
         private void submitRecord(object sender, System.EventArgs e)
@@ -226,6 +300,17 @@ namespace Salon_App_WPF
             dataReader.Close();
 
             return hasRows;
+        }
+
+        private void enableControls(object sender, System.EventArgs e)
+        {
+            NameTextBox.IsReadOnly = false;
+            LastNameTextBox.IsReadOnly = false;
+            PhoneTextBox.IsReadOnly = false;
+            EmailTextBox.IsReadOnly = false;
+            firstVisitDatePicker.IsEnabled = true;
+            MaleRadioBtn.IsEnabled = true;
+            FemaleRadioBtn.IsEnabled = true;
         }
     }
 }
