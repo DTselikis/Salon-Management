@@ -1,4 +1,4 @@
-using MaterialDesignThemes.Wpf;
+﻿using MaterialDesignThemes.Wpf;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -31,7 +31,7 @@ namespace Salon_App_WPF
         {
             InitializeComponent();
 
-            enableControls(null, null);
+            toggleControls(null, null);
 
             firstVisitDatePicker.SelectedDate = DateTime.Now;
 
@@ -57,7 +57,7 @@ namespace Salon_App_WPF
 
             OptionsLeftBtn.ToolTip = "Ενεργοποίηση επεξεργασίας στοιχείων";
             OptionsLeftBtn.Content = "Επεξεργασία";
-            OptionsLeftBtn.Click += enableControls;
+            OptionsLeftBtn.Click += toggleControls;
             OptionsLeftBtn.Visibility = Visibility.Visible;
 
             OptionsRightBtn.ToolTip = "Καταχώρηση αλλαγών";
@@ -233,6 +233,22 @@ namespace Salon_App_WPF
                         MessageBoxImage.Information,
                         MessageBoxResult.OK);
                 }
+
+                // Disable controls and set window state for edit mode
+                toggleControls(null, null);
+
+                OptionsLeftBtn.ToolTip = "Ενεργοποίηση επεξεργασίας στοιχείων";
+                OptionsLeftBtn.Content = "Επεξεργασία";
+                OptionsLeftBtn.Click -= submitRecord;
+                OptionsLeftBtn.Click += toggleControls;
+                OptionsLeftBtn.Visibility = Visibility.Visible;
+
+                OptionsRightBtn.ToolTip = "Καταχώρηση αλλαγών";
+                OptionsRightBtn.Content = "Αποθήκευση";
+                OptionsRightBtn.Click += submitChanges;
+                OptionsRightBtn.Visibility = Visibility.Visible;
+
+                updateCustomerObject();
             }
             
         }
@@ -366,6 +382,72 @@ namespace Salon_App_WPF
             MaleRadioBtn.IsEnabled = !MaleRadioBtn.IsEnabled;
             FemaleRadioBtn.IsEnabled = !FemaleRadioBtn.IsEnabled;
         }
+
+        private void updateCustomerObject()
+        {
+            int customerID;
+            string firstName;
+            string lastName;
+            string phone;
+            string email;
+            Nullable<DateTime> dateTime = null;
+            char gender;
+
+            using (SqlConnection dbConn = new SqlConnection(connStr))
+            {
+
+                try
+                {
+                    dbConn.Open();
+                }
+                catch (SqlException ex)
+                {
+                    MessageBox.Show("Παρουσιάστηκε πρόβλημα κατά στη σύνδεση. Παρακαλούμε επικοινωνήστε με το τεχνικό τμήμα.",
+                        "ΠροέκυψεΠπρόβλημα",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Error,
+                        MessageBoxResult.OK);
+
+                    return;
+                }
+
+                // We know that the column CustomerID was set to IDENT so
+                // every time the most new record will have the highest ID
+                string query = "SELECT MAX(CustomerID) FROM dbo.Customers;";
+                SqlCommand command = new SqlCommand(query, dbConn);
+
+                SqlDataReader dataReader = command.ExecuteReader();
+
+                dataReader.Read();
+
+                customerID = dataReader.GetInt32(0);
+
+                dataReader.Close();
+                command.Dispose();
+
+                string infoQuery = "SELECT * FROM dbo.Customers WHERE CustomerID = @ID";
+                SqlCommand infoCommad = new SqlCommand(infoQuery, dbConn);
+
+                infoCommad.Parameters.Add("@ID", System.Data.SqlDbType.Int);
+                infoCommad.Parameters["@ID"].Value = customerID;
+
+                SqlDataReader infoReader = infoCommad.ExecuteReader();
+
+                infoReader.Read();
+
+                if (infoReader[1] != System.DBNull.Value) firstName = infoReader.GetString(1); else firstName = String.Empty;
+                if (infoReader[2] != System.DBNull.Value) lastName = infoReader.GetString(2); else lastName = String.Empty;
+                if (infoReader[3] != System.DBNull.Value) phone = infoReader.GetString(3); else phone = String.Empty;
+                if (infoReader[4] != System.DBNull.Value) email = infoReader.GetString(4); else email = String.Empty;
+                if (infoReader[5] != System.DBNull.Value) dateTime = infoReader.GetDateTime(5); else dateTime = null;
+                if (infoReader[6] != System.DBNull.Value) gender = Char.Parse(infoReader.GetString(6).Substring(0, 1)); else gender = '\0';
+
+                infoReader.Close();
+                infoCommad.Dispose();
+                dbConn.Close();
+            }
+
+            this.customer = new Customer(customerID, firstName, lastName, phone, email, dateTime, gender);
         }
     }
 }
