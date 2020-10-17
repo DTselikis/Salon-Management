@@ -1,4 +1,4 @@
-﻿using MaterialDesignThemes.Wpf;
+using MaterialDesignThemes.Wpf;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -356,15 +356,16 @@ namespace Salon_App_WPF
             return hasRows;
         }
 
-        private void enableControls(object sender, System.EventArgs e)
+        private void toggleControls(object sender, System.EventArgs e)
         {
-            NameTextBox.IsReadOnly = false;
-            LastNameTextBox.IsReadOnly = false;
-            PhoneTextBox.IsReadOnly = false;
-            EmailTextBox.IsReadOnly = false;
-            firstVisitDatePicker.IsEnabled = true;
-            MaleRadioBtn.IsEnabled = true;
-            FemaleRadioBtn.IsEnabled = true;
+            NameTextBox.IsReadOnly = !NameTextBox.IsReadOnly;
+            LastNameTextBox.IsReadOnly = !LastNameTextBox.IsReadOnly;
+            PhoneTextBox.IsReadOnly = !PhoneTextBox.IsReadOnly;
+            EmailTextBox.IsReadOnly = !EmailTextBox.IsReadOnly;
+            firstVisitDatePicker.IsEnabled = !firstVisitDatePicker.IsEnabled;
+            MaleRadioBtn.IsEnabled = !MaleRadioBtn.IsEnabled;
+            FemaleRadioBtn.IsEnabled = !FemaleRadioBtn.IsEnabled;
+        }
         }
     }
 }
