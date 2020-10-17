@@ -25,7 +25,6 @@ namespace Salon_App_WPF
     {
 
         private string connStr = Properties.Settings.Default.DBConnStr;
-        private SqlConnection dbConn;
         private Customer customer;
 
         public CustomerControl()
@@ -41,20 +40,6 @@ namespace Salon_App_WPF
             OptionsLeftBtn.Click += submitRecord;
             OptionsLeftBtn.Visibility = Visibility.Visible;
 
-            try
-            {
-                dbConn = new SqlConnection(connStr);
-                dbConn.Open();
-            }
-            catch (SqlException ex)
-            {
-                MessageBox.Show("Παρουσιάστηκε πρόβλημα κατά στη σύνδεση. Παρακαλούμε επικοινωνήστε με το τεχνικό τμήμα.",
-                    "ΠροέκυψεΠπρόβλημα",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error,
-                    MessageBoxResult.OK);
-            }
-
         }
         public CustomerControl(Customer customer)
         {
@@ -68,7 +53,7 @@ namespace Salon_App_WPF
             EmailTextBox.Text = customer.Email;
             firstVisitDatePicker.Text = customer.FirstVisit;
             if (customer.Gender == 'M') MaleRadioBtn.IsChecked = true;
-            else if (customer.Gender == 'F') FemaleRadioBtn.IsChecked = false;
+            else if (customer.Gender == 'F') FemaleRadioBtn.IsChecked = true;
 
             OptionsLeftBtn.ToolTip = "Ενεργοποίηση επεξεργασίας στοιχείων";
             OptionsLeftBtn.Content = "Επεξεργασία";
@@ -79,70 +64,95 @@ namespace Salon_App_WPF
             OptionsRightBtn.Content = "Αποθήκευση";
             OptionsRightBtn.Click += submitChanges;
             OptionsRightBtn.Visibility = Visibility.Visible;
-
-            try
-            {
-                dbConn = new SqlConnection(connStr);
-                dbConn.Open();
-            }
-            catch (SqlException ex)
-            {
-                MessageBox.Show("Παρουσιάστηκε πρόβλημα κατά στη σύνδεση. Παρακαλούμε επικοινωνήστε με το τεχνικό τμήμα.",
-                    "ΠροέκυψεΠπρόβλημα",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error,
-                    MessageBoxResult.OK);
-            }
         }
 
         private void submitChanges(object sender, System.EventArgs e)
         {
+            // If phone has changed and it wasn't null
+            if (!PhoneTextBox.Text.Equals(string.Empty) && !PhoneTextBox.Text.Equals(customer.Phone)) {
+                bool hasRows;
+                string queryPhone = "SELECT CustomerID FROM dbo.Customers WHERE Phone LIKE @Phone";
+
+                hasRows = executeQuery(queryPhone, "@Phone", PhoneTextBox.Text);
+
+                if (hasRows)
+                {
+                   MessageBoxResult result =  MessageBox.Show(
+                        "Υπάρχει ήδη μία καταχώρηση με αυτό το τηλέφωνο.\nΘέλετε να συνεχίσετε με την αποθήκυεση των αλλαγών;",
+                        "Διπλότυπο",
+                        MessageBoxButton.YesNo,
+                        MessageBoxImage.Warning,
+                        MessageBoxResult.No);
+
+                    if (result == MessageBoxResult.No) return;
+                }
+            }
+
+            
             string query = "UPDATE dbo.Customers SET FirstName = @Name, LastName = @LName, Phone = @Phone, Email = @Email, FirstVisit = @FVisit, Gender = @Gender WHERE CustomerID = @ID";
 
-            SqlCommand command = new SqlCommand(query, dbConn);
+            using (SqlConnection dbConn = new SqlConnection(connStr))
+            {
 
-            command.Parameters.Add("@Name", System.Data.SqlDbType.NVarChar);
-            command.Parameters.Add("@LName", System.Data.SqlDbType.NVarChar);
-            command.Parameters.Add("@Phone", System.Data.SqlDbType.NVarChar);
-            command.Parameters.Add("@Email", System.Data.SqlDbType.NVarChar);
-            command.Parameters.Add("@FVisit", System.Data.SqlDbType.DateTime2);
-            command.Parameters.Add("@Gender", System.Data.SqlDbType.NChar);
-            command.Parameters.Add("@ID", System.Data.SqlDbType.Int);
+                try
+                {
+                    dbConn.Open();
+                }
+                catch (SqlException ex)
+                {
+                    MessageBox.Show("Παρουσιάστηκε πρόβλημα κατά στη σύνδεση. Παρακαλούμε επικοινωνήστε με το τεχνικό τμήμα.",
+                        "ΠροέκυψεΠπρόβλημα",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Error,
+                        MessageBoxResult.OK);
 
-            command.Parameters["@Name"].Value = NameTextBox.Text;
+                    return;
+                }
 
-            if (!LastNameTextBox.Text.Equals(string.Empty)) command.Parameters["@LName"].Value = LastNameTextBox.Text;
-            else command.Parameters["@LName"].Value = DBNull.Value;
+                SqlCommand command = new SqlCommand(query, dbConn);
 
-            if (!PhoneTextBox.Text.Equals(string.Empty)) command.Parameters["@Phone"].Value = PhoneTextBox.Text;
-            else command.Parameters["@Phone"].Value = DBNull.Value;
+                command.Parameters.Add("@Name", System.Data.SqlDbType.NVarChar);
+                command.Parameters.Add("@LName", System.Data.SqlDbType.NVarChar);
+                command.Parameters.Add("@Phone", System.Data.SqlDbType.NVarChar);
+                command.Parameters.Add("@Email", System.Data.SqlDbType.NVarChar);
+                command.Parameters.Add("@FVisit", System.Data.SqlDbType.DateTime2);
+                command.Parameters.Add("@Gender", System.Data.SqlDbType.NChar);
+                command.Parameters.Add("@ID", System.Data.SqlDbType.Int);
 
-            if (!EmailTextBox.Text.Equals(string.Empty)) command.Parameters["@Email"].Value = EmailTextBox.Text;
-            else command.Parameters["@Email"].Value = DBNull.Value;
+                command.Parameters["@Name"].Value = NameTextBox.Text;
 
-            if (firstVisitDatePicker.SelectedDate.HasValue) command.Parameters["@FVisit"].Value = firstVisitDatePicker.SelectedDate;
-            else command.Parameters["@FVisit"].Value = DBNull.Value;
+                if (!LastNameTextBox.Text.Equals(string.Empty)) command.Parameters["@LName"].Value = LastNameTextBox.Text;
+                else command.Parameters["@LName"].Value = DBNull.Value;
 
-            if (MaleRadioBtn.IsChecked == true) command.Parameters["@Gender"].Value = 'M';
-            else if (FemaleRadioBtn.IsChecked == true) command.Parameters["@Gender"].Value = 'F';
-            else command.Parameters["@Gender"].Value = DBNull.Value;
+                if (!PhoneTextBox.Text.Equals(string.Empty)) command.Parameters["@Phone"].Value = PhoneTextBox.Text;
+                else command.Parameters["@Phone"].Value = DBNull.Value;
 
-            command.Parameters["@ID"].Value = customer.CustomerID;
+                if (!EmailTextBox.Text.Equals(string.Empty)) command.Parameters["@Email"].Value = EmailTextBox.Text;
+                else command.Parameters["@Email"].Value = DBNull.Value;
 
-            SqlDataAdapter adapter = new SqlDataAdapter();
+                if (firstVisitDatePicker.SelectedDate.HasValue) command.Parameters["@FVisit"].Value = firstVisitDatePicker.SelectedDate;
+                else command.Parameters["@FVisit"].Value = DBNull.Value;
 
-            adapter.UpdateCommand = command;
-            adapter.UpdateCommand.ExecuteNonQuery();
+                if (MaleRadioBtn.IsChecked == true) command.Parameters["@Gender"].Value = 'M';
+                else if (FemaleRadioBtn.IsChecked == true) command.Parameters["@Gender"].Value = 'F';
+                else command.Parameters["@Gender"].Value = DBNull.Value;
 
-            adapter.Dispose();
-            dbConn.Close();
+                command.Parameters["@ID"].Value = customer.CustomerID;
 
-            MessageBox.Show(
-                "Επιτυχής αλλαγή στοιχείων!",
-                "Επιτυχία",
-                MessageBoxButton.OK,
-                MessageBoxImage.Information,
-                MessageBoxResult.OK);
+                SqlDataAdapter adapter = new SqlDataAdapter();
+
+                adapter.UpdateCommand = command;
+                adapter.UpdateCommand.ExecuteNonQuery();
+
+                adapter.Dispose();
+
+                MessageBox.Show(
+                    "Επιτυχής αλλαγή στοιχείων!",
+                    "Επιτυχία",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information,
+                    MessageBoxResult.OK);
+            }
         }
 
         private void submitRecord(object sender, System.EventArgs e)
@@ -163,47 +173,66 @@ namespace Salon_App_WPF
             {
                 String query = "INSERT INTO dbo.Customers(FirstName, LastName, Phone, Email, FirstVisit, Gender) VALUES (@Name, @LName, @Phone, @Email, @FVisit, @Gender)";
 
-                SqlCommand command = new SqlCommand(query, dbConn);
+                using (SqlConnection dbConn = new SqlConnection(connStr))
+                {
 
-                command.Parameters.Add("@Name", System.Data.SqlDbType.NVarChar);
-                command.Parameters.Add("@LName", System.Data.SqlDbType.NVarChar);
-                command.Parameters.Add("@Phone", System.Data.SqlDbType.NVarChar);
-                command.Parameters.Add("@Email", System.Data.SqlDbType.NVarChar);
-                command.Parameters.Add("@FVisit", System.Data.SqlDbType.DateTime2);
-                command.Parameters.Add("@Gender", System.Data.SqlDbType.NChar);
+                    try
+                    {
+                        dbConn.Open();
+                    }
+                    catch (SqlException ex)
+                    {
+                        MessageBox.Show("Παρουσιάστηκε πρόβλημα κατά στη σύνδεση. Παρακαλούμε επικοινωνήστε με το τεχνικό τμήμα.",
+                            "ΠροέκυψεΠπρόβλημα",
+                            MessageBoxButton.OK,
+                            MessageBoxImage.Error,
+                            MessageBoxResult.OK);
 
-                command.Parameters["@Name"].Value = NameTextBox.Text;
+                        return;
+                    }
 
-                if (!LastNameTextBox.Text.Equals(string.Empty)) command.Parameters["@LName"].Value = LastNameTextBox.Text;
-                else command.Parameters["@LName"].Value = DBNull.Value;
+                    SqlCommand command = new SqlCommand(query, dbConn);
 
-                if (!PhoneTextBox.Text.Equals(string.Empty)) command.Parameters["@Phone"].Value = PhoneTextBox.Text;
-                else command.Parameters["@Phone"].Value = DBNull.Value;
+                    command.Parameters.Add("@Name", System.Data.SqlDbType.NVarChar);
+                    command.Parameters.Add("@LName", System.Data.SqlDbType.NVarChar);
+                    command.Parameters.Add("@Phone", System.Data.SqlDbType.NVarChar);
+                    command.Parameters.Add("@Email", System.Data.SqlDbType.NVarChar);
+                    command.Parameters.Add("@FVisit", System.Data.SqlDbType.DateTime2);
+                    command.Parameters.Add("@Gender", System.Data.SqlDbType.NChar);
 
-                if (!EmailTextBox.Text.Equals(string.Empty)) command.Parameters["@Email"].Value = EmailTextBox.Text;
-                else command.Parameters["@Email"].Value = DBNull.Value;
+                    command.Parameters["@Name"].Value = NameTextBox.Text;
 
-                if (firstVisitDatePicker.SelectedDate.HasValue) command.Parameters["@FVisit"].Value = firstVisitDatePicker.SelectedDate;
-                else command.Parameters["@FVisit"].Value = DateTime.Now;
+                    if (!LastNameTextBox.Text.Equals(string.Empty)) command.Parameters["@LName"].Value = LastNameTextBox.Text;
+                    else command.Parameters["@LName"].Value = DBNull.Value;
 
-                if (MaleRadioBtn.IsChecked == true) command.Parameters["@Gender"].Value = 'M';
-                else if (FemaleRadioBtn.IsChecked == true) command.Parameters["@Gender"].Value = 'F';
-                else command.Parameters["@Gender"].Value = DBNull.Value;
+                    if (!PhoneTextBox.Text.Equals(string.Empty)) command.Parameters["@Phone"].Value = PhoneTextBox.Text;
+                    else command.Parameters["@Phone"].Value = DBNull.Value;
 
-                SqlDataAdapter adapter = new SqlDataAdapter();
+                    if (!EmailTextBox.Text.Equals(string.Empty)) command.Parameters["@Email"].Value = EmailTextBox.Text;
+                    else command.Parameters["@Email"].Value = DBNull.Value;
 
-                adapter.InsertCommand = command;
-                adapter.InsertCommand.ExecuteNonQuery();
+                    if (firstVisitDatePicker.SelectedDate.HasValue) command.Parameters["@FVisit"].Value = firstVisitDatePicker.SelectedDate;
+                    else command.Parameters["@FVisit"].Value = DateTime.Now;
 
-                adapter.Dispose();
-                dbConn.Close();
+                    if (MaleRadioBtn.IsChecked == true) command.Parameters["@Gender"].Value = 'M';
+                    else if (FemaleRadioBtn.IsChecked == true) command.Parameters["@Gender"].Value = 'F';
+                    else command.Parameters["@Gender"].Value = DBNull.Value;
 
-                MessageBox.Show(
-                    "Επιτυχής καταχώρηση!",
-                    "Επιτυχία",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Information,
-                    MessageBoxResult.OK);
+                    SqlDataAdapter adapter = new SqlDataAdapter();
+
+                    adapter.InsertCommand = command;
+                    adapter.InsertCommand.ExecuteNonQuery();
+
+                    adapter.Dispose();
+                    dbConn.Close();
+
+                    MessageBox.Show(
+                        "Επιτυχής καταχώρηση!",
+                        "Επιτυχία",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Information,
+                        MessageBoxResult.OK);
+                }
             }
             
         }
@@ -266,38 +295,63 @@ namespace Salon_App_WPF
 
         private bool executeQuery(string query, string field, string value)
         {
-            SqlCommand command = new SqlCommand(query, dbConn);
-            SqlDataReader dataReader;
+            bool hasRows;
+            using (SqlConnection dbConn = new SqlConnection(connStr))
+            {
+                SqlCommand command = new SqlCommand(query, dbConn);
+                SqlDataReader dataReader;
 
-            command.Parameters.Add(field, System.Data.SqlDbType.NVarChar);
-            command.Parameters[field].Value = value;
+                command.Parameters.Add(field, System.Data.SqlDbType.NVarChar);
+                command.Parameters[field].Value = value;
 
-            dataReader = command.ExecuteReader();
+                dbConn.Open();
 
-            bool hasRows = dataReader.Read();
+                dataReader = command.ExecuteReader();
 
-            command.Dispose();
-            dataReader.Close();
+                hasRows = dataReader.Read();
+
+                command.Dispose();
+                dataReader.Close();
+            }
 
             return hasRows;
         }
 
         private bool executeQuery(string query, string firstField, string secondField, string firstValue, string secondValue)
         {
-            SqlCommand command = new SqlCommand(query, dbConn);
-            SqlDataReader dataReader;
+            bool hasRows;
+            using (SqlConnection dbConn = new SqlConnection(connStr))
+            {
+                try
+                {
+                    dbConn.Open();
+                }
+                catch (SqlException ex)
+                {
+                    MessageBox.Show("Παρουσιάστηκε πρόβλημα κατά στη σύνδεση. Παρακαλούμε επικοινωνήστε με το τεχνικό τμήμα.",
+                        "ΠροέκυψεΠπρόβλημα",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Error,
+                        MessageBoxResult.OK);
 
-            command.Parameters.Add(firstField, System.Data.SqlDbType.NVarChar);
-            command.Parameters.Add(secondField, System.Data.SqlDbType.NVarChar);
-            command.Parameters[firstField].Value = firstValue;
-            command.Parameters[secondField].Value = secondValue;
+                    return false;
+                }
 
-            dataReader = command.ExecuteReader();
+                SqlCommand command = new SqlCommand(query, dbConn);
+                SqlDataReader dataReader;
 
-            bool hasRows = dataReader.Read();
+                command.Parameters.Add(firstField, System.Data.SqlDbType.NVarChar);
+                command.Parameters.Add(secondField, System.Data.SqlDbType.NVarChar);
+                command.Parameters[firstField].Value = firstValue;
+                command.Parameters[secondField].Value = secondValue;
 
-            command.Dispose();
-            dataReader.Close();
+                dataReader = command.ExecuteReader();
+
+                hasRows = dataReader.Read();
+
+                command.Dispose();
+                dataReader.Close();
+            }
 
             return hasRows;
         }
