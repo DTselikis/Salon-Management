@@ -100,7 +100,7 @@
                 </StackPanel>
 
                 <!--// First visit //-->
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0, 0, 0, 20">
                     <materialDesign:PackIcon Kind="Calendar" Foreground="{Binding ElementName=FirstVisitTextBox, Path=BorderBrush}" VerticalAlignment="Center" Margin="0,0,7,0" Width="62" Height="62"/>
                     <DatePicker
                         x:Name="firstVisitDatePicker"
@@ -112,15 +112,54 @@
                         IsEnabled="False"
                         />
                 </StackPanel>
+
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <materialDesign:PackIcon Kind="GenderMaleFemale" VerticalAlignment="Center" Margin="0,0,7,0" Width="62" Height="62"/>
+                    <RadioButton x:Name="MaleRadioBtn"
+                        Style="{StaticResource MaterialDesignLightRadioButton}"
+                        GroupName="Gender"
+                        IsChecked="False"
+                        Content="Άνδρας" 
+                        Margin="0, 0, 7, 0"
+                        IsEnabled="False"/>
+                    <RadioButton x:Name="FemaleRadioBtn"
+                        Style="{StaticResource MaterialDesignLightRadioButton}"
+                        GroupName="Gender"
+                        IsChecked="False"
+                        Content="Γυναίκα" 
+                        IsEnabled="False"/>
+                </StackPanel>
                 
             </StackPanel>
 
-            <StackPanel Grid.Column="4">
-                <TextBlock Text="Σημειώσεις" FontSize="35" Margin="0,0,0,10"/>
-                <ListView x:Name="Comments">
-                    
-                </ListView>
-            </StackPanel>
+            <!--// Notes Section //-->
+            <Grid Grid.Column="4">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="45"/>
+                </Grid.RowDefinitions>
+
+                <StackPanel Grid.Column="1">
+                    <TextBlock Text="Σημειώσεις" FontSize="30" Margin="0,0,0,10"/>
+                    <ListView x:Name="Comments">
+
+                    </ListView>
+                </StackPanel>
+
+                <!--// Options buttons //-->
+                <StackPanel Grid.Row="2" Orientation="Horizontal">
+                    <Button x:Name="OptionsLeftBtn"
+                    Style="{DynamicResource  MaterialDesignFlatButton}"
+                    Height="45"
+                    Visibility="Hidden"/>
+
+                    <Button x:Name="OptionsRightBtn"
+                    Style="{DynamicResource  MaterialDesignFlatButton}"
+                    Height="45"
+                    Visibility="Hidden"/>
+                </StackPanel>
+            </Grid>
+            
         </Grid>
     </Grid>
 </UserControl>

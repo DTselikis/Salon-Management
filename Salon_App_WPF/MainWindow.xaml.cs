@@ -132,8 +132,8 @@ namespace Salon_App_WPF
                 if (ResultsListBox.HasItems)
                 {
                     ResultsListBox.Items.Clear();
-                    customerIDs.Clear();
                 }
+                customerIDs.Clear();
 
                 SearchResults.IsOpen = true;
 
@@ -182,10 +182,10 @@ namespace Salon_App_WPF
                 char gender;
 
                 if (dataReader[1] != System.DBNull.Value) firstName = dataReader.GetString(1); else firstName = String.Empty;
-                if (dataReader[2] != System.DBNull.Value) lastName = dataReader.GetString(1); else lastName = String.Empty;
-                if (dataReader[3] != System.DBNull.Value) phone = dataReader.GetString(1); else phone = String.Empty;
-                if (dataReader[4] != System.DBNull.Value) email = dataReader.GetString(1); else email = String.Empty;
-                if (dataReader[5] != System.DBNull.Value) dateTime = DateTime.Parse(dataReader.GetString(5));
+                if (dataReader[2] != System.DBNull.Value) lastName = dataReader.GetString(2); else lastName = String.Empty;
+                if (dataReader[3] != System.DBNull.Value) phone = dataReader.GetString(3); else phone = String.Empty;
+                if (dataReader[4] != System.DBNull.Value) email = dataReader.GetString(4); else email = String.Empty;
+                if (dataReader[5] != System.DBNull.Value) dateTime = dataReader.GetDateTime(5); else dateTime = null;
                 if (dataReader[6] != System.DBNull.Value) gender = Char.Parse(dataReader.GetString(6).Substring(0, 1)); else gender = '\0';
 
                 CustomerControl customerControl = new CustomerControl(new Customer(firstName, lastName, phone, email, dateTime, gender));
@@ -195,13 +195,18 @@ namespace Salon_App_WPF
                 // Clear results and close popup
                 SearchResults.IsOpen = false;
                 resultLB.Items.Clear();
+                dataReader.Close();
             }
 
         }
 
         private void customersBtn_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+
+        private void NewRecordLeft_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            ActivateButton(sender, new SolidColorBrush(Color.FromRgb(53, 249, 26)));
+            CustomerControl customerControl = new CustomerControl();
+
+            this.formsGrid.Children.Add(customerControl);
         }
     }
 }

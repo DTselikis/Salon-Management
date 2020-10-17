@@ -44,7 +44,7 @@
 
                     <!--// Search //-->
                     <StackPanel x:Name="searchStackPanel" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0, 0, 100, 0">
-                        <materialDesign:PackIcon Kind="Search" Foreground="{Binding ElementName=NameTextBox, Path=BorderBrush}" VerticalAlignment="Center" Height="35" Width="35" Margin="0,0,7,0" />
+                        <materialDesign:PackIcon Kind="AccountSearchOutline" VerticalAlignment="Center" Height="35" Width="35" Margin="0,0,7,0" />
                         <TextBox
                         x:Name="SearchTextBox"
                         materialDesign:HintAssist.Hint="Όνομα Πελάτη"
@@ -149,6 +149,7 @@
 
                     <StackPanel Grid.Row="1">
 
+                        <!--// Customer Button //-->
                         <StackPanel x:Name="customerBtn" Orientation="Horizontal" Height="65" MouseLeftButtonDown="customerBtn_MouseLeftButtonDown">
                             <!--// Grid is placeholder for select indication //-->
                             <Grid Width="5"/>
@@ -169,6 +170,7 @@
                             </StackPanel.Resources>
                         </StackPanel>
 
+                        <!--// List of customers Button //-->
                         <StackPanel x:Name="customersBtn" Orientation="Horizontal" Height="65" MouseLeftButtonDown="customersBtn_MouseLeftButtonDown">
                             <!--// Grid is placeholder for select indication //-->
                             <Grid Width="5"/>
@@ -188,6 +190,20 @@
 
                             </StackPanel.Resources>
                         </StackPanel>
+
+                        <!--// New customer button //-->
+                        <materialDesign:PackIcon x:Name="NewRecordLeft" Kind="AccountPlus" Height="65" Width="65" HorizontalAlignment="Center" Margin="0, 120, 0, 0" MouseLeftButtonDown="NewRecordLeft_MouseLeftButtonDown">
+                            <materialDesign:PackIcon.Style>
+                                <Style TargetType="materialDesign:PackIcon">
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" Value="#41425e"/>
+                                            <Setter Property="Cursor" Value="Hand"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </materialDesign:PackIcon.Style>
+                        </materialDesign:PackIcon>
 
                     </StackPanel>
 
