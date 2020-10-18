@@ -30,6 +30,8 @@ namespace Salon_App_WPF
         private string connStr = Properties.Settings.Default.DBConnStr;
         private SqlConnection dbConn;
         private short keysPressed = 0;
+        private UserControl openedControl = null;
+        private static MainWindow mainWindow;
 
         private IDictionary<int, int> customerIDs = new Dictionary<int, int>();
 
@@ -37,6 +39,7 @@ namespace Salon_App_WPF
         public MainWindow()
         {
             InitializeComponent();
+            mainWindow = this;
 
             try
             {
@@ -105,6 +108,9 @@ namespace Salon_App_WPF
         private void customersBtn_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             ActivateButton(sender, new SolidColorBrush(Color.FromRgb(53, 249, 26)));
+
+            openedControl = new CustomersBaseControl();
+            this.formsGrid.Children.Add(openedControl);
         }
 
         private void SearchTextBox_KeyUp(object sender, KeyEventArgs e)
@@ -190,9 +196,9 @@ namespace Salon_App_WPF
                 if (dataReader[5] != System.DBNull.Value) dateTime = dataReader.GetDateTime(5); else dateTime = null;
                 if (dataReader[6] != System.DBNull.Value) gender = Char.Parse(dataReader.GetString(6).Substring(0, 1)); else gender = '\0';
 
-                CustomerControl customerControl = new CustomerControl(new Customer(customerID, firstName, lastName, phone, email, dateTime, gender));
+                openedControl = new CustomerControl(new Customer(customerID, firstName, lastName, phone, email, dateTime, gender));
 
-                this.formsGrid.Children.Add(customerControl);
+                this.formsGrid.Children.Add(openedControl);
 
                 // Clear results and close popup
                 SearchResults.IsOpen = false;
@@ -214,9 +220,14 @@ namespace Salon_App_WPF
 
         private void NewRecordLeft_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            CustomerControl customerControl = new CustomerControl();
+            openedControl = new CustomerControl();
 
-            this.formsGrid.Children.Add(customerControl);
+            this.formsGrid.Children.Add(openedControl);
+        }
+
+        public static void CloseUserControl()
+        {
+            mainWindow.formsGrid.Children.Remove(mainWindow.openedControl);
         }
     }
 }

@@ -60,9 +60,9 @@ namespace Salon_App_WPF
             OptionsLeftBtn.Click += toggleControls;
             OptionsLeftBtn.Visibility = Visibility.Visible;
 
-            OptionsRightBtn.ToolTip = "Καταχώρηση αλλαγών";
-            OptionsRightBtn.Content = "Αποθήκευση";
-            OptionsRightBtn.Click += submitChanges;
+            OptionsRightBtn.ToolTip = "Αφαίρεση πελάτη από το πελατολόγιο";
+            OptionsRightBtn.Content = "Διαγραφή";
+            OptionsRightBtn.Click += deleteRecord;
             OptionsRightBtn.Visibility = Visibility.Visible;
         }
 
@@ -152,7 +152,10 @@ namespace Salon_App_WPF
                     MessageBoxButton.OK,
                     MessageBoxImage.Information,
                     MessageBoxResult.OK);
+
+                toggleControls(null, null);
             }
+
         }
 
         private void submitRecord(object sender, System.EventArgs e)
@@ -183,7 +186,7 @@ namespace Salon_App_WPF
                     catch (SqlException ex)
                     {
                         MessageBox.Show("Παρουσιάστηκε πρόβλημα κατά στη σύνδεση. Παρακαλούμε επικοινωνήστε με το τεχνικό τμήμα.",
-                            "ΠροέκυψεΠπρόβλημα",
+                            "Προέκυψε πρόβλημα",
                             MessageBoxButton.OK,
                             MessageBoxImage.Error,
                             MessageBoxResult.OK);
@@ -243,14 +246,60 @@ namespace Salon_App_WPF
                 OptionsLeftBtn.Click += toggleControls;
                 OptionsLeftBtn.Visibility = Visibility.Visible;
 
-                OptionsRightBtn.ToolTip = "Καταχώρηση αλλαγών";
-                OptionsRightBtn.Content = "Αποθήκευση";
-                OptionsRightBtn.Click += submitChanges;
+                OptionsRightBtn.ToolTip = "Αφαίρεση πελάτη από το πελατολόγιο";
+                OptionsRightBtn.Content = "Διαγραφή";
+                OptionsRightBtn.Click += deleteRecord;
                 OptionsRightBtn.Visibility = Visibility.Visible;
 
                 updateCustomerObject();
             }
             
+        }
+
+        private void deleteRecord(object sender, System.EventArgs e)
+        {
+            using (SqlConnection dbConn = new SqlConnection(connStr))
+            {
+
+                try
+                {
+                    dbConn.Open();
+                }
+                catch (SqlException ex)
+                {
+                    MessageBox.Show("Παρουσιάστηκε πρόβλημα κατά στη σύνδεση. Παρακαλούμε επικοινωνήστε με το τεχνικό τμήμα.",
+                        "ΠροέκυψεΠπρόβλημα",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Error,
+                        MessageBoxResult.OK);
+
+                    return;
+                }
+
+                string query = "DELETE dbo.Customers WHERE CustomerID = @ID";
+
+                SqlCommand command = new SqlCommand(query, dbConn);
+
+                command.Parameters.Add("@ID", System.Data.SqlDbType.Int);
+                command.Parameters["@ID"].Value = this.customer.CustomerID;
+
+                SqlDataAdapter dataAdapter = new SqlDataAdapter();
+                dataAdapter.DeleteCommand = command;
+                dataAdapter.DeleteCommand.ExecuteNonQuery();
+
+                command.Dispose();
+                dataAdapter.Dispose();
+                dbConn.Close();
+            }
+
+            MessageBox.Show(
+                "Ο πελάτης διαγράφτηκε.",
+                "Επιτυχία",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information,
+                MessageBoxResult.OK);
+
+            MainWindow.CloseUserControl();
         }
 
         private int checkIfRecordExists()
@@ -381,6 +430,22 @@ namespace Salon_App_WPF
             firstVisitDatePicker.IsEnabled = !firstVisitDatePicker.IsEnabled;
             MaleRadioBtn.IsEnabled = !MaleRadioBtn.IsEnabled;
             FemaleRadioBtn.IsEnabled = !FemaleRadioBtn.IsEnabled;
+
+            if (OptionsLeftBtn.Content.Equals("Επεξεργασία"))
+            {
+                OptionsLeftBtn.ToolTip = "Αποθήκευση αλλαγών";
+                OptionsLeftBtn.Content = "Αποθήκευση";
+                OptionsLeftBtn.Click -= toggleControls;
+                OptionsLeftBtn.Click += submitChanges;
+            }
+            else
+            {
+                OptionsLeftBtn.ToolTip = "Ενεργοποίηση επεξεργασίας στοιχείων";
+                OptionsLeftBtn.Content = "Επεξεργασία";
+                OptionsLeftBtn.Click -= submitChanges;
+                OptionsLeftBtn.Click += toggleControls;
+            }
+            
         }
 
         private void updateCustomerObject()
