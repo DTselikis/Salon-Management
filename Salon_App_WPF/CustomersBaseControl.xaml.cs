@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MaterialDesignThemes.Wpf;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
@@ -24,7 +25,7 @@ namespace Salon_App_WPF
     public partial class CustomersBaseControl : UserControl
     {
         private string connStr = Properties.Settings.Default.DBConnStr;
-        private ObservableCollection<Customer> Customers { get; set; }
+        private ObservableCollection<CustomerGrid> Customers { get; set; }
         public CustomersBaseControl()
         {
             InitializeComponent();
@@ -54,9 +55,11 @@ namespace Salon_App_WPF
 
                 // Use ObservableCollection so everytime there is a change to the collection
                 // it will appear to the GUI as well
-                Customers = new ObservableCollection<Customer>();
+                Customers = new ObservableCollection<CustomerGrid>();
                 while (dataReader.Read())
                 {
+                    
+
                     int customerID;
                     string firstName;
                     string lastName;
@@ -64,6 +67,7 @@ namespace Salon_App_WPF
                     string email;
                     Nullable<DateTime> dateTime = null;
                     char gender;
+                    string lastNote;
 
                     customerID = dataReader.GetInt32(0);
                     if (dataReader[1] != System.DBNull.Value) firstName = dataReader.GetString(1); else firstName = String.Empty;
@@ -72,8 +76,9 @@ namespace Salon_App_WPF
                     if (dataReader[4] != System.DBNull.Value) email = dataReader.GetString(4); else email = String.Empty;
                     if (dataReader[5] != System.DBNull.Value) dateTime = dataReader.GetDateTime(5); else dateTime = null;
                     if (dataReader[6] != System.DBNull.Value) gender = Char.Parse(dataReader.GetString(6).Substring(0, 1)); else gender = '\0';
+                    lastNote = getLastNote(customerID);
 
-                    Customers.Add(new Customer(customerID, firstName, lastName, phone, email, dateTime, gender));
+                    Customers.Add(new CustomerGrid(customerID, firstName, lastName, phone, email, dateTime, gender, lastNote));
                 }
 
 
@@ -127,6 +132,47 @@ namespace Salon_App_WPF
                 MessageBoxImage.Information,
                 MessageBoxResult.OK);
 
+        }
+
+        private string getLastNote(int customerID)
+        {
+
+            using (SqlConnection dbConn = new SqlConnection(connStr))
+            {
+
+                try
+                {
+                    dbConn.Open();
+                }
+                catch (SqlException ex)
+                {
+                    MessageBox.Show("Παρουσιάστηκε πρόβλημα κατά στη σύνδεση. Παρακαλούμε επικοινωνήστε με το τεχνικό τμήμα.",
+                        "Προέκυψε πρόβλημα",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Error,
+                        MessageBoxResult.OK);
+
+                    return string.Empty;
+                }
+
+                string query = "SELECT Note FROM dbo.Notes WHERE CustomerID = @ID AND NoteID = (SELECT MAX(NoteID) FROM dbo.Notes WHERE CustomerID = @ID);";
+
+                SqlCommand command = new SqlCommand(query, dbConn);
+                command.Parameters.AddWithValue("@ID", System.Data.SqlDbType.Int);
+                command.Parameters["@ID"].Value = customerID;
+
+                SqlDataReader dataReader = command.ExecuteReader();
+
+                string lastNote;
+                if (dataReader.Read()) lastNote = dataReader.GetString(0);
+                else lastNote = string.Empty;
+
+                command.Dispose();
+                dataReader.Close();
+                dbConn.Close();
+
+                return lastNote;
+            }
         }
 
         private void DeleteBtn_Click(object sender, RoutedEventArgs e)

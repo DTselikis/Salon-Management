@@ -55,7 +55,7 @@
                     />
 
                 <materialDesign:DataGridTextColumn
-                    Header="Δημιουργία"
+                    Header="Ημ. Δημιουργίας"
                     Binding="{Binding FirstVisit}"
                     ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"
                     EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}"
@@ -66,6 +66,14 @@
                     Binding="{Binding Gender}"
                     ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"
                     EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}"
+                    />
+
+                <materialDesign:DataGridTextColumn
+                    Header="Τελευταία σημείωση"
+                    Binding="{Binding LastNote}"
+                    ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"
+                    EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}"
+                    Width="*"
                     />
 
             </DataGrid.Columns>
