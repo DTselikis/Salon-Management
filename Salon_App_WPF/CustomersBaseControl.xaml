@@ -1,0 +1,68 @@
+﻿<UserControl x:Class="Salon_App_WPF.CustomersBaseControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Salon_App_WPF"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+             TextElement.FontWeight="Regular"
+             TextElement.FontSize="13"
+             TextOptions.TextFormattingMode="Ideal"
+             TextOptions.TextRenderingMode="Auto"
+             FontFamily="{DynamicResource MaterialDesignFont}"
+             mc:Ignorable="d" 
+             Background="#292c3b"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <DataGrid x:Name="CustomersBase"
+               CanUserAddRows="False"
+               AutoGenerateColumns="False"
+               HeadersVisibility="All">
+            <DataGrid.Columns>
+                <materialDesign:DataGridTextColumn
+                    Header="Όνομα"
+                    Binding="{Binding FirstName}"
+                    ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"
+                    EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}"
+                    />
+
+                <materialDesign:DataGridTextColumn
+                    Header="Επώνυμο"
+                    Binding="{Binding LastName}"
+                    ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"
+                    EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}"
+                    />
+
+                <materialDesign:DataGridTextColumn
+                    Header="Τηλέφωνο"
+                    Binding="{Binding Phone}"
+                    ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"
+                    EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}"
+                    />
+
+                <materialDesign:DataGridTextColumn
+                    Header="Email"
+                    Binding="{Binding Email}"
+                    ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"
+                    EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}"
+                    />
+
+                <materialDesign:DataGridTextColumn
+                    Header="Δημιουργία"
+                    Binding="{Binding FirstVisit}"
+                    ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"
+                    EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}"
+                    />
+
+                <materialDesign:DataGridTextColumn
+                    Header="Φύλο"
+                    Binding="{Binding Gender}"
+                    ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"
+                    EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}"
+                    />
+
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</UserControl>
