@@ -1,6 +1,7 @@
 ﻿using MaterialDesignThemes.Wpf;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -26,6 +27,9 @@ namespace Salon_App_WPF
 
         private string connStr = Properties.Settings.Default.DBConnStr;
         private Customer customer;
+
+        private ObservableCollection<TextBox> Notes { get; set; }
+        private IDictionary<int, int> NotesID = new Dictionary<int, int>();
 
         public CustomerControl()
         {
@@ -64,6 +68,10 @@ namespace Salon_App_WPF
             OptionsRightBtn.Content = "Διαγραφή";
             OptionsRightBtn.Click += deleteRecord;
             OptionsRightBtn.Visibility = Visibility.Visible;
+
+            GetNotes();
+
+            NewNoteTB.IsEnabled = true;
         }
 
         private void submitChanges(object sender, System.EventArgs e)
@@ -252,6 +260,8 @@ namespace Salon_App_WPF
                 OptionsRightBtn.Visibility = Visibility.Visible;
 
                 updateCustomerObject();
+
+                NewNoteTB.IsEnabled = true;
             }
             
         }
@@ -276,6 +286,16 @@ namespace Salon_App_WPF
                     return;
                 }
 
+                string notesQuery = "DELETE dbo.Notes WHERE CustomerID = @ID";
+
+                SqlCommand notesCommand = new SqlCommand(notesQuery, dbConn);
+                notesCommand.Parameters.Add("@ID", System.Data.SqlDbType.Int);
+                notesCommand.Parameters["@ID"].Value = this.customer.CustomerID;
+
+                SqlDataAdapter dataAdapter = new SqlDataAdapter();
+                dataAdapter.DeleteCommand = notesCommand;
+                dataAdapter.DeleteCommand.ExecuteNonQuery();
+
                 string query = "DELETE dbo.Customers WHERE CustomerID = @ID";
 
                 SqlCommand command = new SqlCommand(query, dbConn);
@@ -283,10 +303,11 @@ namespace Salon_App_WPF
                 command.Parameters.Add("@ID", System.Data.SqlDbType.Int);
                 command.Parameters["@ID"].Value = this.customer.CustomerID;
 
-                SqlDataAdapter dataAdapter = new SqlDataAdapter();
+                
                 dataAdapter.DeleteCommand = command;
                 dataAdapter.DeleteCommand.ExecuteNonQuery();
 
+                notesCommand.Dispose();
                 command.Dispose();
                 dataAdapter.Dispose();
                 dbConn.Close();
@@ -431,21 +452,23 @@ namespace Salon_App_WPF
             MaleRadioBtn.IsEnabled = !MaleRadioBtn.IsEnabled;
             FemaleRadioBtn.IsEnabled = !FemaleRadioBtn.IsEnabled;
 
-            if (OptionsLeftBtn.Content.Equals("Επεξεργασία"))
+            if (this.customer != null)
             {
-                OptionsLeftBtn.ToolTip = "Αποθήκευση αλλαγών";
-                OptionsLeftBtn.Content = "Αποθήκευση";
-                OptionsLeftBtn.Click -= toggleControls;
-                OptionsLeftBtn.Click += submitChanges;
+                if (OptionsLeftBtn.Content.Equals("Επεξεργασία"))
+                {
+                    OptionsLeftBtn.ToolTip = "Αποθήκευση αλλαγών";
+                    OptionsLeftBtn.Content = "Αποθήκευση";
+                    OptionsLeftBtn.Click -= toggleControls;
+                    OptionsLeftBtn.Click += submitChanges;
+                }
+                else
+                {
+                    OptionsLeftBtn.ToolTip = "Ενεργοποίηση επεξεργασίας στοιχείων";
+                    OptionsLeftBtn.Content = "Επεξεργασία";
+                    OptionsLeftBtn.Click -= submitChanges;
+                    OptionsLeftBtn.Click += toggleControls;
+                }
             }
-            else
-            {
-                OptionsLeftBtn.ToolTip = "Ενεργοποίηση επεξεργασίας στοιχείων";
-                OptionsLeftBtn.Content = "Επεξεργασία";
-                OptionsLeftBtn.Click -= submitChanges;
-                OptionsLeftBtn.Click += toggleControls;
-            }
-            
         }
 
         private void updateCustomerObject()
@@ -513,6 +536,185 @@ namespace Salon_App_WPF
             }
 
             this.customer = new Customer(customerID, firstName, lastName, phone, email, dateTime, gender);
+        }
+
+        private void GetNotes()
+        {
+            using (SqlConnection dbConn = new SqlConnection(connStr))
+            {
+
+                try
+                {
+                    dbConn.Open();
+                }
+                catch (SqlException ex)
+                {
+                    MessageBox.Show("Παρουσιάστηκε πρόβλημα κατά στη σύνδεση. Παρακαλούμε επικοινωνήστε με το τεχνικό τμήμα.",
+                        "ΠροέκυψεΠπρόβλημα",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Error,
+                        MessageBoxResult.OK);
+
+                    return;
+                }
+
+                string query = "SELECT NoteID, Note FROM dbo.Notes WHERE CustomerID = @ID ORDER BY NoteID DESC";
+
+                SqlCommand command = new SqlCommand(query, dbConn);
+                command.Parameters.Add("@ID", System.Data.SqlDbType.Int);
+                command.Parameters["@ID"].Value = this.customer.CustomerID;
+
+                SqlDataReader dataReader = command.ExecuteReader();
+
+                if (Notes == null)
+                {
+                    Notes = new ObservableCollection<TextBox>();
+                    NotesListView.ItemsSource = Notes;
+                }
+
+                int i = 0;
+                while (dataReader.Read())
+                {
+                    TextBox noteTB = new TextBox();
+                    noteTB.Text = dataReader.GetString(1);
+                    Notes.Add(noteTB);
+                    NotesID.Add(i, dataReader.GetInt32(0));
+                    i++;
+                }
+
+                command.Dispose();
+                dataReader.Close();
+                dbConn.Close();
+            }
+        }
+
+        private void NewNoteTB_KeyDown(object sender, KeyEventArgs e)
+        {
+            SaveNoteBtn.IsEnabled = true;
+        }
+
+        private void NewNoteTB_GotFocus(object sender, RoutedEventArgs e)
+        {
+            if (NewNoteTB.Text.Equals("Νέα σημείωση")) NewNoteTB.Text = string.Empty;
+        }
+
+        private void SaveNoteBtn_Click(object sender, RoutedEventArgs e)
+        {
+            if (NewNoteTB.Text.Equals(string.Empty) || NewNoteTB.Text.Trim().Equals(string.Empty)) {
+                MessageBox.Show(
+                    "Έγινε προσπάθεια αποθήκευσης κενής σημείωσης. Η σημείωση αυτή δε θα αποθηκευτεί.",
+                    "Κενή σημείωση",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Exclamation,
+                    MessageBoxResult.OK);
+
+                return;
+            }
+
+            using (SqlConnection dbConn = new SqlConnection(connStr))
+            {
+                try
+                {
+                    dbConn.Open();
+                }
+                catch (SqlException ex)
+                {
+                    MessageBox.Show("Παρουσιάστηκε πρόβλημα κατά στη σύνδεση. Παρακαλούμε επικοινωνήστε με το τεχνικό τμήμα.",
+                        "Προέκυψε πρόβλημα",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Error,
+                        MessageBoxResult.OK);
+
+                    return;
+                }
+
+                string query = "INSERT INTO dbo.Notes (CustomerID, Note) VALUES (@ID,  @Note)";
+
+                SqlCommand command = new SqlCommand(query, dbConn);
+                command.Parameters.Add("@ID", System.Data.SqlDbType.Int);
+                command.Parameters.Add("@Note", System.Data.SqlDbType.NVarChar);
+                command.Parameters["@ID"].Value = this.customer.CustomerID;
+                command.Parameters["@Note"].Value = NewNoteTB.Text;
+
+                SqlDataAdapter adapter = new SqlDataAdapter();
+
+                adapter.InsertCommand = command;
+                adapter.InsertCommand.ExecuteNonQuery();
+
+                string noteQuery = "SELECT MAX(NoteID) FROM dbo.Notes WHERE CustomerID = @ID";
+                SqlCommand noteCommand = new SqlCommand(noteQuery, dbConn);
+                noteCommand.Parameters.Add("@ID", System.Data.SqlDbType.Int);
+                noteCommand.Parameters["@ID"].Value = this.customer.CustomerID;
+
+                SqlDataReader dataReader = noteCommand.ExecuteReader();
+                dataReader.Read();
+
+                int lastIndex = NotesID.Count > 0 ? NotesID.Count : 0;
+                NotesID.Add(lastIndex, dataReader.GetInt32(0));
+
+                noteCommand.Dispose();
+                dataReader.Close();
+                command.Dispose();
+                adapter.Dispose();
+                dbConn.Close();
+
+                if (Notes == null)
+                {
+                    Notes = new ObservableCollection<TextBox>();
+                    NotesListView.ItemsSource = Notes;
+                }
+
+                TextBox noteTB = new TextBox();
+                noteTB.Text = NewNoteTB.Text;
+                Notes.Add(noteTB);
+
+                
+
+                SaveNoteBtn.IsEnabled = false;
+                NewNoteTB.Text = "Νέα σημείωση";
+            }
+        }
+
+        private void DeleteBtn_Click(object sender, RoutedEventArgs e)
+        {
+            int s = NotesListView.SelectedIndex;
+            using (SqlConnection dbConn = new SqlConnection(connStr))
+            {
+
+                try
+                {
+                    dbConn.Open();
+                }
+                catch (SqlException ex)
+                {
+                    MessageBox.Show("Παρουσιάστηκε πρόβλημα κατά στη σύνδεση. Παρακαλούμε επικοινωνήστε με το τεχνικό τμήμα.",
+                        "Προέκυψε πρόβλημα",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Error,
+                        MessageBoxResult.OK);
+
+                    return;
+                }
+
+                string query = "DELETE dbo.Notes WHERE NoteID = @ID";
+
+                SqlCommand command = new SqlCommand(query, dbConn);
+
+                command.Parameters.Add("@ID", System.Data.SqlDbType.Int);
+                command.Parameters["@ID"].Value = NotesID[NotesListView.SelectedIndex];
+
+                SqlDataAdapter dataAdapter = new SqlDataAdapter();
+                dataAdapter.DeleteCommand = command;
+                dataAdapter.DeleteCommand.ExecuteNonQuery();
+
+                command.Dispose();
+                dataAdapter.Dispose();
+                dbConn.Close();
+
+                Notes.RemoveAt(NotesListView.SelectedIndex);
+                NotesID.Remove(NotesListView.SelectedIndex);
+
+            }
         }
     }
 }

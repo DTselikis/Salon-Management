@@ -96,7 +96,7 @@ namespace Salon_App_WPF
                 catch (SqlException ex)
                 {
                     MessageBox.Show("Παρουσιάστηκε πρόβλημα κατά στη σύνδεση. Παρακαλούμε επικοινωνήστε με το τεχνικό τμήμα.",
-                        "ΠροέκυψεΠπρόβλημα",
+                        "Προέκυψε πρόβλημα",
                         MessageBoxButton.OK,
                         MessageBoxImage.Error,
                         MessageBoxResult.OK);

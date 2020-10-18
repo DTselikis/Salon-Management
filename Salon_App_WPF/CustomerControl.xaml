@@ -141,9 +141,22 @@
 
                 <StackPanel Grid.Column="1">
                     <TextBlock Text="Σημειώσεις" FontSize="30" Margin="0,0,0,10"/>
-                    <ListView x:Name="Comments">
-
+                    <ListView x:Name="NotesListView" ItemsSource="{Binding Notes}">
+                        <ListView.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem x:Name="DeleteBtn" Header="Διαγραφή" Click="DeleteBtn_Click"/>
+                            </ContextMenu>
+                        </ListView.ContextMenu>
                     </ListView>
+                    <TextBox x:Name="NewNoteTB" Text="Νέα σημείωση" KeyDown="NewNoteTB_KeyDown" IsEnabled="False" GotFocus="NewNoteTB_GotFocus"/>
+                    <Button x:Name="SaveNoteBtn"
+                            Style="{DynamicResource  MaterialDesignFlatButton}"
+                            HorizontalAlignment="Right"
+                            Margin="0, 10, 0, 0"
+                            Width="154"
+                            Height="45"
+                            Content="Αποθήκευση σημ."
+                            IsEnabled="False" Click="SaveNoteBtn_Click"/>
                 </StackPanel>
 
                 <!--// Options buttons //-->
