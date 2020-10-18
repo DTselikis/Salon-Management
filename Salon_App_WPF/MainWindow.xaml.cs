@@ -109,8 +109,7 @@ namespace Salon_App_WPF
         {
             ActivateButton(sender, new SolidColorBrush(Color.FromRgb(53, 249, 26)));
 
-            openedControl = new CustomersBaseControl();
-            this.formsGrid.Children.Add(openedControl);
+            OpenUserControl(new CustomersBaseControl());
         }
 
         private void SearchTextBox_KeyUp(object sender, KeyEventArgs e)
@@ -196,14 +195,12 @@ namespace Salon_App_WPF
                 if (dataReader[5] != System.DBNull.Value) dateTime = dataReader.GetDateTime(5); else dateTime = null;
                 if (dataReader[6] != System.DBNull.Value) gender = Char.Parse(dataReader.GetString(6).Substring(0, 1)); else gender = '\0';
 
-                openedControl = new CustomerControl(new Customer(customerID, firstName, lastName, phone, email, dateTime, gender));
-
-                this.formsGrid.Children.Add(openedControl);
-
                 // Clear results and close popup
                 SearchResults.IsOpen = false;
                 resultLB.Items.Clear();
                 dataReader.Close();
+
+                OpenUserControl(new CustomerControl(new Customer(customerID, firstName, lastName, phone, email, dateTime, gender)));
             }
 
         }
@@ -220,7 +217,14 @@ namespace Salon_App_WPF
 
         private void NewRecordLeft_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            openedControl = new CustomerControl();
+            OpenUserControl(new CustomerControl());
+        }
+
+        private void OpenUserControl(UserControl userControl)
+        {
+            if (this.openedControl != null) CloseUserControl();
+
+            openedControl = userControl;
 
             this.formsGrid.Children.Add(openedControl);
         }
