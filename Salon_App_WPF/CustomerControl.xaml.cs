@@ -1,4 +1,4 @@
-﻿using MaterialDesignThemes.Wpf;
+using MaterialDesignThemes.Wpf;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -31,14 +31,14 @@ namespace Salon_App_WPF
         {
             InitializeComponent();
 
-            toggleControls(null, null);
-
             firstVisitDatePicker.SelectedDate = DateTime.Now;
 
             OptionsLeftBtn.ToolTip = "Καταχώρηση νέου πελάτη";
             OptionsLeftBtn.Content = "Αποθήκευση";
             OptionsLeftBtn.Click += submitRecord;
             OptionsLeftBtn.Visibility = Visibility.Visible;
+
+            toggleControls(null, null);
 
         }
         public CustomerControl(Customer customer)
