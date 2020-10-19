@@ -16,6 +16,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using MaterialDesignThemes;
 
 namespace Salon_App_WPF
 {
@@ -575,8 +576,13 @@ namespace Salon_App_WPF
                 int i = 0;
                 while (dataReader.Read())
                 {
+                    Style style = new Style(typeof(TextBox), (Style)this.FindResource("MaterialDesignOutlinedTextBox"));
+                    style.Setters.Add(new Setter(MaterialDesignThemes.Wpf.HintAssist.HintProperty, dataReader.GetDateTime(2).ToString()));
+
                     TextBox noteTB = new TextBox();
                     noteTB.Text = dataReader.GetString(1);
+                    noteTB.IsReadOnly = true;
+                    noteTB.Style = style;
                     Notes.Add(noteTB);
                     NotesID.Add(i, dataReader.GetInt32(0));
                     i++;
@@ -629,6 +635,7 @@ namespace Salon_App_WPF
                 }
 
                 string query = "INSERT INTO dbo.Notes (CustomerID, Note, CreationDate) VALUES (@ID,  @Note, @Date)";
+                DateTime dateTime = DateTime.Now;
 
                 SqlCommand command = new SqlCommand(query, dbConn);
                 command.Parameters.Add("@ID", System.Data.SqlDbType.Int);
@@ -636,7 +643,7 @@ namespace Salon_App_WPF
                 command.Parameters.Add("@Date", System.Data.SqlDbType.DateTime);
                 command.Parameters["@ID"].Value = this.customer.CustomerID;
                 command.Parameters["@Note"].Value = NewNoteTB.Text;
-                command.Parameters["@Date"].Value = DateTime.Now;
+                command.Parameters["@Date"].Value = dateTime;
 
                 SqlDataAdapter adapter = new SqlDataAdapter();
 
@@ -666,11 +673,15 @@ namespace Salon_App_WPF
                     NotesListView.ItemsSource = Notes;
                 }
 
+                Style style = new Style(typeof (TextBox), (Style) this.FindResource("MaterialDesignOutlinedTextBox"));
+                style.Setters.Add(new Setter(MaterialDesignThemes.Wpf.HintAssist.HintProperty, dateTime.ToString()));
+
                 TextBox noteTB = new TextBox();
                 noteTB.Text = NewNoteTB.Text;
-                Notes.Add(noteTB);
+                noteTB.IsReadOnly = true;
+                noteTB.Style = style;
 
-                
+                Notes.Insert(0, noteTB);
 
                 SaveNoteBtn.IsEnabled = false;
                 NewNoteTB.Text = "Νέα σημείωση";
