@@ -21,8 +21,8 @@
             <Setter Property="materialDesign:TextFieldAssist.HasOutlinedTextField" Value="True" />
             <Setter Property="materialDesign:TextFieldAssist.TextFieldCornerRadius" Value="4" />
             <Setter Property="VerticalAlignment" Value="Top"/>
-            <Setter Property="Height" Value="50"/>
-            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="Height" Value="70"/>
+            <Setter Property="FontSize" Value="20"/>
             <Setter Property="IsReadOnly" Value="False"/>
             <Setter Property="AcceptsReturn" Value="True"/>
             <Setter Property="TextWrapping" Value="Wrap"/>
@@ -159,13 +159,15 @@
 
                 <StackPanel Grid.Column="1">
                     <TextBlock Text="Σημειώσεις" FontSize="30" Margin="0,0,0,10"/>
-                    <ListView x:Name="NotesListView" ItemsSource="{Binding Notes}">
+                    
+                        <ListView x:Name="NotesListView" ItemsSource="{Binding Notes}" MaxHeight="367" >
                         <ListView.ContextMenu>
                             <ContextMenu>
                                 <MenuItem x:Name="DeleteBtn" Header="Διαγραφή" Click="DeleteBtn_Click"/>
                             </ContextMenu>
                         </ListView.ContextMenu>
                     </ListView>
+                    
                     <TextBox Style="{StaticResource MaterialDesignOutlinedTextBox}" x:Name="NewNoteTB"  Text="Νέα σημείωση" KeyDown="NewNoteTB_KeyDown" IsEnabled="False" GotFocus="NewNoteTB_GotFocus"/>
                     <Button x:Name="SaveNoteBtn"
                             Style="{DynamicResource  MaterialDesignFlatButton}"

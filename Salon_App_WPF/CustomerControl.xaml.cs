@@ -673,13 +673,15 @@ namespace Salon_App_WPF
                     NotesListView.ItemsSource = Notes;
                 }
 
-                Style style = new Style(typeof (TextBox), (Style) this.FindResource("MaterialDesignOutlinedTextBox"));
+                Style style = new Style(typeof(TextBox), (Style)this.FindResource("MaterialDesignOutlinedTextBox"));
                 style.Setters.Add(new Setter(MaterialDesignThemes.Wpf.HintAssist.HintProperty, dateTime.ToString()));
+                
 
                 TextBox noteTB = new TextBox();
                 noteTB.Text = NewNoteTB.Text;
                 noteTB.IsReadOnly = true;
                 noteTB.Style = style;
+                noteTB.MaxWidth = 540;
 
                 Notes.Insert(0, noteTB);
 
@@ -711,6 +713,7 @@ namespace Salon_App_WPF
 
                 string query = "DELETE dbo.Notes WHERE NoteID = @ID";
 
+
                 SqlCommand command = new SqlCommand(query, dbConn);
 
                 command.Parameters.Add("@ID", System.Data.SqlDbType.Int);
@@ -719,6 +722,7 @@ namespace Salon_App_WPF
                 SqlDataAdapter dataAdapter = new SqlDataAdapter();
                 dataAdapter.DeleteCommand = command;
                 dataAdapter.DeleteCommand.ExecuteNonQuery();
+
 
                 command.Dispose();
                 dataAdapter.Dispose();
