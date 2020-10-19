@@ -559,7 +559,7 @@ namespace Salon_App_WPF
                     return;
                 }
 
-                string query = "SELECT NoteID, Note, CreationDate FROM dbo.Notes WHERE CustomerID = @ID ORDER BY NoteID DESC";
+                string query = "SELECT NoteID, Note, CreationDate FROM dbo.Notes WHERE CustomerID = @ID ORDER BY NoteID ASC";
 
                 SqlCommand command = new SqlCommand(query, dbConn);
                 command.Parameters.Add("@ID", System.Data.SqlDbType.Int);
@@ -583,7 +583,7 @@ namespace Salon_App_WPF
                     noteTB.Text = dataReader.GetString(1);
                     noteTB.IsReadOnly = true;
                     noteTB.Style = style;
-                    Notes.Add(noteTB);
+                    Notes.Insert(0, noteTB);
                     NotesID.Add(i, dataReader.GetInt32(0));
                     i++;
                 }
@@ -714,7 +714,7 @@ namespace Salon_App_WPF
                 SqlCommand command = new SqlCommand(query, dbConn);
 
                 command.Parameters.Add("@ID", System.Data.SqlDbType.Int);
-                command.Parameters["@ID"].Value = NotesID[NotesListView.SelectedIndex];
+                command.Parameters["@ID"].Value = NotesID[NotesID.Count() - NotesListView.SelectedIndex - 1];
 
                 SqlDataAdapter dataAdapter = new SqlDataAdapter();
                 dataAdapter.DeleteCommand = command;
@@ -725,7 +725,7 @@ namespace Salon_App_WPF
                 dbConn.Close();
 
                 Notes.RemoveAt(NotesListView.SelectedIndex);
-                NotesID.Remove(NotesListView.SelectedIndex);
+                NotesID.Remove(NotesID.Count() - NotesListView.SelectedIndex - 1);
 
             }
         }
