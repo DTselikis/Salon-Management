@@ -208,7 +208,7 @@ namespace Salon_App_WPF
                     command.Parameters.Add("@LName", System.Data.SqlDbType.NVarChar);
                     command.Parameters.Add("@Phone", System.Data.SqlDbType.NVarChar);
                     command.Parameters.Add("@Email", System.Data.SqlDbType.NVarChar);
-                    command.Parameters.Add("@FVisit", System.Data.SqlDbType.DateTime2);
+                    command.Parameters.Add("@FVisit", System.Data.SqlDbType.DateTime);
                     command.Parameters.Add("@Gender", System.Data.SqlDbType.NChar);
 
                     command.Parameters["@Name"].Value = NameTextBox.Text;
@@ -223,7 +223,7 @@ namespace Salon_App_WPF
                     else command.Parameters["@Email"].Value = DBNull.Value;
 
                     if (firstVisitDatePicker.SelectedDate.HasValue) command.Parameters["@FVisit"].Value = firstVisitDatePicker.SelectedDate;
-                    else command.Parameters["@FVisit"].Value = DateTime.Now;
+                    else command.Parameters["@FVisit"].Value = DBNull.Value;    
 
                     if (MaleRadioBtn.IsChecked == true) command.Parameters["@Gender"].Value = 'M';
                     else if (FemaleRadioBtn.IsChecked == true) command.Parameters["@Gender"].Value = 'F';
@@ -558,7 +558,7 @@ namespace Salon_App_WPF
                     return;
                 }
 
-                string query = "SELECT NoteID, Note FROM dbo.Notes WHERE CustomerID = @ID ORDER BY NoteID DESC";
+                string query = "SELECT NoteID, Note, CreationDate FROM dbo.Notes WHERE CustomerID = @ID ORDER BY NoteID DESC";
 
                 SqlCommand command = new SqlCommand(query, dbConn);
                 command.Parameters.Add("@ID", System.Data.SqlDbType.Int);
@@ -628,13 +628,15 @@ namespace Salon_App_WPF
                     return;
                 }
 
-                string query = "INSERT INTO dbo.Notes (CustomerID, Note) VALUES (@ID,  @Note)";
+                string query = "INSERT INTO dbo.Notes (CustomerID, Note, CreationDate) VALUES (@ID,  @Note, @Date)";
 
                 SqlCommand command = new SqlCommand(query, dbConn);
                 command.Parameters.Add("@ID", System.Data.SqlDbType.Int);
                 command.Parameters.Add("@Note", System.Data.SqlDbType.NVarChar);
+                command.Parameters.Add("@Date", System.Data.SqlDbType.DateTime);
                 command.Parameters["@ID"].Value = this.customer.CustomerID;
                 command.Parameters["@Note"].Value = NewNoteTB.Text;
+                command.Parameters["@Date"].Value = DateTime.Now;
 
                 SqlDataAdapter adapter = new SqlDataAdapter();
 
