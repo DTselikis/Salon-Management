@@ -17,6 +17,8 @@ using System.Data.SqlClient;
 using System.Windows.Controls.Primitives;
 using System.Runtime.Remoting.Metadata.W3cXsd2001;
 using System.Data;
+using System.Collections.ObjectModel;
+using System.Runtime.CompilerServices;
 
 namespace Salon_App_WPF
 {
@@ -32,6 +34,7 @@ namespace Salon_App_WPF
         private short keysPressed = 0;
         private UserControl openedControl = null;
         private static MainWindow mainWindow;
+        private ObservableCollection<Result> results{ get; set; }
 
         private IDictionary<int, int> customerIDs = new Dictionary<int, int>();
 
@@ -40,6 +43,7 @@ namespace Salon_App_WPF
         {
             InitializeComponent();
             mainWindow = this;
+            results = new ObservableCollection<Result>();
 
             try
             {
@@ -121,10 +125,9 @@ namespace Salon_App_WPF
             {
                 keysPressed = 0;
 
-                Popup popup = this.SearchResults;
                 TextBox searchTextBox = (TextBox)sender;
 
-                String query = "SELECT CustomerID, FirstName, LastName FROM dbo.Customers WHERE FirstName LIKE @Name OR LastName LIKE @Name";
+                String query = "SELECT CustomerID, FirstName, LastName, NickName FROM dbo.Customers WHERE FirstName LIKE @Name OR LastName LIKE @Name";
                 
                 SqlCommand selectCommand = new SqlCommand(query, dbConn);
 
@@ -133,26 +136,27 @@ namespace Salon_App_WPF
 
                 SqlDataReader dataReader = selectCommand.ExecuteReader();
 
-                // Clears results from previous search
-                if (ResultsListBox.HasItems)
-                {
-                    ResultsListBox.Items.Clear();
-                }
+                if (results.Count > 0) results.Clear();
                 customerIDs.Clear();
 
                 SearchResults.IsOpen = true;
 
-                int i = 0;
-                StringBuilder resultStr = new StringBuilder();
                 while (dataReader.Read())
                 {
-                    customerIDs.Add(i, dataReader.GetInt32(0));
-                    i++;
+                    int id;
+                    string firstName;
+                    string lastName;
+                    string nickName;
 
-                    resultStr.Append(dataReader[1]).Append(" ").Append(dataReader[2]);
-                    ResultsListBox.Items.Add(resultStr.ToString());
-                    resultStr.Clear();
+                    id = dataReader.GetInt32(0);
+                    if (dataReader[1] != System.DBNull.Value) firstName = dataReader.GetString(1); else firstName = String.Empty;
+                    if (dataReader[2] != System.DBNull.Value) lastName = dataReader.GetString(2); else lastName = String.Empty;
+                    if (dataReader[3] != System.DBNull.Value) nickName = dataReader.GetString(3); else nickName = String.Empty;
+
+                    results.Add(new Result(id, firstName, lastName, nickName));
                 }
+
+                SearchResultsGrid.ItemsSource = results;
 
                 dataReader.Close();
                 selectCommand.Dispose();
@@ -160,52 +164,44 @@ namespace Salon_App_WPF
 
         }
 
-        private void ResultsListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void SearchResultsGrid_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            ListBox resultLB = (ListBox)sender;
-            MessageBox.Show(resultLB.SelectedIndex.ToString());
+            Result selection = (Result)SearchResultsGrid.SelectedItem;
+
             String query = "SELECT * FROM dbo.Customers WHERE CustomerID = @ID";
 
             SqlCommand sqlCmd = new SqlCommand(query, dbConn);
-
             sqlCmd.Parameters.Add("@ID", System.Data.SqlDbType.Int);
-            if (resultLB.SelectedIndex != -1)
-            {
+            sqlCmd.Parameters["@ID"].Value = selection.ID;
 
+            SqlDataReader dataReader = sqlCmd.ExecuteReader();
 
-                sqlCmd.Parameters["@ID"].Value = customerIDs[resultLB.SelectedIndex];
+            dataReader.Read();
 
-                SqlDataReader dataReader = sqlCmd.ExecuteReader();
+            int customerID;
+            string firstName;
+            string lastName;
+            string nickName;
+            string phone;
+            string email;
+            Nullable<DateTime> dateTime = null;
+            char gender;
 
-                dataReader.Read();
+            customerID = dataReader.GetInt32(0);
+            if (dataReader[1] != System.DBNull.Value) firstName = dataReader.GetString(1); else firstName = String.Empty;
+            if (dataReader[2] != System.DBNull.Value) lastName = dataReader.GetString(2); else lastName = String.Empty;
+            if (dataReader[3] != System.DBNull.Value) nickName = dataReader.GetString(3); else nickName = String.Empty;
+            if (dataReader[4] != System.DBNull.Value) phone = dataReader.GetString(4); else phone = String.Empty;
+            if (dataReader[5] != System.DBNull.Value) email = dataReader.GetString(5); else email = String.Empty;
+            if (dataReader[6] != System.DBNull.Value) dateTime = dataReader.GetDateTime(6); else dateTime = null;
+            if (dataReader[7] != System.DBNull.Value) gender = Char.Parse(dataReader.GetString(7).Substring(0, 1)); else gender = '\0';
 
-                int customerID;
-                string firstName;
-                string lastName;
-                string nickName;
-                string phone;
-                string email;
-                Nullable<DateTime> dateTime = null;
-                char gender;
+            // Clear results and close popup
+            SearchResults.IsOpen = false;
+            results.Clear();
+            dataReader.Close();
 
-                customerID = dataReader.GetInt32(0);
-                if (dataReader[1] != System.DBNull.Value) firstName = dataReader.GetString(1); else firstName = String.Empty;
-                if (dataReader[2] != System.DBNull.Value) lastName = dataReader.GetString(2); else lastName = String.Empty;
-                if (dataReader[3] != System.DBNull.Value) nickName = dataReader.GetString(3); else nickName = String.Empty;
-                if (dataReader[4] != System.DBNull.Value) phone = dataReader.GetString(4); else phone = String.Empty;
-                if (dataReader[5] != System.DBNull.Value) email = dataReader.GetString(5); else email = String.Empty;
-                if (dataReader[6] != System.DBNull.Value) dateTime = dataReader.GetDateTime(6); else dateTime = null;
-                if (dataReader[7] != System.DBNull.Value) gender = Char.Parse(dataReader.GetString(7).Substring(0, 1)); else gender = '\0';
-
-                // Clear results and close popup
-                //SearchResults.IsOpen = false;
-                SearchResults.IsPopupOpen = false;
-                resultLB.Items.Clear();
-                dataReader.Close();
-
-                OpenUserControl(new CustomerControl(new Customer(customerID, firstName, lastName, nickName, phone, email, dateTime, gender)));
-            }
-
+            OpenUserControl(new CustomerControl(new Customer(customerID, firstName, lastName, nickName, phone, email, dateTime, gender)));
         }
 
         private void InsertRecords()
@@ -251,6 +247,23 @@ namespace Salon_App_WPF
         public static void CloseUserControl()
         {
             mainWindow.formsGrid.Children.Remove(mainWindow.openedControl);
+        }
+
+    }
+
+    public class Result
+    {
+        public int ID { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string NickName { get; set; }
+
+        public Result(int ID, string firstName, string lastName, string nickName)
+        {
+            this.ID = ID;
+            this.FirstName = firstName;
+            this.LastName = lastName;
+            this.NickName = nickName;
         }
     }
 }

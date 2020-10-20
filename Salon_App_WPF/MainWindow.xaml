@@ -1,4 +1,4 @@
-﻿<Window x:Class="Salon_App_WPF.MainWindow"
+<Window x:Class="Salon_App_WPF.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -36,11 +36,42 @@
 
             <!--// Top Grid //-->
             <Grid Grid.Row="0" Background="#4c4d6b">
-                <Grid HorizontalAlignment="Right">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="auto" />
-                        <ColumnDefinition Width="auto" />
-                    </Grid.ColumnDefinitions>
+
+                <Popup
+                    x:Name="SearchResults" 
+                    PlacementTarget="{Binding ElementName=searchStackPanel}"
+                    HorizontalOffset="220"
+                    VerticalOffset="13">
+
+                    <DataGrid 
+                        x:Name="SearchResultsGrid"
+                        CanUserAddRows="False"
+                        AutoGenerateColumns="False"
+                        HeadersVisibility="All"
+                        IsReadOnly="True"
+                        MouseDown="SearchResultsGrid_MouseDown"
+                        >
+                        <DataGrid.Columns>
+                            <materialDesign:DataGridTextColumn
+                                Binding="{Binding FirstName}"
+                                ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"
+                                EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}"
+                                />
+
+                            <materialDesign:DataGridTextColumn
+                                Binding="{Binding LastName}"
+                                ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"
+                                EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}"
+                                />
+
+                            <materialDesign:DataGridTextColumn
+                                Binding="{Binding NickName}"
+                                ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"
+                                EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}"
+                                />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Popup>
 
                     <!--// Search //-->
                     <StackPanel x:Name="searchStackPanel" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0, 0, 100, 0">
