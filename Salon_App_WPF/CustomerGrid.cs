@@ -12,7 +12,7 @@ namespace Salon_App_WPF
 
         public string LastNote { get { return this._lastNote; } set { this._lastNote = value; } }
 
-        public CustomerGrid(int customerID, string firstName, string lastName, string phone, string email, Nullable<DateTime> firstVisit, char gender, string lastNote): base(customerID, firstName, lastName, phone, email, firstVisit, gender)
+        public CustomerGrid(int customerID, string firstName, string lastName, string nickName, string phone, string email, Nullable<DateTime> firstVisit, char gender, string lastNote): base(customerID, firstName, lastName, nickName, phone, email, firstVisit, gender)
         {
             this._lastNote = lastNote;
         }

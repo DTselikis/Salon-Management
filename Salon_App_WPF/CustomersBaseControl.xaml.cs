@@ -63,6 +63,7 @@ namespace Salon_App_WPF
                     int customerID;
                     string firstName;
                     string lastName;
+                    string nickName;
                     string phone;
                     string email;
                     Nullable<DateTime> dateTime = null;
@@ -72,13 +73,14 @@ namespace Salon_App_WPF
                     customerID = dataReader.GetInt32(0);
                     if (dataReader[1] != System.DBNull.Value) firstName = dataReader.GetString(1); else firstName = String.Empty;
                     if (dataReader[2] != System.DBNull.Value) lastName = dataReader.GetString(2); else lastName = String.Empty;
-                    if (dataReader[3] != System.DBNull.Value) phone = dataReader.GetString(3); else phone = String.Empty;
-                    if (dataReader[4] != System.DBNull.Value) email = dataReader.GetString(4); else email = String.Empty;
-                    if (dataReader[5] != System.DBNull.Value) dateTime = dataReader.GetDateTime(5); else dateTime = null;
-                    if (dataReader[6] != System.DBNull.Value) gender = Char.Parse(dataReader.GetString(6).Substring(0, 1)); else gender = '\0';
+                    if (dataReader[3] != System.DBNull.Value) nickName = dataReader.GetString(3); else nickName = String.Empty;
+                    if (dataReader[4] != System.DBNull.Value) phone = dataReader.GetString(4); else phone = String.Empty;
+                    if (dataReader[5] != System.DBNull.Value) email = dataReader.GetString(5); else email = String.Empty;
+                    if (dataReader[6] != System.DBNull.Value) dateTime = dataReader.GetDateTime(6); else dateTime = null;
+                    if (dataReader[7] != System.DBNull.Value) gender = Char.Parse(dataReader.GetString(7).Substring(0, 1)); else gender = '\0';
                     lastNote = getLastNote(customerID);
 
-                    Customers.Add(new CustomerGrid(customerID, firstName, lastName, phone, email, dateTime, gender, lastNote));
+                    Customers.Add(new CustomerGrid(customerID, firstName, lastName, nickName, phone, email, dateTime, gender, lastNote));
                 }
 
 

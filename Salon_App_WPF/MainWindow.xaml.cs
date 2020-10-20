@@ -1,4 +1,4 @@
-﻿using FontAwesome.Sharp;
+using FontAwesome.Sharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -182,6 +182,7 @@ namespace Salon_App_WPF
                 int customerID;
                 string firstName;
                 string lastName;
+                string nickName;
                 string phone;
                 string email;
                 Nullable<DateTime> dateTime = null;
@@ -190,29 +191,47 @@ namespace Salon_App_WPF
                 customerID = dataReader.GetInt32(0);
                 if (dataReader[1] != System.DBNull.Value) firstName = dataReader.GetString(1); else firstName = String.Empty;
                 if (dataReader[2] != System.DBNull.Value) lastName = dataReader.GetString(2); else lastName = String.Empty;
-                if (dataReader[3] != System.DBNull.Value) phone = dataReader.GetString(3); else phone = String.Empty;
-                if (dataReader[4] != System.DBNull.Value) email = dataReader.GetString(4); else email = String.Empty;
-                if (dataReader[5] != System.DBNull.Value) dateTime = dataReader.GetDateTime(5); else dateTime = null;
-                if (dataReader[6] != System.DBNull.Value) gender = Char.Parse(dataReader.GetString(6).Substring(0, 1)); else gender = '\0';
+                if (dataReader[3] != System.DBNull.Value) nickName = dataReader.GetString(3); else nickName = String.Empty;
+                if (dataReader[4] != System.DBNull.Value) phone = dataReader.GetString(4); else phone = String.Empty;
+                if (dataReader[5] != System.DBNull.Value) email = dataReader.GetString(5); else email = String.Empty;
+                if (dataReader[6] != System.DBNull.Value) dateTime = dataReader.GetDateTime(6); else dateTime = null;
+                if (dataReader[7] != System.DBNull.Value) gender = Char.Parse(dataReader.GetString(7).Substring(0, 1)); else gender = '\0';
 
                 // Clear results and close popup
-                SearchResults.IsOpen = false;
+                //SearchResults.IsOpen = false;
+                SearchResults.IsPopupOpen = false;
                 resultLB.Items.Clear();
                 dataReader.Close();
 
-                OpenUserControl(new CustomerControl(new Customer(customerID, firstName, lastName, phone, email, dateTime, gender)));
+                OpenUserControl(new CustomerControl(new Customer(customerID, firstName, lastName, nickName, phone, email, dateTime, gender)));
             }
 
         }
 
         private void InsertRecords()
         {
-            string query = $"INSERT INTO dbo.Customers(FirstName, LastName, Phone, Email, FirstVisit, Gender) VALUES ('Jim', 'Lk', NULL, NULL, NULL, NULL), ('maria', 'Lek', NULL, NULL, NULL, NULL), ('maria', 'Lk', NULL, NULL, NULL, NULL), ('John', 'Papas', NULL, NULL, NULL, NULL)";
+            string query = $"INSERT INTO dbo.Customers(FirstName, LastName, Nickname, Phone, Email, FirstVisit, Gender) VALUES ('Jim', 'Lk', NULL, NULL, NULL, NULL, NULL), ('maria', 'Lek', NULL, NULL, NULL, NULL, NULL), ('maria', 'Lk', NULL, NULL, NULL, NULL, NULL), ('John', 'Papas', NULL, NULL, NULL, NULL, NULL)";
             SqlCommand command = new SqlCommand(query, dbConn);
 
             command.ExecuteNonQuery();
 
             command.Dispose();
+
+            string query2 = "INSERT INTO dbo.Notes(CustomerID, Note, CreationDate) VALUES (@ID, @Note, @Date), (@ID, @Note2, @Date)";
+            SqlCommand com2 = new SqlCommand(query2, dbConn);
+            com2.Parameters.AddWithValue("@ID", System.Data.SqlDbType.Int);
+            com2.Parameters.AddWithValue("@Note", System.Data.SqlDbType.NVarChar);
+            com2.Parameters.AddWithValue("@Note2", System.Data.SqlDbType.NVarChar);
+            com2.Parameters.AddWithValue("@Date", System.Data.SqlDbType.DateTime);
+
+            com2.Parameters["@ID"].Value = 4;
+            com2.Parameters["@Note"].Value = "Some text";
+            com2.Parameters["@Note2"].Value = "Some other text";
+            com2.Parameters["@Date"].Value = DateTime.Now;
+
+            com2.ExecuteNonQuery();
+            com2.Dispose();
+
         }
 
         private void NewRecordLeft_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)

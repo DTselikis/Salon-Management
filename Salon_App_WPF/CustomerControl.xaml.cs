@@ -54,6 +54,7 @@ namespace Salon_App_WPF
 
             NameTextBox.Text = customer.FirstName;
             LastNameTextBox.Text = customer.LastName;
+            NickNameTextBox.Text = customer.NickName;
             PhoneTextBox.Text = customer.Phone;
             EmailTextBox.Text = customer.Email;
             firstVisitDatePicker.Text = customer.FirstVisit;
@@ -98,7 +99,7 @@ namespace Salon_App_WPF
             }
 
             
-            string query = "UPDATE dbo.Customers SET FirstName = @Name, LastName = @LName, Phone = @Phone, Email = @Email, FirstVisit = @FVisit, Gender = @Gender WHERE CustomerID = @ID";
+            string query = "UPDATE dbo.Customers SET FirstName = @Name, LastName = @LName, NickName = @NickName, Phone = @Phone, Email = @Email, FirstVisit = @FVisit, Gender = @Gender WHERE CustomerID = @ID";
 
             using (SqlConnection dbConn = new SqlConnection(connStr))
             {
@@ -122,6 +123,7 @@ namespace Salon_App_WPF
 
                 command.Parameters.Add("@Name", System.Data.SqlDbType.NVarChar);
                 command.Parameters.Add("@LName", System.Data.SqlDbType.NVarChar);
+                command.Parameters.Add("@NickName", System.Data.SqlDbType.NVarChar);
                 command.Parameters.Add("@Phone", System.Data.SqlDbType.NVarChar);
                 command.Parameters.Add("@Email", System.Data.SqlDbType.NVarChar);
                 command.Parameters.Add("@FVisit", System.Data.SqlDbType.DateTime2);
@@ -132,6 +134,9 @@ namespace Salon_App_WPF
 
                 if (!LastNameTextBox.Text.Equals(string.Empty)) command.Parameters["@LName"].Value = LastNameTextBox.Text;
                 else command.Parameters["@LName"].Value = DBNull.Value;
+
+                if (!NickNameTextBox.Text.Equals(string.Empty)) command.Parameters["@NickName"].Value = NickNameTextBox.Text;
+                else command.Parameters["@NickName"].Value = DBNull.Value;
 
                 if (!PhoneTextBox.Text.Equals(string.Empty)) command.Parameters["@Phone"].Value = PhoneTextBox.Text;
                 else command.Parameters["@Phone"].Value = DBNull.Value;
@@ -183,7 +188,7 @@ namespace Salon_App_WPF
             // If record is unique
             if (checkIfRecordExists() == 0)
             {
-                String query = "INSERT INTO dbo.Customers(FirstName, LastName, Phone, Email, FirstVisit, Gender) VALUES (@Name, @LName, @Phone, @Email, @FVisit, @Gender)";
+                String query = "INSERT INTO dbo.Customers(FirstName, LastName, NickName, Phone, Email, FirstVisit, Gender) VALUES (@Name, @LName, @NickName, @Phone, @Email, @FVisit, @Gender)";
 
                 using (SqlConnection dbConn = new SqlConnection(connStr))
                 {
@@ -207,6 +212,7 @@ namespace Salon_App_WPF
 
                     command.Parameters.Add("@Name", System.Data.SqlDbType.NVarChar);
                     command.Parameters.Add("@LName", System.Data.SqlDbType.NVarChar);
+                    command.Parameters.Add("@NickName", System.Data.SqlDbType.NVarChar);
                     command.Parameters.Add("@Phone", System.Data.SqlDbType.NVarChar);
                     command.Parameters.Add("@Email", System.Data.SqlDbType.NVarChar);
                     command.Parameters.Add("@FVisit", System.Data.SqlDbType.DateTime);
@@ -216,6 +222,9 @@ namespace Salon_App_WPF
 
                     if (!LastNameTextBox.Text.Equals(string.Empty)) command.Parameters["@LName"].Value = LastNameTextBox.Text;
                     else command.Parameters["@LName"].Value = DBNull.Value;
+
+                    if (!NickNameTextBox.Text.Equals(string.Empty)) command.Parameters["@NickName"].Value = NickNameTextBox.Text;
+                    else command.Parameters["@NickName"].Value = DBNull.Value;
 
                     if (!PhoneTextBox.Text.Equals(string.Empty)) command.Parameters["@Phone"].Value = PhoneTextBox.Text;
                     else command.Parameters["@Phone"].Value = DBNull.Value;
@@ -416,7 +425,7 @@ namespace Salon_App_WPF
                 catch (SqlException ex)
                 {
                     MessageBox.Show("Παρουσιάστηκε πρόβλημα κατά στη σύνδεση. Παρακαλούμε επικοινωνήστε με το τεχνικό τμήμα.",
-                        "ΠροέκυψεΠπρόβλημα",
+                        "Προέκυψε πρόβλημα",
                         MessageBoxButton.OK,
                         MessageBoxImage.Error,
                         MessageBoxResult.OK);
@@ -447,6 +456,7 @@ namespace Salon_App_WPF
         {
             NameTextBox.IsReadOnly = !NameTextBox.IsReadOnly;
             LastNameTextBox.IsReadOnly = !LastNameTextBox.IsReadOnly;
+            NickNameTextBox.IsReadOnly = !NickNameTextBox.IsReadOnly;
             PhoneTextBox.IsReadOnly = !PhoneTextBox.IsReadOnly;
             EmailTextBox.IsReadOnly = !EmailTextBox.IsReadOnly;
             firstVisitDatePicker.IsEnabled = !firstVisitDatePicker.IsEnabled;
@@ -477,6 +487,7 @@ namespace Salon_App_WPF
             int customerID;
             string firstName;
             string lastName;
+            string nickName;
             string phone;
             string email;
             Nullable<DateTime> dateTime = null;
@@ -492,7 +503,7 @@ namespace Salon_App_WPF
                 catch (SqlException ex)
                 {
                     MessageBox.Show("Παρουσιάστηκε πρόβλημα κατά στη σύνδεση. Παρακαλούμε επικοινωνήστε με το τεχνικό τμήμα.",
-                        "ΠροέκυψεΠπρόβλημα",
+                        "Προέκυψε πρόβλημα",
                         MessageBoxButton.OK,
                         MessageBoxImage.Error,
                         MessageBoxResult.OK);
@@ -526,17 +537,18 @@ namespace Salon_App_WPF
 
                 if (infoReader[1] != System.DBNull.Value) firstName = infoReader.GetString(1); else firstName = String.Empty;
                 if (infoReader[2] != System.DBNull.Value) lastName = infoReader.GetString(2); else lastName = String.Empty;
-                if (infoReader[3] != System.DBNull.Value) phone = infoReader.GetString(3); else phone = String.Empty;
-                if (infoReader[4] != System.DBNull.Value) email = infoReader.GetString(4); else email = String.Empty;
-                if (infoReader[5] != System.DBNull.Value) dateTime = infoReader.GetDateTime(5); else dateTime = null;
-                if (infoReader[6] != System.DBNull.Value) gender = Char.Parse(infoReader.GetString(6).Substring(0, 1)); else gender = '\0';
+                if (infoReader[3] != System.DBNull.Value) nickName = infoReader.GetString(3); else nickName = String.Empty;
+                if (infoReader[4] != System.DBNull.Value) phone = infoReader.GetString(4); else phone = String.Empty;
+                if (infoReader[5] != System.DBNull.Value) email = infoReader.GetString(5); else email = String.Empty;
+                if (infoReader[6] != System.DBNull.Value) dateTime = infoReader.GetDateTime(6); else dateTime = null;
+                if (infoReader[7] != System.DBNull.Value) gender = Char.Parse(infoReader.GetString(7).Substring(0, 1)); else gender = '\0';
 
                 infoReader.Close();
                 infoCommad.Dispose();
                 dbConn.Close();
             }
 
-            this.customer = new Customer(customerID, firstName, lastName, phone, email, dateTime, gender);
+            this.customer = new Customer(customerID, firstName, lastName, nickName, phone, email, dateTime, gender);
         }
 
         private void GetNotes()
@@ -551,7 +563,7 @@ namespace Salon_App_WPF
                 catch (SqlException ex)
                 {
                     MessageBox.Show("Παρουσιάστηκε πρόβλημα κατά στη σύνδεση. Παρακαλούμε επικοινωνήστε με το τεχνικό τμήμα.",
-                        "ΠροέκυψεΠπρόβλημα",
+                        "Προέκυψε πρόβλημα",
                         MessageBoxButton.OK,
                         MessageBoxImage.Error,
                         MessageBoxResult.OK);

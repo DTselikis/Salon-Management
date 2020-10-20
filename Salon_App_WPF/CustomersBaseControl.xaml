@@ -41,6 +41,13 @@
                     />
 
                 <materialDesign:DataGridTextColumn
+                    Header="Ανγνωριστικό"
+                    Binding="{Binding NickName}"
+                    ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"
+                    EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}"
+                    />
+
+                <materialDesign:DataGridTextColumn
                     Header="Τηλέφωνο"
                     Binding="{Binding Phone}"
                     ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"

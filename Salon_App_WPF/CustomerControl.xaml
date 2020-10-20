@@ -90,7 +90,20 @@
                         IsReadOnly="True"
                         />
                 </StackPanel>
-                
+
+                <!--// Lastname //-->
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0, 0, 0, 20">
+                    <materialDesign:PackIcon Kind="CommentAccount" Foreground="{Binding ElementName=LastNameTextBox, Path=BorderBrush}" VerticalAlignment="Center" Margin="0,0,7,0" Width="62" Height="62"/>
+                    <TextBox
+                        x:Name="NickNameTextBox"
+                        materialDesign:HintAssist.Hint="Σημείωση"
+                        Width="250"
+                        VerticalAlignment="Center"
+                        FontSize="35"
+                        IsReadOnly="True"
+                        />
+                </StackPanel>
+
                 <!--// Phone //-->
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0, 0, 0, 20">
                     <materialDesign:PackIcon Kind="Phone" Foreground="{Binding ElementName=PhoneTextBox, Path=BorderBrush}" VerticalAlignment="Center" Margin="0,0,7,0" Width="62" Height="62"/>
