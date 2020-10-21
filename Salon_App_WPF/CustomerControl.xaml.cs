@@ -57,7 +57,7 @@ namespace Salon_App_WPF
             NickNameTextBox.Text = customer.NickName;
             PhoneTextBox.Text = customer.Phone;
             EmailTextBox.Text = customer.Email;
-            firstVisitDatePicker.Text = customer.FirstVisit;
+            firstVisitDatePicker.Text = customer.FirstVisit.ToString();
             if (customer.Gender == 'M') MaleRadioBtn.IsChecked = true;
             else if (customer.Gender == 'F') FemaleRadioBtn.IsChecked = true;
 

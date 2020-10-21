@@ -1,4 +1,4 @@
-using MaterialDesignThemes.Wpf;
+﻿using MaterialDesignThemes.Wpf;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -199,6 +199,21 @@ namespace Salon_App_WPF
         private void UserControl_Unloaded(object sender, RoutedEventArgs e)
         {
             Customers.Clear();
+        }
+
+        private void EditBtn_Click(object sender, RoutedEventArgs e)
+        {
+            CustomerGrid customer = (CustomerGrid)CustomersBase.SelectedItem;
+            int id = customer.CustomerID;
+            string firstaName = customer.FirstName;
+            string lastName = customer.LastName;
+            string nickName = customer.NickName;
+            string phone = customer.Phone;
+            string email = customer.Email;
+            Nullable<DateTime> firstVisit = customer.FirstVisit;
+            char gender = customer.Gender;
+
+            MainWindow.OpenUserControl(new CustomerControl(new Customer(id, firstaName, lastName, nickName, phone, email, firstVisit, gender)));
         }
     }
 }

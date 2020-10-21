@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="Salon_App_WPF.CustomersBaseControl"
+<UserControl x:Class="Salon_App_WPF.CustomersBaseControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -23,6 +23,7 @@
             <DataGrid.ContextMenu>
                 <ContextMenu>
                     <MenuItem x:Name="DeleteBtn" Header="Διαγραφή" Click="DeleteBtn_Click" />
+                    <MenuItem x:Name="EditBtn" Header="Επεξεργασία" Click="EditBtn_Click"/>
                 </ContextMenu>
             </DataGrid.ContextMenu>
             <DataGrid.Columns>

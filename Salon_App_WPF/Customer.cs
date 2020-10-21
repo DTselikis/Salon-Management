@@ -24,7 +24,7 @@ namespace Salon_App_WPF
         public string NickName { get { return this._nickName; } set { this._nickName = value; } }
         public string Phone { get { return this._phone; } set { this._phone = value; } }
         public string Email { get { return _email; } set { this._email= value; } }
-        public string FirstVisit { get { return this._firstVisit.ToString(); } }
+        public Nullable<DateTime> FirstVisit { get { return this._firstVisit; } }
         public char Gender { get { return _gender; } set { this._gender = value; } }
 
         public Customer(int customerID, string firstName, string lastName, string phone, string email, Nullable<DateTime> firstVisit, char gender)
