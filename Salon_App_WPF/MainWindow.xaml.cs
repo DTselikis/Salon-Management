@@ -127,11 +127,11 @@ namespace Salon_App_WPF
 
                 TextBox searchTextBox = (TextBox)sender;
 
-                String query = "SELECT CustomerID, FirstName, LastName, NickName FROM dbo.Customers WHERE FirstName LIKE @Name OR LastName LIKE @Name";
+                String query = "SELECT CustomerID, FirstName,  LastName, NickName FROM dbo.Customers WHERE FirstName LIKE @Name OR LastName LIKE @Name";
                 
                 SqlCommand selectCommand = new SqlCommand(query, dbConn);
 
-                selectCommand.Parameters.Add("@Name", System.Data.SqlDbType.VarChar);
+                selectCommand.Parameters.Add("@Name", System.Data.SqlDbType.NVarChar);
                 selectCommand.Parameters["@Name"].Value = searchTextBox.Text + "%";
 
                 SqlDataReader dataReader = selectCommand.ExecuteReader();
