@@ -1,4 +1,4 @@
-﻿using MaterialDesignThemes.Wpf;
+using MaterialDesignThemes.Wpf;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -110,6 +110,19 @@ namespace Salon_App_WPF
 
                     return;
                 }
+
+                string noteQuery = "DELETE dbo.Notes WHERE CustomerID = @ID";
+
+                SqlCommand noteCommand= new SqlCommand(noteQuery, dbConn);
+                noteCommand.Parameters.AddWithValue("@ID", System.Data.SqlDbType.Int);
+                noteCommand.Parameters["@ID"].Value = customer.CustomerID;
+
+                SqlDataAdapter noteAdapter = new SqlDataAdapter();
+                noteAdapter.DeleteCommand = noteCommand;
+                noteAdapter.DeleteCommand.ExecuteNonQuery();
+
+                noteCommand.Dispose();
+                noteAdapter.Dispose();
 
                 string query = "DELETE dbo.Customers WHERE CustomerID = @ID";
 
