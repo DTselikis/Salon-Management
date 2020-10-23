@@ -21,22 +21,42 @@ namespace Salon_App_WPF
         private const string Package = "Salon Management";
         private const string BackUpFolder = "BackUp";
         private const string Daily = "Daily";
+        private const string Monthly = "Monthly";
         private const string XMLFolder = "XML";
+
+        private const string ResourcesFolder = "Resources";
+        private const string ImagesFolder = "Images";
+        private const string ProfileImageFolder = "ProfileImages";
 
         private string appData;
         private string dailyPath;
+        private string monthlyPath;
         private string todayPath;
+        private string profileImgPath;
 
         private string destinationPath;
+        private string destProfImgPath;
+
 
         public BackUpManager()
         {
             appData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
             dailyPath = Path.Combine(appData, Package, BackUpFolder, Daily);
+            monthlyPath = Path.Combine(appData, Package, BackUpFolder, Monthly);
 
-            todayPath = Path.Combine(dailyPath, DateTime.Now.ToString("yyyy_MM_dd"), XMLFolder);
+            todayPath = Path.Combine(dailyPath, DateTime.Now.ToString("yyyy_MM_dd"));
+            profileImgPath = Path.Combine(appData, Package, ResourcesFolder);
+            profileImgPath = Path.Combine(profileImgPath, ImagesFolder, ProfileImageFolder);
 
-            destinationPath = todayPath;
+            destinationPath = Path.Combine(todayPath, XMLFolder);
+            destProfImgPath = Path.Combine(todayPath, ProfileImageFolder); 
+        }
+
+        public BackUpManager(string destinationPath)
+        {
+            this.destinationPath = destinationPath;
+
+            destinationPath = Path.Combine(destinationPath, ImagesFolder);
         }
 
         public void Initialize()
@@ -61,6 +81,17 @@ namespace Salon_App_WPF
                     // Delete records of last week
                     if (interval.Days >= 7) Directory.Delete(directory, true);
                 }
+
+                foreach (string directory in Directory.GetDirectories(monthlyPath))
+                {
+                    // Indexing starts from 0
+                    int index = directory.LastIndexOf('\\') + 1;
+                    string dirName = directory.Substring(index, directory.Length - index);
+                    TimeSpan interval = DateTime.Today - DateTime.Parse(dirName.Replace('_', '/'));
+
+                    // Delete records of last week
+                    if (interval.Days >= 90) Directory.Delete(directory, true);
+                }
             }
             catch (DirectoryNotFoundException ex)
             {
@@ -80,6 +111,12 @@ namespace Salon_App_WPF
                 // If the directory already exists, this method does not create a new directory
                 Directory.CreateDirectory(destinationPath);
                 BackUpDBToXML(null);
+
+                // If profile pictures exists
+                if(Directory.Exists(profileImgPath))
+                {
+                    DirectoryCopy(profileImgPath, destProfImgPath, true);
+                }
             }
             // If today backup was completed check if any new records was added
             else
@@ -110,11 +147,34 @@ namespace Salon_App_WPF
                         if (numOfRecords > Directory.GetFiles(destinationPath).Length)
                         {
                             BackUpDBToXML(DateTime.Today);
+
+                            BackUpTodayImages(profileImgPath, destProfImgPath);
                         }
                         
                     }
                 }
             }
+
+            destinationPath = Path.Combine(monthlyPath, DateTime.Today.ToString("yyyy_MM"));
+            if(!Directory.Exists(destinationPath))
+            {
+                try
+                {
+                    Directory.CreateDirectory(destinationPath);
+                    BackUpDBToXML(null);
+
+                    if (Directory.Exists(profileImgPath))
+                    {
+                        DirectoryCopy(profileImgPath, Path.Combine(destinationPath, ImagesFolder), true);
+                    }
+                }
+                catch (Exception ex)
+                {
+
+                }
+            }
+
+            destinationPath = todayPath;
         }
 
         private void BackUpDBToXML(Nullable<DateTime> today)
@@ -242,6 +302,84 @@ namespace Salon_App_WPF
             }
 
             return notes;
+        }
+
+        private void DirectoryCopy(string sourceDirName, string destDirName, bool copySubDirs)
+        {
+            try
+            {
+                // Get the subdirectories for the specified directory.
+                DirectoryInfo dir = new DirectoryInfo(sourceDirName);
+
+                if (!dir.Exists)
+                {
+                    throw new DirectoryNotFoundException(
+                        "Source directory does not exist or could not be found: "
+                        + sourceDirName);
+                }
+
+                DirectoryInfo[] dirs = dir.GetDirectories();
+
+                // If the destination directory doesn't exist, create it.       
+                Directory.CreateDirectory(destDirName);
+
+                // Get the files in the directory and copy them to the new location.
+                FileInfo[] files = dir.GetFiles();
+                foreach (FileInfo file in files)
+                {
+                    string tempPath = Path.Combine(destDirName, file.Name);
+                    file.CopyTo(tempPath, false);
+                }
+
+                // If copying subdirectories, copy them and their contents to new location.
+                if (copySubDirs)
+                {
+                    foreach (DirectoryInfo subdir in dirs)
+                    {
+                        string tempPath = Path.Combine(destDirName, subdir.Name);
+                        DirectoryCopy(subdir.FullName, tempPath, copySubDirs);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
+
+        private void BackUpTodayImages(string sourceDirName, string destDirName)
+        {
+            try
+            {
+                // Get the subdirectories for the specified directory.
+                DirectoryInfo dir = new DirectoryInfo(sourceDirName);
+
+                if (!dir.Exists)
+                {
+                    throw new DirectoryNotFoundException(
+                        "Source directory does not exist or could not be found: "
+                        + sourceDirName);
+                }
+
+                DirectoryInfo[] dirs = dir.GetDirectories();
+
+                // If the destination directory doesn't exist, create it.       
+                Directory.CreateDirectory(destDirName);
+
+                // Get the files in the directory and copy them to the new location.
+                FileInfo[] files = dir.GetFiles();
+                foreach (FileInfo file in files)
+                {
+                    if (file.CreationTime.Date == DateTime.Today)
+                    {
+                        string tempPath = Path.Combine(destDirName, file.Name);
+                        file.CopyTo(tempPath, true);
+                    }
+                }
+            } catch (Exception ex)
+            {
+
+            }
         }
     }
 
