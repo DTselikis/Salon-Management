@@ -149,7 +149,12 @@ namespace Salon_App_WPF
                 if (!EmailTextBox.Text.Equals(string.Empty)) command.Parameters["@Email"].Value = EmailTextBox.Text;
                 else command.Parameters["@Email"].Value = DBNull.Value;
 
-                if (firstVisitDatePicker.SelectedDate.HasValue) command.Parameters["@FVisit"].Value = firstVisitDatePicker.SelectedDate;
+                if (firstVisitDatePicker.SelectedDate.HasValue)
+                {
+                    string date = DateTime.Parse(firstVisitDatePicker.SelectedDate.ToString()).ToString("d");
+                    string time = DateTime.Now.ToString("T");
+                    command.Parameters["@FVisit"].Value = DateTime.Parse(date + " " + time);
+                }
                 else command.Parameters["@FVisit"].Value = DBNull.Value;
 
                 if (MaleRadioBtn.IsChecked == true) command.Parameters["@Gender"].Value = 'M';
@@ -243,7 +248,12 @@ namespace Salon_App_WPF
                     if (!EmailTextBox.Text.Equals(string.Empty)) command.Parameters["@Email"].Value = EmailTextBox.Text;
                     else command.Parameters["@Email"].Value = DBNull.Value;
 
-                    if (firstVisitDatePicker.SelectedDate.HasValue) command.Parameters["@FVisit"].Value = firstVisitDatePicker.SelectedDate;
+                    if (firstVisitDatePicker.SelectedDate.HasValue)
+                    {
+                        string date = DateTime.Parse(firstVisitDatePicker.SelectedDate.ToString()).ToString("d");
+                        string time = DateTime.Now.ToString("T");
+                        command.Parameters["@FVisit"].Value = DateTime.Parse(date + " " + time);
+                    }
                     else command.Parameters["@FVisit"].Value = DBNull.Value;    
 
                     if (MaleRadioBtn.IsChecked == true) command.Parameters["@Gender"].Value = 'M';
