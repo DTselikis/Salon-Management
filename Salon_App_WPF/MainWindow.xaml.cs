@@ -249,6 +249,26 @@ namespace Salon_App_WPF
             mainWindow.formsGrid.Children.Remove(mainWindow.openedControl);
         }
 
+        private void ExportDBBtn_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+
+            openFileDialog.Title = "Επιλογή τοποθεσίας αποθήκευσης";
+            openFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            openFileDialog.ValidateNames = false;
+            openFileDialog.CheckFileExists = false;
+            openFileDialog.CheckPathExists = true;
+            openFileDialog.FileName = "backup";
+
+            if (openFileDialog.ShowDialog() == true)
+            {
+                string path = openFileDialog.FileName.Substring(0, openFileDialog.FileName.LastIndexOf('\\'));
+
+                BackUpManager export = new BackUpManager(path);
+
+                new Thread(export.Export).Start();
+            }
+        }
     }
 
     public class Result

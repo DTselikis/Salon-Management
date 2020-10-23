@@ -55,8 +55,13 @@ namespace Salon_App_WPF
         public BackUpManager(string destinationPath)
         {
             this.destinationPath = destinationPath;
+            this.destinationPath = Path.Combine(destinationPath, "XML");
 
-            destinationPath = Path.Combine(destinationPath, ImagesFolder);
+            destProfImgPath = Path.Combine(destinationPath, ImagesFolder);
+
+            appData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            profileImgPath = Path.Combine(appData, Package, ResourcesFolder);
+            profileImgPath = Path.Combine(profileImgPath, ImagesFolder, ProfileImageFolder);
         }
 
         public void Initialize()
@@ -64,7 +69,12 @@ namespace Salon_App_WPF
             // Check if there are old backups to be removed
             DeleteOld();
 
-            BackUp();
+            BackUp(false);
+        }
+
+        public void Export()
+        {
+            BackUp(true);
         }
 
         private void DeleteOld()
@@ -103,10 +113,10 @@ namespace Salon_App_WPF
             }
         }
 
-        private void BackUp()
+        private void BackUp(bool isExport)
         {
             // Backup only once a day
-            if (!Directory.Exists(destinationPath))
+            if (!Directory.Exists(destinationPath) || isExport)
             {
                 // If the directory already exists, this method does not create a new directory
                 Directory.CreateDirectory(destinationPath);
@@ -155,26 +165,28 @@ namespace Salon_App_WPF
                 }
             }
 
-            destinationPath = Path.Combine(monthlyPath, DateTime.Today.ToString("yyyy_MM"));
-            if(!Directory.Exists(destinationPath))
+            if (!isExport)
             {
-                try
+                destinationPath = Path.Combine(monthlyPath, DateTime.Today.ToString("yyyy_MM"));
+                if (!Directory.Exists(destinationPath))
                 {
-                    Directory.CreateDirectory(destinationPath);
-                    BackUpDBToXML(null);
-
-                    if (Directory.Exists(profileImgPath))
+                    try
                     {
-                        DirectoryCopy(profileImgPath, Path.Combine(destinationPath, ImagesFolder), true);
+                        Directory.CreateDirectory(destinationPath);
+                        BackUpDBToXML(null);
+
+                        if (Directory.Exists(profileImgPath))
+                        {
+                            DirectoryCopy(profileImgPath, Path.Combine(destinationPath, ImagesFolder), true);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+
                     }
                 }
-                catch (Exception ex)
-                {
-
-                }
+                destinationPath = todayPath;
             }
-
-            destinationPath = todayPath;
         }
 
         private void BackUpDBToXML(Nullable<DateTime> today)
