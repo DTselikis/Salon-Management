@@ -33,6 +33,7 @@ namespace Salon_App_WPF
         private string monthlyPath;
         private string todayPath;
         private string profileImgPath;
+        private string dbBasePath;
 
         private string destinationPath;
         private string destProfImgPath;
@@ -47,6 +48,7 @@ namespace Salon_App_WPF
             todayPath = Path.Combine(dailyPath, DateTime.Now.ToString("yyyy_MM_dd"));
             profileImgPath = Path.Combine(appData, Package, ResourcesFolder);
             profileImgPath = Path.Combine(profileImgPath, ImagesFolder, ProfileImageFolder);
+            dbBasePath = todayPath;
 
             destinationPath = Path.Combine(todayPath, XMLFolder);
             destProfImgPath = Path.Combine(todayPath, ProfileImageFolder); 
@@ -58,6 +60,7 @@ namespace Salon_App_WPF
             this.destinationPath = Path.Combine(destinationPath, "XML");
 
             destProfImgPath = Path.Combine(destinationPath, ImagesFolder);
+            dbBasePath = destinationPath;
 
             appData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
             profileImgPath = Path.Combine(appData, Package, ResourcesFolder);
@@ -99,7 +102,7 @@ namespace Salon_App_WPF
                     string dirName = directory.Substring(index, directory.Length - index);
                     TimeSpan interval = DateTime.Today - DateTime.Parse(dirName.Replace('_', '/'));
 
-                    // Delete records of last week
+                    // Delete records of last three months
                     if (interval.Days >= 90) Directory.Delete(directory, true);
                 }
             }
@@ -127,6 +130,8 @@ namespace Salon_App_WPF
                 {
                     DirectoryCopy(profileImgPath, destProfImgPath, true);
                 }
+
+                BackUpDB();
             }
             // If today backup was completed check if any new records was added
             else
@@ -160,13 +165,18 @@ namespace Salon_App_WPF
 
                             BackUpTodayImages(profileImgPath, destProfImgPath);
                         }
+
+                        BackUpDB();
                         
                     }
                 }
             }
 
+            // If user requested an export we don't want the monthly backup
             if (!isExport)
             {
+                // Monthly backup
+                // Change path to current month
                 destinationPath = Path.Combine(monthlyPath, DateTime.Today.ToString("yyyy_MM"));
                 if (!Directory.Exists(destinationPath))
                 {
@@ -175,6 +185,7 @@ namespace Salon_App_WPF
                         Directory.CreateDirectory(destinationPath);
                         BackUpDBToXML(null);
 
+                        // Backup every profile image
                         if (Directory.Exists(profileImgPath))
                         {
                             DirectoryCopy(profileImgPath, Path.Combine(destinationPath, ImagesFolder), true);
@@ -185,7 +196,15 @@ namespace Salon_App_WPF
 
                     }
                 }
+
+                // Change path to current month
+                dbBasePath = destinationPath;
+
+                BackUpDB();
+
+                // Retore original paths
                 destinationPath = todayPath;
+                dbBasePath = destinationPath;
             }
         }
 
@@ -257,7 +276,7 @@ namespace Salon_App_WPF
 
             string fullPath = Path.Combine(destinationPath, fileName.ToString());
 
-            // For records with the same name, append the phone number
+            // For records with the same name, append the last name or phone number
             if (File.Exists(fullPath))
             {
                 if (!customer.Phone.Equals(string.Empty)) fileName.Append("_").Append(customer.Phone);
@@ -314,6 +333,34 @@ namespace Salon_App_WPF
             }
 
             return notes;
+        }
+
+        private void BackUpDB()
+        {
+            using (SqlConnection dbConn = new SqlConnection(connStr))
+            {
+                try
+                {
+                    dbConn.Open();
+                }
+                catch (SqlException ex)
+                {
+
+                }
+
+                string query = "BACKUP DATABASE @DBPath TO DISK = @Path";
+
+                SqlCommand command = new SqlCommand(query, dbConn);
+                command.Parameters.AddWithValue("@DBPath", System.Data.SqlDbType.NVarChar);
+                command.Parameters.AddWithValue("@Path", System.Data.SqlDbType.NVarChar);
+                command.Parameters["@DBPath"].Value = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "SalonDB.mdf");
+                command.Parameters["@Path"].Value = Path.Combine(dbBasePath, "SalonDB.mdf");
+
+                command.ExecuteNonQuery();
+
+                command.Dispose();
+                dbConn.Close();
+            }
         }
 
         private void DirectoryCopy(string sourceDirName, string destDirName, bool copySubDirs)
