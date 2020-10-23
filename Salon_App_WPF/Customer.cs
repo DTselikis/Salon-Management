@@ -1,20 +1,30 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace Salon_App_WPF
 {
+    [XmlRoot("customer")]
     public class Customer
     {
+        [XmlElement("ID")]
         private int _customerID;
+        [XmlElement("FirstName")]
         private string _firstName;
+        [XmlElement("LastName")]
         private string _lastName;
+        [XmlElement("NickName")]
         private string _nickName;
+        [XmlElement("Phone")]
         private string _phone;
+        [XmlElement("Email")]
         private string _email;
+        [XmlElement("CreationDate")]
         private Nullable<DateTime> _firstVisit;
+        [XmlElement("Gender")]
         private char _gender;
 
         
@@ -27,7 +37,10 @@ namespace Salon_App_WPF
         public Nullable<DateTime> FirstVisit { get { return this._firstVisit; } }
         public char Gender { get { return _gender; } set { this._gender = value; } }
 
-        public Customer(int customerID, string firstName, string lastName, string phone, string email, Nullable<DateTime> firstVisit, char gender)
+        public Customer()
+        {
+
+        }
         public Customer(int customerID, string firstName, string lastName, string nickName, string phone, string email, Nullable<DateTime> firstVisit, char gender)
         {
             this._customerID = customerID;
