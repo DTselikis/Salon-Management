@@ -1,4 +1,4 @@
-﻿using MaterialDesignThemes.Wpf;
+using MaterialDesignThemes.Wpf;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -17,6 +17,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using MaterialDesignThemes;
+using System.IO;
 
 namespace Salon_App_WPF
 {
@@ -28,6 +29,8 @@ namespace Salon_App_WPF
 
         private string connStr = Properties.Settings.Default.DBConnStr;
         private Customer customer;
+        private string imageFilePath;
+        private bool hadProfileImage = false;
 
         private ObservableCollection<TextBox> Notes { get; set; }
         private IDictionary<int, int> NotesID = new Dictionary<int, int>();
@@ -60,6 +63,8 @@ namespace Salon_App_WPF
             firstVisitDatePicker.Text = customer.FirstVisit.ToString();
             if (customer.Gender == 'M') MaleRadioBtn.IsChecked = true;
             else if (customer.Gender == 'F') FemaleRadioBtn.IsChecked = true;
+
+            loadProfileImage();
 
             OptionsLeftBtn.ToolTip = "Ενεργοποίηση επεξεργασίας στοιχείων";
             OptionsLeftBtn.Content = "Επεξεργασία";
@@ -159,6 +164,12 @@ namespace Salon_App_WPF
                 adapter.UpdateCommand.ExecuteNonQuery();
 
                 adapter.Dispose();
+
+                if (CustomerPicture.Visibility == Visibility.Visible)
+                {
+                    SaveProfileImage();
+                }
+                
 
                 MessageBox.Show(
                     "Επιτυχής αλλαγή στοιχείων!",
@@ -296,14 +307,29 @@ namespace Salon_App_WPF
                     return;
                 }
 
+                SqlDataAdapter dataAdapter = new SqlDataAdapter();
+                if (hadProfileImage && imageFilePath.Contains("AppData"))
+                {
+                    string picQuery = "DELETE dbo.ProfileImages WHERE CustomerID = @ID";
+
+                    SqlCommand notesCommand = new SqlCommand(picQuery, dbConn);
+                    notesCommand.Parameters.Add("@ID", System.Data.SqlDbType.Int);
+                    notesCommand.Parameters["@ID"].Value = this.customer.CustomerID;
+
+                    dataAdapter.DeleteCommand = notesCommand;
+                    dataAdapter.DeleteCommand.ExecuteNonQuery();
+
+                    hadProfileImage = false;
+                    File.Delete(imageFilePath);
+                }
+
                 string notesQuery = "DELETE dbo.Notes WHERE CustomerID = @ID";
 
                 SqlCommand notesCommand = new SqlCommand(notesQuery, dbConn);
                 notesCommand.Parameters.Add("@ID", System.Data.SqlDbType.Int);
                 notesCommand.Parameters["@ID"].Value = this.customer.CustomerID;
 
-                SqlDataAdapter dataAdapter = new SqlDataAdapter();
-                dataAdapter.DeleteCommand = notesCommand;
+                    dataAdapter.DeleteCommand = notesCommand;
                 dataAdapter.DeleteCommand.ExecuteNonQuery();
 
                 string query = "DELETE dbo.Customers WHERE CustomerID = @ID";
@@ -462,6 +488,7 @@ namespace Salon_App_WPF
             firstVisitDatePicker.IsEnabled = !firstVisitDatePicker.IsEnabled;
             MaleRadioBtn.IsEnabled = !MaleRadioBtn.IsEnabled;
             FemaleRadioBtn.IsEnabled = !FemaleRadioBtn.IsEnabled;
+            if (this.customer != null) ChangePicBtn.IsEnabled = !ChangePicBtn.IsEnabled;
 
             if (this.customer != null)
             {
@@ -606,6 +633,148 @@ namespace Salon_App_WPF
             }
         }
 
+        private void loadProfileImage()
+        {
+            using (SqlConnection dbConn = new SqlConnection(connStr))
+            {
+                try
+                {
+                    dbConn.Open();
+                }
+                catch
+                {
+
+                }
+
+                string query = "SELECT FileName FROM dbo.ProfileImages WHERE CustomerID = @ID";
+
+                SqlCommand command = new SqlCommand(query, dbConn);
+                command.Parameters.AddWithValue("@ID", System.Data.DbType.Int32);
+                command.Parameters["@ID"].Value = this.customer.CustomerID;
+
+                SqlDataReader dataReader = command.ExecuteReader();
+
+                if (dataReader.Read())
+                {
+                    hadProfileImage = true;
+
+                    string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+                    string[] pathStrs = { appDataPath, "Salon Management", "Resources", "Images", "ProfileImages", dataReader.GetString(0) };
+                    string imageFilePath = System.IO.Path.Combine(pathStrs);
+
+                    openProfileImage(imageFilePath);
+                }
+
+                command.Dispose();
+                dataReader.Close();
+                dbConn.Close();
+            }
+        }
+
+        private void openProfileImage(string imageFilePath)
+        {
+            if (File.Exists(imageFilePath))
+            {
+                BitmapImage customerBitMap = null;
+                try
+                {
+                    // Use stream to be able to delete image later
+                    var stream = File.OpenRead(imageFilePath);
+
+                    customerBitMap = new BitmapImage();
+                    customerBitMap = new BitmapImage();
+                    customerBitMap.BeginInit();
+                    customerBitMap.CacheOption = BitmapCacheOption.OnLoad;
+                    customerBitMap.StreamSource = stream;
+                    customerBitMap.EndInit();
+
+                    stream.Close();
+                    stream.Dispose();
+                }
+                catch (Exception ex)
+                {
+
+                }
+                
+                CustomerPicBorder.BorderThickness = new Thickness(3);
+                CustomerPicture.Source = customerBitMap;
+
+                CustomerIcon.Width = 0;
+                CustomerIcon.Height = 0;
+                CustomerIcon.Visibility = Visibility.Hidden;
+
+                CustomerPicture.Width = 100;
+                CustomerPicture.Height = 100;
+                CustomerPicture.Visibility = Visibility.Visible;
+            }
+        }
+
+        private void SaveProfileImage()
+        {
+            string fileName = this.customer.CustomerID.ToString();
+            string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            string[] pathStrs = { appDataPath, "Salon Management", "Resources", "Images", "ProfileImages" };
+            string destination = System.IO.Path.Combine(pathStrs);
+            string imageFilePath = System.IO.Path.Combine(destination, fileName + System.IO.Path.GetExtension(this.imageFilePath));
+
+            Directory.CreateDirectory(destination);
+
+            try
+            {
+               
+                File.Copy(this.imageFilePath, imageFilePath, true);
+            }
+            catch
+            {
+
+            }
+
+            openProfileImage(imageFilePath);
+            this.imageFilePath = imageFilePath;
+
+            using (SqlConnection dbConn = new SqlConnection(connStr))
+            {
+                try
+                {
+                    dbConn.Open();
+                }
+                catch (SqlException ex)
+                {
+
+                }
+                
+                string query;
+                if (hadProfileImage) query = "UPDATE dbo.ProfileImages SET FileName = @FName WHERE CustomerID = @ID";
+                else query = "INSERT INTO dbo.ProfileImages (CustomerID, FileName) VALUES (@ID, @FName)";
+
+                SqlCommand command = new SqlCommand(query, dbConn);
+                command.Parameters.AddWithValue("@ID", System.Data.DbType.Int32);
+                command.Parameters.AddWithValue("@FName", System.Data.DbType.String);
+                command.Parameters["@ID"].Value = this.customer.CustomerID;
+                command.Parameters["@FName"].Value = fileName;
+
+                SqlDataAdapter adapter = new SqlDataAdapter();
+
+                if (hadProfileImage)
+                {
+                    adapter.UpdateCommand = command;
+                    adapter.UpdateCommand.ExecuteNonQuery();
+                }
+                else
+                {
+                    adapter.InsertCommand = command;
+                    adapter.InsertCommand.ExecuteNonQuery();
+
+                    hadProfileImage = true;
+                }
+
+                command.Dispose();
+                adapter.Dispose();
+                dbConn.Close();
+            }
+            
+        }
+
         private void NewNoteTB_KeyDown(object sender, KeyEventArgs e)
         {
             SaveNoteBtn.IsEnabled = true;
@@ -744,6 +913,35 @@ namespace Salon_App_WPF
                 NotesID.Remove(NotesID.Count() - NotesListView.SelectedIndex - 1);
 
             }
+        }
+
+        private void ChangePicBtn_Click(object sender, RoutedEventArgs e)
+        {
+
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            
+            openFileDialog.Title = "Επιλογή εικόνας πελάτη";
+            openFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            openFileDialog.Filter = "Image files (*.jpg, *.jpeg, *.jpe, *.jfif, *.png)|*.jpg;*.jpeg;*.jpe;*.jfif;*.png";
+
+            if (openFileDialog.ShowDialog() == true)
+            {
+                openProfileImage(openFileDialog.FileName);
+                imageFilePath = openFileDialog.FileName;
+            }
+            
+        }
+
+        private void CustomerPicture_MouseEnter(object sender, MouseEventArgs e)
+        {
+            PopUpPicture.Source = CustomerPicture.Source;
+
+            ImagePopUP.IsOpen = true;
+        }
+
+        private void CustomerPicture_MouseLeave(object sender, MouseEventArgs e)
+        {
+            ImagePopUP.IsOpen = false;
         }
     }
 }
