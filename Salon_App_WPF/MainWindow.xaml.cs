@@ -19,6 +19,10 @@ using System.Runtime.Remoting.Metadata.W3cXsd2001;
 using System.Data;
 using System.Collections.ObjectModel;
 using System.Runtime.CompilerServices;
+using System.Threading;
+using System.IO;
+using Microsoft.Win32;
+using System.Windows.Interop;
 
 namespace Salon_App_WPF
 {
@@ -118,28 +122,47 @@ namespace Salon_App_WPF
 
         private void SearchTextBox_KeyUp(object sender, KeyEventArgs e)
         {
+            TextBox searchTextBox = (TextBox)sender;
             keysPressed++;
 
+            string trimmedText = searchTextBox.Text.Trim();
             // If two keys were pressed search for the ginen text
-            if (keysPressed >= 2)
+            if (keysPressed == 2 && !trimmedText.Equals(string.Empty))
             {
+                SqlCommand command;
+                string query = "SELECT CustomerID, FirstName, LastName, NickName FROM dbo.Customers WHERE";
+                // If text containes two words, search for first name and last name
+                if (trimmedText.Contains(" "))
+                {
+                    string[] strs = trimmedText.Split(' ');
+                    query += " (FirstName LIKE @Name AND LastName LIKE @LName) OR (FirstName LIKE @LName AND LastName LIKE @Name)";
+
+                    command = new SqlCommand(query, dbConn);
+
+                    command.Parameters.AddWithValue("@Name", System.Data.SqlDbType.NVarChar);
+                    command.Parameters.AddWithValue("@LName", System.Data.SqlDbType.NVarChar);
+                    command.Parameters["@Name"].Value = strs[0] + "%";
+                    command.Parameters["@LName"].Value = strs[1] + "%";
+                }
+                else
+                {
+                    query += " FirstName LIKE @Name OR LastName LIKE @Name";
+
+                    command = new SqlCommand(query, dbConn);
+                    command.Parameters.Add("@Name", System.Data.SqlDbType.NVarChar);
+                    command.Parameters["@Name"].Value = searchTextBox.Text + "%";
+                }
+
                 keysPressed = 0;
 
-                TextBox searchTextBox = (TextBox)sender;
 
-                String query = "SELECT CustomerID, FirstName,  LastName, NickName FROM dbo.Customers WHERE FirstName LIKE @Name OR LastName LIKE @Name";
-                
-                SqlCommand selectCommand = new SqlCommand(query, dbConn);
-
-                selectCommand.Parameters.Add("@Name", System.Data.SqlDbType.NVarChar);
-                selectCommand.Parameters["@Name"].Value = searchTextBox.Text + "%";
-
-                SqlDataReader dataReader = selectCommand.ExecuteReader();
+                SqlDataReader dataReader = command.ExecuteReader();
 
                 if (results.Count > 0) results.Clear();
                 customerIDs.Clear();
 
-                SearchResults.IsOpen = true;
+                if (dataReader.HasRows) SearchResults.IsOpen = true;
+                else SearchResults.IsOpen = false;
 
                 while (dataReader.Read())
                 {
@@ -159,7 +182,15 @@ namespace Salon_App_WPF
                 SearchResultsGrid.ItemsSource = results;
 
                 dataReader.Close();
-                selectCommand.Dispose();
+                command.Dispose();
+            }
+            // To not show popup indefinitely
+            else if (keysPressed == 4 || (trimmedText.Equals(string.Empty)))
+            {
+                keysPressed = 0;
+                if (results.Count > 0) results.Clear();
+                customerIDs.Clear();
+                SearchResults.IsOpen = false;
             }
 
         }
