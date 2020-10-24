@@ -1,10 +1,11 @@
-<UserControl x:Class="Salon_App_WPF.CustomerControl"
+﻿<UserControl x:Class="Salon_App_WPF.CustomerControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:prs="clr-namespace:Salon_App_WPF.Properties"
              TextElement.Foreground="{DynamicResource MaterialDesignBody}"
              TextElement.FontWeight="Regular"
              TextElement.FontSize="13"
@@ -13,7 +14,7 @@
              FontFamily="{DynamicResource MaterialDesignFont}"
              xmlns:local="clr-namespace:Salon_App_WPF"
              mc:Ignorable="d"
-             Background="#292c3b"
+             Background="{Binding Source={x:Static prs:Settings.Default}, Path=FormsGrid}"
              d:DesignHeight="450" d:DesignWidth="800">
 
     <UserControl.Resources>
@@ -23,14 +24,19 @@
             <Setter Property="VerticalAlignment" Value="Top"/>
             <Setter Property="Height" Value="70"/>
             <Setter Property="FontSize" Value="20"/>
+            <Setter Property="Foreground" Value="{Binding Source={x:Static prs:Settings.Default}, Path=Text}"/>
             <Setter Property="IsReadOnly" Value="False"/>
             <Setter Property="AcceptsReturn" Value="True"/>
             <Setter Property="TextWrapping" Value="Wrap"/>
             <Setter Property="VerticalScrollBarVisibility" Value="Auto"/>
         </Style>
 
-        <Style x:Key="NewNoteStyle" TargetType="{x:Type TextBox}" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
-            <Setter Property="materialDesign:HintAssist.Hint" Value=""/>
+        <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource MaterialDesignTextBoxBase}">
+            <Setter Property="Foreground" Value="{Binding Source={x:Static prs:Settings.Default}, Path=Text}"/>
+            <Setter Property="Width" Value="250"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="FontSize" Value="35"/>
+            <Setter Property="IsReadOnly" Value="True"/>
         </Style>
     </UserControl.Resources>
 
@@ -57,7 +63,7 @@
                 <materialDesign:PackIcon
                     x:Name="CustomerIcon"
                     HorizontalAlignment="Center"
-                    Foreground="#FF673AB7"
+                    Foreground="{Binding Source={x:Static prs:Settings.Default}, Path=Text}"
                     Width="100"
                     Height="100"
                     Kind="AccountBox" />
@@ -67,7 +73,7 @@
                     BorderThickness="0"
                     >
                     <Border.BorderBrush>
-                        <SolidColorBrush Color="#FF4C4D6B"/>
+                        <SolidColorBrush Color="{Binding Source={x:Static prs:Settings.Default}, Path=ImageBorder}"/>
                     </Border.BorderBrush>
                     
                     <Image
@@ -94,8 +100,8 @@
                     >
                         <Border.BorderBrush>
                             <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                                <GradientStop Color="#FF4C4D6B" Offset="0"/>
-                                <GradientStop Color="#FF4C4D6B" Offset="1"/>
+                                <GradientStop Color="{Binding Source={x:Static prs:Settings.Default}, Path=ImageBorder}" Offset="0"/>
+                                <GradientStop Color="{Binding Source={x:Static prs:Settings.Default}, Path=ImageBorder}" Offset="1"/>
                             </LinearGradientBrush>
                         </Border.BorderBrush>
                         
@@ -126,78 +132,59 @@
                                
                 <!--// Name //-->
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0, 0, 0, 20">
-                    <materialDesign:PackIcon Kind="Account" Foreground="{Binding ElementName=NameTextBox, Path=BorderBrush}" VerticalAlignment="Center" Margin="0,0,7,0" Width="62" Height="62"/>
+                    <materialDesign:PackIcon Kind="Account" Foreground="{Binding Source={x:Static prs:Settings.Default}, Path=UserFormIcon}" VerticalAlignment="Center" Margin="0,0,7,0" Width="62" Height="62"/>
                     <TextBox
                         x:Name="NameTextBox"
                         materialDesign:HintAssist.Hint="Όνομα"
-                        Width="250"
-                        VerticalAlignment="Center"
-                        FontSize="35"
-                        IsReadOnly="True"
                         />
                 </StackPanel>
                 
                 <!--// Lastname //-->
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0, 0, 0, 20">
-                    <materialDesign:PackIcon Kind="Account" Foreground="{Binding ElementName=LastNameTextBox, Path=BorderBrush}" VerticalAlignment="Center" Margin="0,0,7,0" Width="62" Height="62"/>
+                    <materialDesign:PackIcon Kind="Account" Foreground="{Binding Source={x:Static prs:Settings.Default}, Path=UserFormIcon}" VerticalAlignment="Center" Margin="0,0,7,0" Width="62" Height="62"/>
                     <TextBox
                         x:Name="LastNameTextBox"
                         materialDesign:HintAssist.Hint="Επίθετο"
-                        Width="250"
-                        VerticalAlignment="Center"
-                        FontSize="35"
-                        IsReadOnly="True"
                         />
                 </StackPanel>
 
                 <!--// Lastname //-->
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0, 0, 0, 20">
-                    <materialDesign:PackIcon Kind="CommentAccount" Foreground="{Binding ElementName=LastNameTextBox, Path=BorderBrush}" VerticalAlignment="Center" Margin="0,0,7,0" Width="62" Height="62"/>
+                    <materialDesign:PackIcon Kind="CommentAccount" Foreground="{Binding Source={x:Static prs:Settings.Default}, Path=UserFormIcon}" VerticalAlignment="Center" Margin="0,0,7,0" Width="62" Height="62"/>
                     <TextBox
                         x:Name="NickNameTextBox"
                         materialDesign:HintAssist.Hint="Σημείωση"
-                        Width="250"
-                        VerticalAlignment="Center"
-                        FontSize="35"
-                        IsReadOnly="True"
                         />
                 </StackPanel>
 
                 <!--// Phone //-->
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0, 0, 0, 20">
-                    <materialDesign:PackIcon Kind="Phone" Foreground="{Binding ElementName=PhoneTextBox, Path=BorderBrush}" VerticalAlignment="Center" Margin="0,0,7,0" Width="62" Height="62"/>
+                    <materialDesign:PackIcon Kind="Phone" Foreground="{Binding Source={x:Static prs:Settings.Default}, Path=UserFormIcon}" VerticalAlignment="Center" Margin="0,0,7,0" Width="62" Height="62"/>
                     <TextBox
                         x:Name="PhoneTextBox"
                         materialDesign:HintAssist.Hint="Τηλέφωνο"
-                        Width="250"
-                        VerticalAlignment="Center"
-                        FontSize="35"
-                        IsReadOnly="True"
                         />
                 </StackPanel>
                 
                 <!--// E-mail //-->
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0, 0, 0, 20">
-                    <materialDesign:PackIcon Kind="Email" Foreground="{Binding ElementName=EmailTextBox, Path=BorderBrush}" VerticalAlignment="Center" Margin="0,0,7,0" Width="62" Height="62"/>
+                    <materialDesign:PackIcon Kind="Email" Foreground="{Binding Source={x:Static prs:Settings.Default}, Path=UserFormIcon}" VerticalAlignment="Center" Margin="0,0,7,0" Width="62" Height="62"/>
                     <TextBox
                         x:Name="EmailTextBox"
                         materialDesign:HintAssist.Hint="E-mail"
-                        Width="250"
-                        VerticalAlignment="Center"
-                        FontSize="35"
-                        IsReadOnly="True"
                         />
                 </StackPanel>
 
                 <!--// First visit //-->
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0, 0, 0, 20">
-                    <materialDesign:PackIcon Kind="Calendar" Foreground="{Binding ElementName=FirstVisitTextBox, Path=BorderBrush}" VerticalAlignment="Center" Margin="0,0,7,0" Width="62" Height="62"/>
+                    <materialDesign:PackIcon Kind="Calendar" Foreground="{Binding Source={x:Static prs:Settings.Default}, Path=UserFormIcon}" VerticalAlignment="Center" Margin="0,0,7,0" Width="62" Height="62"/>
                     <DatePicker
                         x:Name="firstVisitDatePicker"
                         Width="250"
                         materialDesign:HintAssist.Hint="Ημ/νια"
                         FontSize="35"
-                        Style="{StaticResource MaterialDesignFloatingHintDatePicker}" 
+                        Style="{StaticResource MaterialDesignFloatingHintDatePicker}"
+                        Foreground="{Binding Source={x:Static prs:Settings.Default}, Path=Text}"
                         materialDesign:HintAssist.HelperText="Ημέρα/Μήνας/Χρόνος"
                         IsEnabled="False"
                         />
@@ -205,19 +192,25 @@
 
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                     <materialDesign:PackIcon Kind="GenderMaleFemale" VerticalAlignment="Center" Margin="0,0,7,0" Width="62" Height="62"/>
-                    <RadioButton x:Name="MaleRadioBtn"
-                        Style="{StaticResource MaterialDesignLightRadioButton}"
+                    <RadioButton 
+                        x:Name="MaleRadioBtn"
                         GroupName="Gender"
                         IsChecked="False"
                         Content="Άνδρας" 
-                        Margin="0, 0, 7, 0"
-                        IsEnabled="False"/>
-                    <RadioButton x:Name="FemaleRadioBtn"
                         Style="{StaticResource MaterialDesignLightRadioButton}"
+                        Foreground="{Binding Source={x:Static prs:Settings.Default}, Path=Text}"
+                        Margin="0, 0, 7, 0"
+                        IsEnabled="False"
+                        />
+                    <RadioButton
+                        x:Name="FemaleRadioBtn"
                         GroupName="Gender"
                         IsChecked="False"
-                        Content="Γυναίκα" 
-                        IsEnabled="False"/>
+                        Content="Γυναίκα"
+                        Style="{StaticResource MaterialDesignLightRadioButton}"
+                        Foreground="{Binding Source={x:Static prs:Settings.Default}, Path=Text}"
+                        IsEnabled="False"
+                        />
                 </StackPanel>
                 
             </StackPanel>
@@ -230,7 +223,7 @@
                 </Grid.RowDefinitions>
 
                 <StackPanel Grid.Column="1">
-                    <TextBlock Text="Σημειώσεις" FontSize="30" Margin="0,0,0,10"/>
+                    <TextBlock Text="Σημειώσεις" FontSize="30" Foreground="{Binding Source={x:Static prs:Settings.Default}, Path=Text}" Margin="0,0,0,10"/>
                     
                         <ListView x:Name="NotesListView" ItemsSource="{Binding Notes}" MaxHeight="367" >
                         <ListView.ContextMenu>
