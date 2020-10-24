@@ -41,11 +41,13 @@ namespace Salon_App_WPF
             previousValues.Add("OverIcon", Properties.Settings.Default.OverIcon);
             previousValues.Add("MainWindowText", Properties.Settings.Default.MainWindowText);
             previousValues.Add("Text", Properties.Settings.Default.Text);
+            previousValues.Add("ImageBorder", Properties.Settings.Default.ImageBorder);
             previousValues.Add("UserFormIcon", Properties.Settings.Default.UserFormIcon);
             previousValues.Add("GridBackground", Properties.Settings.Default.GridBackground);
 
+
             List<string> names = new List<string>();
-            string[] labels = { "Επάνω μέρος", "Αριστερό μενού", "Παράθυρο φορμών", "Ποντίκι σε αντικείμενο", "Εικονίδια", "Ποντίκι σε εικονίδιο", "Κείμενο", "Κείμενο μενού", "Περίγραμμα εικόνας", "Εικονίδια φόρμας" };
+            string[] labels = { "Επάνω μέρος", "Αριστερό μενού", "Παράθυρο φορμών", "Ποντίκι σε αντικείμενο", "Εικονίδια", "Ποντίκι σε εικονίδιο", "Κείμενο", "Κείμενο φόρμας", "Περίγραμμα εικόνας", "Εικονίδια φόρμας" };
 
             names.Add("TopGrid");
             names.Add("SideMenu");
@@ -59,7 +61,7 @@ namespace Salon_App_WPF
             {
                 case "CustomerControl":
                     {
-                        names.Add("TextTB");
+                        names.Add("Text");
                         names.Add("ImageBorder");
                         names.Add("UserFormIcon");
                         break;
