@@ -269,6 +269,32 @@ namespace Salon_App_WPF
                 new Thread(export.Export).Start();
             }
         }
+
+        private void ConfigurationBtn_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            string userControl = string.Empty;
+            if (mainWindow.openedControl != null)
+            {
+                userControl = mainWindow.openedControl.ToString();
+                int lastIndex = userControl.LastIndexOf('.') + 1;
+                userControl = userControl.Substring(lastIndex, userControl.Length - lastIndex);
+            }
+
+            ConfigurationPopup.Child = new ConfigurationControl(userControl);
+            ConfigurationPopup.IsOpen = true;
+             
+        }
+
+        public static void ConfigurationPopupClose()
+        {
+            mainWindow.ConfigurationPopup.Child = null;
+            mainWindow.ConfigurationPopup.IsOpen = false;
+        }
+
+        private void WindowMinimize_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            mainWindow.WindowState = WindowState.Minimized;
+        }
     }
 
     public class Result

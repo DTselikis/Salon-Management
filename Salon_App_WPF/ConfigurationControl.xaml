@@ -1,0 +1,40 @@
+﻿<UserControl x:Class="Salon_App_WPF.ConfigurationControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:extWpf="clr-namespace:Xceed.Wpf.Toolkit;assembly=Xceed.Wpf.Toolkit"
+             Background="#FF403D80"
+             xmlns:prs="clr-namespace:Salon_App_WPF.Properties"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:local="clr-namespace:Salon_App_WPF"
+             mc:Ignorable="d" 
+             d:DesignHeight="480" d:DesignWidth="150">
+    <Grid>
+        <StackPanel>
+            <StackPanel x:Name="Controls">
+            </StackPanel>
+            <Button
+                x:Name="ExitBtn"
+                Style="{DynamicResource  MaterialDesignFlatButton}"
+                Content="Αποθήκευση"
+                ToolTip="Αποθήκευση αλλαγών"
+                Foreground="#FFD13397"
+                Click="ExitBtn_Click"/>
+            <Button
+                x:Name="CanceBtn"
+                Style="{DynamicResource  MaterialDesignFlatButton}"
+                Content="Ακύρωση"
+                ToolTip="Ακύρωση αλλαγών"
+                Foreground="#FFD13397"
+                Click="CanceBtn_Click"/>
+            <Button
+                x:Name="DefaultBtn"
+                Style="{DynamicResource  MaterialDesignFlatButton}"
+                Content="Επαναφορά"
+                ToolTip="Επαναφορά προεπιλογών"
+                Foreground="#FFD13397"
+                Click="DefaultBtn_Click"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

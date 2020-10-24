@@ -13,11 +13,11 @@ namespace Salon_App_WPF.Properties {
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.7.0.0")]
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+    internal sealed partial class DefaultSettings : global::System.Configuration.ApplicationSettingsBase {
         
-        private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
+        private static DefaultSettings defaultInstance = ((DefaultSettings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new DefaultSettings())));
         
-        public static Settings Default {
+        public static DefaultSettings Default {
             get {
                 return defaultInstance;
             }
@@ -34,111 +34,84 @@ namespace Salon_App_WPF.Properties {
             }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("#4c4d6b")]
         public string TopGrid {
             get {
                 return ((string)(this["TopGrid"]));
             }
-            set {
-                this["TopGrid"] = value;
-            }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("#303145")]
         public string SideMenu {
             get {
                 return ((string)(this["SideMenu"]));
             }
-            set {
-                this["SideMenu"] = value;
-            }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("#292c3b")]
         public string FormsGrid {
             get {
                 return ((string)(this["FormsGrid"]));
             }
-            set {
-                this["FormsGrid"] = value;
-            }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("#41425e")]
         public string MouseOver {
             get {
                 return ((string)(this["MouseOver"]));
             }
-            set {
-                this["MouseOver"] = value;
-            }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("#FF673AB7")]
         public string Text {
             get {
                 return ((string)(this["Text"]));
             }
-            set {
-                this["Text"] = value;
-            }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("#FF4C4D6B")]
         public string ImageBorder {
             get {
                 return ((string)(this["ImageBorder"]));
             }
-            set {
-                this["ImageBorder"] = value;
-            }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("#FF13141B")]
         public string UserFormIcon {
             get {
                 return ((string)(this["UserFormIcon"]));
             }
-            set {
-                this["UserFormIcon"] = value;
-            }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("White")]
         public string GridBackground {
             get {
                 return ((string)(this["GridBackground"]));
             }
-            set {
-                this["GridBackground"] = value;
-            }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("Black")]
         public string MainWindowIcon {
             get {
                 return ((string)(this["MainWindowIcon"]));
-            }
-            set {
-                this["MainWindowIcon"] = value;
             }
         }
         

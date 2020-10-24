@@ -1,5 +1,5 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
-<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Salon_App_WPF.Properties" GeneratedClassName="Settings">
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Salon_App_WPF.Properties" GeneratedClassName="DefaultSettings">
   <Profiles />
   <Settings>
     <Setting Name="DBConnStr" Type="(Connection string)" Scope="Application">
@@ -10,31 +10,31 @@
 &lt;/SerializableConnectionString&gt;</DesignTimeValue>
       <Value Profile="(Default)">Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\SalonDB.mdf;Integrated Security=True</Value>
     </Setting>
-    <Setting Name="TopGrid" Type="System.String" Scope="User">
+    <Setting Name="TopGrid" Type="System.String" Scope="Application">
       <Value Profile="(Default)">#4c4d6b</Value>
     </Setting>
-    <Setting Name="SideMenu" Type="System.String" Scope="User">
+    <Setting Name="SideMenu" Type="System.String" Scope="Application">
       <Value Profile="(Default)">#303145</Value>
     </Setting>
-    <Setting Name="FormsGrid" Type="System.String" Scope="User">
+    <Setting Name="FormsGrid" Type="System.String" Scope="Application">
       <Value Profile="(Default)">#292c3b</Value>
     </Setting>
-    <Setting Name="MouseOver" Type="System.String" Scope="User">
+    <Setting Name="MouseOver" Type="System.String" Scope="Application">
       <Value Profile="(Default)">#41425e</Value>
     </Setting>
-    <Setting Name="Text" Type="System.String" Scope="User">
+    <Setting Name="Text" Type="System.String" Scope="Application">
       <Value Profile="(Default)">#FF673AB7</Value>
     </Setting>
-    <Setting Name="ImageBorder" Type="System.String" Scope="User">
+    <Setting Name="ImageBorder" Type="System.String" Scope="Application">
       <Value Profile="(Default)">#FF4C4D6B</Value>
     </Setting>
-    <Setting Name="UserFormIcon" Type="System.String" Scope="User">
+    <Setting Name="UserFormIcon" Type="System.String" Scope="Application">
       <Value Profile="(Default)">#FF13141B</Value>
     </Setting>
-    <Setting Name="GridBackground" Type="System.String" Scope="User">
+    <Setting Name="GridBackground" Type="System.String" Scope="Application">
       <Value Profile="(Default)">White</Value>
     </Setting>
-    <Setting Name="MainWindowIcon" Type="System.String" Scope="User">
+    <Setting Name="MainWindowIcon" Type="System.String" Scope="Application">
       <Value Profile="(Default)">Black</Value>
     </Setting>
     <Setting Name="OverIcon" Type="System.String" Scope="User">
