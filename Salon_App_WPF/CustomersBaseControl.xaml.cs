@@ -1,4 +1,4 @@
-﻿using MaterialDesignThemes.Wpf;
+using MaterialDesignThemes.Wpf;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -25,19 +25,28 @@ namespace Salon_App_WPF
     public partial class CustomersBaseControl : UserControl
     {
         private string connStr = Properties.Settings.Default.DBConnStr;
+
+        private Logger logger;
         private ObservableCollection<CustomerGrid> Customers { get; set; }
         public CustomersBaseControl()
         {
             InitializeComponent();
 
+            logger = new Logger();
+
+            logger.Section("CustomerBaseControl: Constructor");
+
             using (SqlConnection dbConn = new SqlConnection(connStr))
             {
                 try
                 {
+                    logger.Log("Connectin to DB.");
                     dbConn.Open();
                 }
                 catch (SqlException ex)
                 {
+                    logger.Log("Error while connecting to DB: " + ex.ToString());
+
                     MessageBox.Show("Παρουσιάστηκε πρόβλημα κατά στη σύνδεση. Παρακαλούμε επικοινωνήστε με το τεχνικό τμήμα.",
                         "Προέκυψε πρόβλημα",
                         MessageBoxButton.OK,
@@ -51,6 +60,7 @@ namespace Salon_App_WPF
 
                 SqlCommand command = new SqlCommand(query, dbConn);
 
+                logger.Log("Executing query.");
                 SqlDataReader dataReader = command.ExecuteReader();
 
                 // Use ObservableCollection so everytime there is a change to the collection
@@ -58,8 +68,6 @@ namespace Salon_App_WPF
                 Customers = new ObservableCollection<CustomerGrid>();
                 while (dataReader.Read())
                 {
-                    
-
                     int customerID;
                     string firstName;
                     string lastName;
@@ -93,15 +101,20 @@ namespace Salon_App_WPF
 
         private void DeleteRecord(Customer customer)
         {
+            logger.Section("CustomerBaseControl: DeleteRecord");
+
             using (SqlConnection dbConn = new SqlConnection(connStr))
             {
 
                 try
                 {
+                    logger.Log("Connecting to DB.");
                     dbConn.Open();
                 }
                 catch (SqlException ex)
                 {
+                    logger.Log("Error while connecting to DB: " + ex.ToString());
+
                     MessageBox.Show("Παρουσιάστηκε πρόβλημα κατά στη σύνδεση. Παρακαλούμε επικοινωνήστε με το τεχνικό τμήμα.",
                         "Προέκυψε πρόβλημα",
                         MessageBoxButton.OK,
@@ -119,11 +132,13 @@ namespace Salon_App_WPF
 
                 SqlDataAdapter noteAdapter = new SqlDataAdapter();
                 noteAdapter.DeleteCommand = noteCommand;
+                logger.Log("Deleting notes.");
                 noteAdapter.DeleteCommand.ExecuteNonQuery();
 
                 noteCommand.Dispose();
                 noteAdapter.Dispose();
 
+                logger.Log("Deleting image.");
                 string query = "DELETE dbo.Customers WHERE CustomerID = @ID";
 
                 SqlCommand command = new SqlCommand(query, dbConn);
@@ -133,12 +148,15 @@ namespace Salon_App_WPF
 
                 SqlDataAdapter dataAdapter = new SqlDataAdapter();
                 dataAdapter.DeleteCommand = command;
+                logger.Log("Deleting Customer.");
                 dataAdapter.DeleteCommand.ExecuteNonQuery();
 
                 command.Dispose();
                 dataAdapter.Dispose();
                 dbConn.Close();
             }
+
+            logger.Log("Success.");
 
             MessageBox.Show(
                 "Ο πελάτης διαγράφτηκε.",
@@ -151,16 +169,19 @@ namespace Salon_App_WPF
 
         private string getLastNote(int customerID)
         {
-
+            logger.Section("CustomerBaseControl: getLastNote");
             using (SqlConnection dbConn = new SqlConnection(connStr))
             {
 
                 try
                 {
+                    logger.Log("Connecting to DB.");
                     dbConn.Open();
                 }
                 catch (SqlException ex)
                 {
+                    logger.Log("Error whilec connecting to DB: " + ex.ToString());
+
                     MessageBox.Show("Παρουσιάστηκε πρόβλημα κατά στη σύνδεση. Παρακαλούμε επικοινωνήστε με το τεχνικό τμήμα.",
                         "Προέκυψε πρόβλημα",
                         MessageBoxButton.OK,
@@ -176,6 +197,7 @@ namespace Salon_App_WPF
                 command.Parameters.AddWithValue("@ID", System.Data.SqlDbType.Int);
                 command.Parameters["@ID"].Value = customerID;
 
+                logger.Log("Executing query");
                 SqlDataReader dataReader = command.ExecuteReader();
 
                 string lastNote;
@@ -203,6 +225,8 @@ namespace Salon_App_WPF
 
         private void EditBtn_Click(object sender, RoutedEventArgs e)
         {
+            logger.Section("CustomerBaseControl: EditBtn");
+
             CustomerGrid customer = (CustomerGrid)CustomersBase.SelectedItem;
             int id = customer.CustomerID;
             string firstaName = customer.FirstName;

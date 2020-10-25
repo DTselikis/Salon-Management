@@ -38,6 +38,7 @@ namespace Salon_App_WPF
         private short keysPressed = 0;
         private UserControl openedControl = null;
         private static MainWindow mainWindow;
+        private Logger logger;
         private ObservableCollection<Result> results{ get; set; }
 
         private IDictionary<int, int> customerIDs = new Dictionary<int, int>();
@@ -46,6 +47,8 @@ namespace Salon_App_WPF
         public MainWindow()
         {
             InitializeComponent();
+
+            logger = new Logger();
             mainWindow = this;
             results = new ObservableCollection<Result>();
 
@@ -56,8 +59,11 @@ namespace Salon_App_WPF
             }
             catch (SqlException ex)
             {
+                logger.Section("MainWindow: DBconnect");
+                logger.Log(ex.ToString());
+
                 MessageBox.Show("Παρουσιάστηκε πρόβλημα κατά στη σύνδεση. Παρακαλούμε επικοινωνήστε με το τεχνικό τμήμα.",
-                    "ΠροέκυψεΠπρόβλημα",
+                    "Προέκυψε πρόβλημα",
                     MessageBoxButton.OK,
                     MessageBoxImage.Error,
                     MessageBoxResult.OK);
@@ -155,7 +161,8 @@ namespace Salon_App_WPF
 
                 keysPressed = 0;
 
-
+                logger.Section("Customer search");
+                logger.Log("Executing query");
                 SqlDataReader dataReader = command.ExecuteReader();
 
                 if (results.Count > 0) results.Clear();
@@ -164,6 +171,7 @@ namespace Salon_App_WPF
                 if (dataReader.HasRows) SearchResults.IsOpen = true;
                 else SearchResults.IsOpen = false;
 
+                logger.Log("Reading fetched data.");
                 while (dataReader.Read())
                 {
                     int id;
@@ -178,6 +186,7 @@ namespace Salon_App_WPF
 
                     results.Add(new Result(id, firstName, lastName, nickName));
                 }
+                logger.Log("Reading complete.");
 
                 SearchResultsGrid.ItemsSource = results;
 
@@ -204,6 +213,9 @@ namespace Salon_App_WPF
             SqlCommand sqlCmd = new SqlCommand(query, dbConn);
             sqlCmd.Parameters.Add("@ID", System.Data.SqlDbType.Int);
             sqlCmd.Parameters["@ID"].Value = selection.ID;
+
+            logger.Section("Customer choose");
+            logger.Log("Executing query");
 
             SqlDataReader dataReader = sqlCmd.ExecuteReader();
 
@@ -282,6 +294,7 @@ namespace Salon_App_WPF
 
         private void ExportDBBtn_MouseDown(object sender, MouseButtonEventArgs e)
         {
+            logger.Section("DB export");
             OpenFileDialog openFileDialog = new OpenFileDialog();
 
             openFileDialog.Title = "Επιλογή τοποθεσίας αποθήκευσης";
@@ -297,12 +310,14 @@ namespace Salon_App_WPF
 
                 BackUpManager export = new BackUpManager(path);
 
+                logger.Log("Exporting DB.");
                 new Thread(export.Export).Start();
             }
         }
 
         private void ConfigurationBtn_MouseDown(object sender, MouseButtonEventArgs e)
         {
+            logger.Section("MainWindow: Configuration");
             if (!ConfigurationPopup.IsOpen)
             {
                 string userControl = string.Empty;
@@ -325,12 +340,18 @@ namespace Salon_App_WPF
 
         public static void ConfigurationPopupClose()
         {
+            mainWindow.logger.Section("MainWindow: Configuration");
+            mainWindow.logger.Log("Closing configuration control");
+
             mainWindow.ConfigurationPopup.Child = null;
             mainWindow.ConfigurationPopup.IsOpen = false;
         }
 
         private void WindowMinimize_MouseDown(object sender, MouseButtonEventArgs e)
         {
+            logger.Section("MainWindow: Window Controls");
+            logger.Log("Minimizing window");
+
             mainWindow.WindowState = WindowState.Minimized;
         }
     }

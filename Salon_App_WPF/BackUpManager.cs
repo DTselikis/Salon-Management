@@ -3,6 +3,7 @@ using Salon_App_WPF.CustomersDataSetTableAdapters;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Diagnostics.Eventing.Reader;
 using System.Dynamic;
 using System.IO;
 using System.Linq;
@@ -38,9 +39,16 @@ namespace Salon_App_WPF
         private string destinationPath;
         private string destProfImgPath;
 
+        private Logger logger;
+
 
         public BackUpManager()
         {
+            logger = new Logger("BackUpManager");
+
+            logger.Section("BackUpManager: Default Constructor");
+            logger.Log("Initializing.");
+
             appData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
             dailyPath = Path.Combine(appData, Package, BackUpFolder, Daily);
             monthlyPath = Path.Combine(appData, Package, BackUpFolder, Monthly);
@@ -56,6 +64,9 @@ namespace Salon_App_WPF
 
         public BackUpManager(string destinationPath)
         {
+            logger.Section("BackUpManager: General Constructor");
+            logger.Log("Initializing.");
+
             this.destinationPath = destinationPath;
             this.destinationPath = Path.Combine(destinationPath, "XML");
 
@@ -82,6 +93,7 @@ namespace Salon_App_WPF
 
         private void DeleteOld()
         {
+            logger.Section("BackUpManager: DeleteOld");
             try
             {
                 foreach (string directory in Directory.GetDirectories(dailyPath))
@@ -91,6 +103,8 @@ namespace Salon_App_WPF
                     string dirName = directory.Substring(index, directory.Length - index);
                     TimeSpan interval = DateTime.Today - DateTime.Parse(dirName.Replace('_', '/'));
 
+                    logger.Log("Daily");
+                    logger.Log("Deleting directory: " + directory);
                     // Delete records of last week
                     if (interval.Days >= 7) Directory.Delete(directory, true);
                 }
@@ -102,25 +116,29 @@ namespace Salon_App_WPF
                     string dirName = directory.Substring(index, directory.Length - index);
                     TimeSpan interval = DateTime.Today - DateTime.Parse(dirName.Replace('_', '/'));
 
+                    logger.Log("Monthly");
+                    logger.Log("Deleting directory: " + directory);
                     // Delete records of last three months
                     if (interval.Days >= 90) Directory.Delete(directory, true);
                 }
             }
             catch (DirectoryNotFoundException ex)
             {
-
+                logger.Log("Error while deleting direcotry: " + ex.ToString());
             }
             catch (Exception ex)
             {
-
+                logger.Log("Error while deleting direcotry: " + ex.ToString());
             }
         }
 
         private void BackUp(bool isExport)
         {
+            logger.Section("BackUpMaanger: BackUp");
             // Backup only once a day
             if (!Directory.Exists(destinationPath) || isExport)
             {
+                logger.Log("Daily backup");
                 // If the directory already exists, this method does not create a new directory
                 Directory.CreateDirectory(destinationPath);
                 BackUpDBToXML(null);
@@ -136,26 +154,30 @@ namespace Salon_App_WPF
             // If today backup was completed check if any new records was added
             else
             {
+                logger.Log("Checking if new records were added.");
                 using (SqlConnection dbConn = new SqlConnection(connStr))
                 {
                     try
                     {
+                        logger.Log("Connecting to DB.");
                         dbConn.Open();
                     }
                     catch (SqlException ex)
                     {
-
+                        logger.Log("Error while connecting to DB.");
                     }
 
                     string query = "SELECT COUNT(*) FROM dbo.Customers";
 
                     SqlCommand command = new SqlCommand(query, dbConn);
 
+                    logger.Log("Executing query.");
                     SqlDataReader dataReader = command.ExecuteReader();
                     
                     // At the very first run DB will be empty
                     if(dataReader.Read())
                     {
+                        logger.Log("New records found.");
                         int numOfRecords = dataReader.GetInt32(0);
 
                         // If new records were added
@@ -175,6 +197,7 @@ namespace Salon_App_WPF
             // If user requested an export we don't want the monthly backup
             if (!isExport)
             {
+                logger.Log("Monthly backup");
                 // Monthly backup
                 // Change path to current month
                 destinationPath = Path.Combine(monthlyPath, DateTime.Today.ToString("yyyy_MM"));
@@ -188,12 +211,13 @@ namespace Salon_App_WPF
                         // Backup every profile image
                         if (Directory.Exists(profileImgPath))
                         {
+                            logger.Log("Coping to directory: " + destinationPath);
                             DirectoryCopy(profileImgPath, Path.Combine(destinationPath, ImagesFolder), true);
                         }
                     }
                     catch (Exception ex)
                     {
-
+                        logger.Log("Error while coping: " + ex.ToString());
                     }
                 }
 
@@ -210,15 +234,17 @@ namespace Salon_App_WPF
 
         private void BackUpDBToXML(Nullable<DateTime> today)
         {
+            logger.Section("BackUpManager: BackUpDBToXML");
             using (SqlConnection dbConn = new SqlConnection(connStr))
             {
                 try
                 {
+                    logger.Log("Connecting to DB.");
                     dbConn.Open();
                 }
                 catch (SqlException ex)
                 {
-
+                    logger.Log("Error while conntectin to DB: " + ex.ToString());
                 }
 
                 string query = "SELECT * FROM dbo.Customers";
@@ -267,6 +293,7 @@ namespace Salon_App_WPF
 
         private void CreateXMLFile(CustomerXML customer)
         {
+            logger.Section("BackUpManager: CreateXMLFile");
 
             XmlSerializer serializer = new XmlSerializer(typeof(CustomerXML));
 
@@ -289,11 +316,12 @@ namespace Salon_App_WPF
             {
                 try
                 {
+                    logger.Log("Writing xml file for customer: " + customer.CustomerID.ToString());
                     serializer.Serialize(stream, customer);
                 }
                 catch (Exception ex)
                 {
-
+                    logger.Log("Error while writing xml file for customer: " + customer.CustomerID.ToString() + " " + ex.ToString());
                 }
                 
             }
@@ -301,16 +329,18 @@ namespace Salon_App_WPF
 
         private List<Note> getNotes(int customerID)
         {
+            logger.Section("BackUpManager: getNotes");
             List<Note> notes = new List<Note>();
             using (SqlConnection dbConn = new SqlConnection(connStr))
             {
                 try
                 {
+                    logger.Log("Connecting to DB.");
                     dbConn.Open();
                 }
                 catch (SqlException ex)
                 {
-
+                    logger.Log("Error while connecting to DB: " + ex.ToString());
                 }
 
                 // Notes will be saved from newer to older
@@ -337,15 +367,17 @@ namespace Salon_App_WPF
 
         private void BackUpDB()
         {
+            logger.Section("BackUpManager: BackUpDB");
             using (SqlConnection dbConn = new SqlConnection(connStr))
             {
                 try
                 {
+                    logger.Log("Connecting to DB.");
                     dbConn.Open();
                 }
                 catch (SqlException ex)
                 {
-
+                    logger.Log("Error while connecting to DB: " + ex.ToString());
                 }
 
                 string query = "BACKUP DATABASE @DBPath TO DISK = @Path";
@@ -365,6 +397,7 @@ namespace Salon_App_WPF
 
         private void DirectoryCopy(string sourceDirName, string destDirName, bool copySubDirs)
         {
+            logger.Section("BackUpManager: DirectoryCopy");
             try
             {
                 // Get the subdirectories for the specified directory.
@@ -382,6 +415,7 @@ namespace Salon_App_WPF
                 // If the destination directory doesn't exist, create it.       
                 Directory.CreateDirectory(destDirName);
 
+                logger.Log("Coping files.");
                 // Get the files in the directory and copy them to the new location.
                 FileInfo[] files = dir.GetFiles();
                 foreach (FileInfo file in files)
@@ -402,12 +436,13 @@ namespace Salon_App_WPF
             }
             catch (Exception ex)
             {
-
+                logger.Log("Error while coping files: " + ex.ToString());
             }
         }
 
         private void BackUpTodayImages(string sourceDirName, string destDirName)
         {
+            logger.Section("BackUpManager: BackUpTodayImages");
             try
             {
                 // Get the subdirectories for the specified directory.
@@ -425,6 +460,7 @@ namespace Salon_App_WPF
                 // If the destination directory doesn't exist, create it.       
                 Directory.CreateDirectory(destDirName);
 
+                logger.Log("Coping files.");
                 // Get the files in the directory and copy them to the new location.
                 FileInfo[] files = dir.GetFiles();
                 foreach (FileInfo file in files)
@@ -437,7 +473,7 @@ namespace Salon_App_WPF
                 }
             } catch (Exception ex)
             {
-
+                logger.Log("Error while coping files: " + ex.ToString());
             }
         }
     }

@@ -1,4 +1,4 @@
-using MaterialDesignThemes.Wpf;
+﻿using MaterialDesignThemes.Wpf;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -17,7 +17,9 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using MaterialDesignThemes;
+using Microsoft.Win32;
 using System.IO;
+using System.Diagnostics.Eventing.Reader;
 
 namespace Salon_App_WPF
 {
@@ -31,12 +33,17 @@ namespace Salon_App_WPF
         private Customer customer;
         private string imageFilePath;
         private bool hadProfileImage = false;
+        private Logger logger;
 
         private ObservableCollection<TextBox> Notes { get; set; }
         private IDictionary<int, int> NotesID = new Dictionary<int, int>();
 
         public CustomerControl()
         {
+            logger = new Logger();
+
+            logger.Section("CustoemrControl: Default Constructor");
+
             InitializeComponent();
 
             firstVisitDatePicker.SelectedDate = DateTime.Now;
@@ -46,11 +53,16 @@ namespace Salon_App_WPF
             OptionsLeftBtn.Click += submitRecord;
             OptionsLeftBtn.Visibility = Visibility.Visible;
 
+            
+
             toggleControls(null, null);
 
         }
         public CustomerControl(Customer customer)
         {
+            logger = new Logger();
+            logger.Section("CustoemrControl: Default Constructor");
+
             this.customer = customer;
 
             InitializeComponent();
@@ -83,6 +95,7 @@ namespace Salon_App_WPF
 
         private void submitChanges(object sender, System.EventArgs e)
         {
+            logger.Section("CustomerControl: SumbitChange");
             // If phone has changed and it wasn't null
             if (!PhoneTextBox.Text.Equals(string.Empty) && !PhoneTextBox.Text.Equals(customer.Phone)) {
                 bool hasRows;
@@ -92,6 +105,8 @@ namespace Salon_App_WPF
 
                 if (hasRows)
                 {
+                    logger.Log("Duplicate detected.");
+
                    MessageBoxResult result =  MessageBox.Show(
                         "Υπάρχει ήδη μία καταχώρηση με αυτό το τηλέφωνο.\nΘέλετε να συνεχίσετε με την αποθήκυεση των αλλαγών;",
                         "Διπλότυπο",
@@ -111,12 +126,15 @@ namespace Salon_App_WPF
 
                 try
                 {
+                    logger.Log("Opening connection to DB.");
                     dbConn.Open();
                 }
                 catch (SqlException ex)
                 {
+                    logger.Log("Error while trying to connect: " + ex.ToString());
+
                     MessageBox.Show("Παρουσιάστηκε πρόβλημα κατά στη σύνδεση. Παρακαλούμε επικοινωνήστε με το τεχνικό τμήμα.",
-                        "ΠροέκυψεΠπρόβλημα",
+                        "Προέκυψε πρόβλημα",
                         MessageBoxButton.OK,
                         MessageBoxImage.Error,
                         MessageBoxResult.OK);
@@ -151,6 +169,8 @@ namespace Salon_App_WPF
 
                 if (firstVisitDatePicker.SelectedDate.HasValue)
                 {
+                    logger.Log("Taking date");
+
                     string date = DateTime.Parse(firstVisitDatePicker.SelectedDate.ToString()).ToString("d");
                     string time = DateTime.Now.ToString("T");
                     command.Parameters["@FVisit"].Value = DateTime.Parse(date + " " + time);
@@ -165,6 +185,7 @@ namespace Salon_App_WPF
 
                 SqlDataAdapter adapter = new SqlDataAdapter();
 
+                logger.Log("Executing query");
                 adapter.UpdateCommand = command;
                 adapter.UpdateCommand.ExecuteNonQuery();
 
@@ -174,7 +195,8 @@ namespace Salon_App_WPF
                 {
                     SaveProfileImage();
                 }
-                
+
+                logger.Log("All good.");
 
                 MessageBox.Show(
                     "Επιτυχής αλλαγή στοιχείων!",
@@ -190,8 +212,12 @@ namespace Salon_App_WPF
 
         private void submitRecord(object sender, System.EventArgs e)
         {
+            logger.Section("CustomerControl: submitRecord");
+
             if (NameTextBox.Text.Equals(string.Empty))
             {
+                logger.Log("Name field was empty.");
+
                 MessageBox.Show("Το πεδίο \"Όνομα\" δε μπορεί να είναι κενό!",
                     "Κενό πεδίο",
                     MessageBoxButton.OK,
@@ -204,6 +230,8 @@ namespace Salon_App_WPF
             // If record is unique
             if (checkIfRecordExists() == 0)
             {
+                logger.Log("Checking if record exists.");
+
                 String query = "INSERT INTO dbo.Customers(FirstName, LastName, NickName, Phone, Email, FirstVisit, Gender) VALUES (@Name, @LName, @NickName, @Phone, @Email, @FVisit, @Gender)";
 
                 using (SqlConnection dbConn = new SqlConnection(connStr))
@@ -211,10 +239,13 @@ namespace Salon_App_WPF
 
                     try
                     {
+                        logger.Log("Openig connection to DB.");
                         dbConn.Open();
                     }
                     catch (SqlException ex)
                     {
+                        logger.Log("Error while connecting to DB: " + ex.ToString());
+
                         MessageBox.Show("Παρουσιάστηκε πρόβλημα κατά στη σύνδεση. Παρακαλούμε επικοινωνήστε με το τεχνικό τμήμα.",
                             "Προέκυψε πρόβλημα",
                             MessageBoxButton.OK,
@@ -250,6 +281,8 @@ namespace Salon_App_WPF
 
                     if (firstVisitDatePicker.SelectedDate.HasValue)
                     {
+                        logger.Log("Taking date.");
+
                         string date = DateTime.Parse(firstVisitDatePicker.SelectedDate.ToString()).ToString("d");
                         string time = DateTime.Now.ToString("T");
                         command.Parameters["@FVisit"].Value = DateTime.Parse(date + " " + time);
@@ -267,6 +300,8 @@ namespace Salon_App_WPF
 
                     adapter.Dispose();
                     dbConn.Close();
+
+                    logger.Log("Success.");
 
                     MessageBox.Show(
                         "Επιτυχής καταχώρηση!",
@@ -299,15 +334,20 @@ namespace Salon_App_WPF
 
         private void deleteRecord(object sender, System.EventArgs e)
         {
+            logger.Section("CustomerControl: deleteRecord");
+
             using (SqlConnection dbConn = new SqlConnection(connStr))
             {
 
                 try
                 {
+                    logger.Log("Opening connection to DB.");
                     dbConn.Open();
                 }
                 catch (SqlException ex)
                 {
+                    logger.Log("Error while connection to DB: " + ex.ToString());
+
                     MessageBox.Show("Παρουσιάστηκε πρόβλημα κατά στη σύνδεση. Παρακαλούμε επικοινωνήστε με το τεχνικό τμήμα.",
                         "ΠροέκυψεΠπρόβλημα",
                         MessageBoxButton.OK,
@@ -318,8 +358,11 @@ namespace Salon_App_WPF
                 }
 
                 SqlDataAdapter dataAdapter = new SqlDataAdapter();
+
                 if (hadProfileImage && imageFilePath.Contains("AppData"))
                 {
+                    logger.Log("Deleting image");
+
                     string picQuery = "DELETE dbo.ProfileImages WHERE CustomerID = @ID";
 
                     SqlCommand notesCommand = new SqlCommand(picQuery, dbConn);
@@ -333,14 +376,23 @@ namespace Salon_App_WPF
                     File.Delete(imageFilePath);
                 }
 
-                string notesQuery = "DELETE dbo.Notes WHERE CustomerID = @ID";
+                if (Notes != null)
+                {
+                    logger.Log("Deleting notes");
 
-                SqlCommand notesCommand = new SqlCommand(notesQuery, dbConn);
-                notesCommand.Parameters.Add("@ID", System.Data.SqlDbType.Int);
-                notesCommand.Parameters["@ID"].Value = this.customer.CustomerID;
+                    string notesQuery = "DELETE dbo.Notes WHERE CustomerID = @ID";
+
+                    SqlCommand notesCommand = new SqlCommand(notesQuery, dbConn);
+                    notesCommand.Parameters.Add("@ID", System.Data.SqlDbType.Int);
+                    notesCommand.Parameters["@ID"].Value = this.customer.CustomerID;
 
                     dataAdapter.DeleteCommand = notesCommand;
-                dataAdapter.DeleteCommand.ExecuteNonQuery();
+                    dataAdapter.DeleteCommand.ExecuteNonQuery();
+
+                    Notes.Clear();
+                    NotesID.Clear();
+                }
+               
 
                 string query = "DELETE dbo.Customers WHERE CustomerID = @ID";
 
@@ -349,16 +401,17 @@ namespace Salon_App_WPF
                 command.Parameters.Add("@ID", System.Data.SqlDbType.Int);
                 command.Parameters["@ID"].Value = this.customer.CustomerID;
 
-                
+                logger.Log("Deleting customer.");
+
                 dataAdapter.DeleteCommand = command;
                 dataAdapter.DeleteCommand.ExecuteNonQuery();
 
-                notesCommand.Dispose();
                 command.Dispose();
                 dataAdapter.Dispose();
                 dbConn.Close();
             }
 
+            logger.Log("Success.");
             MessageBox.Show(
                 "Ο πελάτης διαγράφτηκε.",
                 "Επιτυχία",
@@ -427,6 +480,8 @@ namespace Salon_App_WPF
 
         private bool executeQuery(string query, string field, string value)
         {
+            logger.Section("CustomerControl: execureQuery");
+            logger.Log("Args: " + query + " " + field + " " + value);
             bool hasRows;
             using (SqlConnection dbConn = new SqlConnection(connStr))
             {
@@ -435,8 +490,22 @@ namespace Salon_App_WPF
 
                 command.Parameters.Add(field, System.Data.SqlDbType.NVarChar);
                 command.Parameters[field].Value = value;
+                try
+                {
+                    logger.Log("Connection to DB");
+                    dbConn.Open();
+                }
+                catch (SqlException ex)
+                {
+                    logger.Log("Error while connection to DB: " + ex.ToString());
 
-                dbConn.Open();
+                    MessageBox.Show("Παρουσιάστηκε πρόβλημα κατά στη σύνδεση. Παρακαλούμε επικοινωνήστε με το τεχνικό τμήμα.",
+                        "ΠροέκυψεΠπρόβλημα",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Error,
+                        MessageBoxResult.OK);
+                }
+                
 
                 dataReader = command.ExecuteReader();
 
@@ -451,15 +520,21 @@ namespace Salon_App_WPF
 
         private bool executeQuery(string query, string firstField, string secondField, string firstValue, string secondValue)
         {
+            logger.Section("CustomerControl: execureQuery");
+            logger.Log("Args: " + query + " " + firstField + " " + secondField + " " + firstValue + " " + secondValue);
+
             bool hasRows;
             using (SqlConnection dbConn = new SqlConnection(connStr))
             {
                 try
                 {
+                    logger.Log("Connection to DB");
                     dbConn.Open();
                 }
                 catch (SqlException ex)
                 {
+                    logger.Log("Error while connection to DB: " + ex.ToString());
+
                     MessageBox.Show("Παρουσιάστηκε πρόβλημα κατά στη σύνδεση. Παρακαλούμε επικοινωνήστε με το τεχνικό τμήμα.",
                         "Προέκυψε πρόβλημα",
                         MessageBoxButton.OK,
@@ -521,6 +596,7 @@ namespace Salon_App_WPF
 
         private void updateCustomerObject()
         {
+            logger.Section("CustomerControl: updateCustomerObject");
             int customerID;
             string firstName;
             string lastName;
@@ -535,10 +611,13 @@ namespace Salon_App_WPF
 
                 try
                 {
+                    logger.Log("Connecting to DB.");
                     dbConn.Open();
                 }
                 catch (SqlException ex)
                 {
+                    logger.Log("Error while connection to DB: " + ex.ToString());
+
                     MessageBox.Show("Παρουσιάστηκε πρόβλημα κατά στη σύνδεση. Παρακαλούμε επικοινωνήστε με το τεχνικό τμήμα.",
                         "Προέκυψε πρόβλημα",
                         MessageBoxButton.OK,
@@ -568,6 +647,7 @@ namespace Salon_App_WPF
                 infoCommad.Parameters.Add("@ID", System.Data.SqlDbType.Int);
                 infoCommad.Parameters["@ID"].Value = customerID;
 
+                logger.Log("Executing query");
                 SqlDataReader infoReader = infoCommad.ExecuteReader();
 
                 infoReader.Read();
@@ -590,15 +670,20 @@ namespace Salon_App_WPF
 
         private void GetNotes()
         {
+            logger.Section("CustomerControl");
+
             using (SqlConnection dbConn = new SqlConnection(connStr))
             {
 
                 try
                 {
+                    logger.Log("Connecting to DB.");
                     dbConn.Open();
                 }
                 catch (SqlException ex)
                 {
+                    logger.Log("Error while connecting to DB: " + ex.ToString());
+
                     MessageBox.Show("Παρουσιάστηκε πρόβλημα κατά στη σύνδεση. Παρακαλούμε επικοινωνήστε με το τεχνικό τμήμα.",
                         "Προέκυψε πρόβλημα",
                         MessageBoxButton.OK,
@@ -614,6 +699,7 @@ namespace Salon_App_WPF
                 command.Parameters.Add("@ID", System.Data.SqlDbType.Int);
                 command.Parameters["@ID"].Value = this.customer.CustomerID;
 
+                logger.Log("Executing query.");
                 SqlDataReader dataReader = command.ExecuteReader();
 
                 if (Notes == null)
@@ -622,6 +708,7 @@ namespace Salon_App_WPF
                     NotesListView.ItemsSource = Notes;
                 }
 
+                logger.Log("Generating notes");
                 int i = 0;
                 while (dataReader.Read())
                 {
@@ -645,15 +732,26 @@ namespace Salon_App_WPF
 
         private void loadProfileImage()
         {
+            logger.Section("CustomerControl: loadProfileImage");
+
             using (SqlConnection dbConn = new SqlConnection(connStr))
             {
                 try
                 {
+                    logger.Log("Connecting to DB.");
                     dbConn.Open();
                 }
-                catch
+                catch (Exception ex)
                 {
+                    logger.Log("Error while connecting to DB: " + ex.ToString());
 
+                    MessageBox.Show("Παρουσιάστηκε πρόβλημα κατά στη σύνδεση. Παρακαλούμε επικοινωνήστε με το τεχνικό τμήμα.",
+                        "Προέκυψε πρόβλημα",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Error,
+                        MessageBoxResult.OK);
+
+                    return;
                 }
 
                 string query = "SELECT FileName FROM dbo.ProfileImages WHERE CustomerID = @ID";
@@ -662,6 +760,7 @@ namespace Salon_App_WPF
                 command.Parameters.AddWithValue("@ID", System.Data.DbType.Int32);
                 command.Parameters["@ID"].Value = this.customer.CustomerID;
 
+                logger.Log("Executing query.");
                 SqlDataReader dataReader = command.ExecuteReader();
 
                 if (dataReader.Read())
@@ -683,11 +782,14 @@ namespace Salon_App_WPF
 
         private void openProfileImage(string imageFilePath)
         {
+            logger.Section("CustomerControl: openProfileImage");
+
             if (File.Exists(imageFilePath))
             {
                 BitmapImage customerBitMap = null;
                 try
                 {
+                    logger.Log("Opening image: " + imageFilePath);
                     // Use stream to be able to delete image later
                     var stream = File.OpenRead(imageFilePath);
 
@@ -703,7 +805,7 @@ namespace Salon_App_WPF
                 }
                 catch (Exception ex)
                 {
-
+                    logger.Log("Error while opening image: " + imageFilePath + ex.ToString());
                 }
                 
                 CustomerPicBorder.BorderThickness = new Thickness(3);
@@ -721,6 +823,8 @@ namespace Salon_App_WPF
 
         private void SaveProfileImage()
         {
+            logger.Section("CustomerControl: SaveProfileImage");
+
             string fileName = this.customer.CustomerID.ToString();
             string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
             string[] pathStrs = { appDataPath, "Salon Management", "Resources", "Images", "ProfileImages" };
@@ -731,12 +835,12 @@ namespace Salon_App_WPF
 
             try
             {
-               
+                logger.Log("Coping file: " + imageFilePath);  
                 File.Copy(this.imageFilePath, imageFilePath, true);
             }
-            catch
+            catch (Exception ex) 
             {
-
+                logger.Log("Erro while coping file :" + imageFilePath + ex.ToString());
             }
 
             openProfileImage(imageFilePath);
@@ -746,11 +850,18 @@ namespace Salon_App_WPF
             {
                 try
                 {
+                    logger.Log("Connecting to DB");
                     dbConn.Open();
                 }
                 catch (SqlException ex)
                 {
+                    logger.Log("Error while connecting to DB: " + ex.ToString());
 
+                    MessageBox.Show("Παρουσιάστηκε πρόβλημα κατά στη σύνδεση. Παρακαλούμε επικοινωνήστε με το τεχνικό τμήμα.",
+                       "Προέκυψε πρόβλημα",
+                       MessageBoxButton.OK,
+                       MessageBoxImage.Error,
+                       MessageBoxResult.OK);
                 }
                 
                 string query;
@@ -767,11 +878,15 @@ namespace Salon_App_WPF
 
                 if (hadProfileImage)
                 {
+                    logger.Log("Executing update command.");
+
                     adapter.UpdateCommand = command;
                     adapter.UpdateCommand.ExecuteNonQuery();
                 }
                 else
                 {
+                    logger.Log("Executing insert command.");
+
                     adapter.InsertCommand = command;
                     adapter.InsertCommand.ExecuteNonQuery();
 
@@ -797,7 +912,10 @@ namespace Salon_App_WPF
 
         private void SaveNoteBtn_Click(object sender, RoutedEventArgs e)
         {
+            logger.Section("CustomerControl: SaveNoteBtn");
             if (NewNoteTB.Text.Equals(string.Empty) || NewNoteTB.Text.Trim().Equals(string.Empty)) {
+                logger.Log("Empty note.");
+
                 MessageBox.Show(
                     "Έγινε προσπάθεια αποθήκευσης κενής σημείωσης. Η σημείωση αυτή δε θα αποθηκευτεί.",
                     "Κενή σημείωση",
@@ -812,10 +930,13 @@ namespace Salon_App_WPF
             {
                 try
                 {
+                    logger.Log("Connecting to DB.");
                     dbConn.Open();
                 }
                 catch (SqlException ex)
                 {
+                    logger.Log("Error while connecting to DB: " + ex.ToString());
+
                     MessageBox.Show("Παρουσιάστηκε πρόβλημα κατά στη σύνδεση. Παρακαλούμε επικοινωνήστε με το τεχνικό τμήμα.",
                         "Προέκυψε πρόβλημα",
                         MessageBoxButton.OK,
@@ -838,6 +959,7 @@ namespace Salon_App_WPF
 
                 SqlDataAdapter adapter = new SqlDataAdapter();
 
+                logger.Log("Executing query.");
                 adapter.InsertCommand = command;
                 adapter.InsertCommand.ExecuteNonQuery();
 
@@ -883,16 +1005,21 @@ namespace Salon_App_WPF
 
         private void DeleteBtn_Click(object sender, RoutedEventArgs e)
         {
-            int s = NotesListView.SelectedIndex;
+            logger.Section("CustomerControl: DeleteBtn");
+
             using (SqlConnection dbConn = new SqlConnection(connStr))
             {
 
                 try
                 {
+                    logger.Log("Connection to DB.");
+
                     dbConn.Open();
                 }
                 catch (SqlException ex)
                 {
+                    logger.Log("Error while connecting to DB: " + ex.ToString());
+
                     MessageBox.Show("Παρουσιάστηκε πρόβλημα κατά στη σύνδεση. Παρακαλούμε επικοινωνήστε με το τεχνικό τμήμα.",
                         "Προέκυψε πρόβλημα",
                         MessageBoxButton.OK,
@@ -912,6 +1039,7 @@ namespace Salon_App_WPF
 
                 SqlDataAdapter dataAdapter = new SqlDataAdapter();
                 dataAdapter.DeleteCommand = command;
+                logger.Log("Executing query.");
                 dataAdapter.DeleteCommand.ExecuteNonQuery();
 
 
@@ -927,6 +1055,7 @@ namespace Salon_App_WPF
 
         private void ChangePicBtn_Click(object sender, RoutedEventArgs e)
         {
+            logger.Section("CustomerControl: ChangePicBtn");
 
             OpenFileDialog openFileDialog = new OpenFileDialog();
             
@@ -936,6 +1065,8 @@ namespace Salon_App_WPF
 
             if (openFileDialog.ShowDialog() == true)
             {
+                logger.Log("File choosed.");
+
                 openProfileImage(openFileDialog.FileName);
                 imageFilePath = openFileDialog.FileName;
             }
