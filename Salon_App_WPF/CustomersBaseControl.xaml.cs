@@ -1,9 +1,10 @@
-using MaterialDesignThemes.Wpf;
+﻿using MaterialDesignThemes.Wpf;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -91,6 +92,7 @@ namespace Salon_App_WPF
                     Customers.Add(new CustomerGrid(customerID, firstName, lastName, nickName, phone, email, dateTime, gender, lastNote));
                 }
 
+                logger.Log("Data retrieved.");
 
                 CustomersBase.ItemsSource = Customers;
 
@@ -138,7 +140,20 @@ namespace Salon_App_WPF
                 noteCommand.Dispose();
                 noteAdapter.Dispose();
 
+                string imageQuery = "DELETE dbo.ProFileImages WHERE CustomerID = @ID";
+
+                SqlCommand imageCommand = new SqlCommand(imageQuery, dbConn);
+                noteCommand.Parameters.AddWithValue("@ID", System.Data.SqlDbType.Int);
+                noteCommand.Parameters["@ID"].Value = customer.CustomerID;
+
+                SqlDataAdapter imageAdapter = new SqlDataAdapter();
+                imageAdapter.DeleteCommand = imageCommand;
                 logger.Log("Deleting image.");
+                imageAdapter.DeleteCommand.ExecuteNonQuery();
+
+                noteCommand.Dispose();
+                noteAdapter.Dispose();
+
                 string query = "DELETE dbo.Customers WHERE CustomerID = @ID";
 
                 SqlCommand command = new SqlCommand(query, dbConn);

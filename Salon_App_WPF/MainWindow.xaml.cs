@@ -23,6 +23,7 @@ using System.Threading;
 using System.IO;
 using Microsoft.Win32;
 using System.Windows.Interop;
+using System.Diagnostics;
 
 namespace Salon_App_WPF
 {
@@ -70,6 +71,12 @@ namespace Salon_App_WPF
             }
 
             InsertRecords();
+
+            BackUpManager BUManager = new BackUpManager();
+
+            new Thread(BUManager.Initialize).Start();
+
+            OpenUserControl(new HomeControl());
         }
 
         private void ActivateButton(object senderBtn, SolidColorBrush color)
@@ -249,7 +256,7 @@ namespace Salon_App_WPF
 
         private void InsertRecords()
         {
-            string query = $"INSERT INTO dbo.Customers(FirstName, LastName, Nickname, Phone, Email, FirstVisit, Gender) VALUES ('Jim', 'Lk', NULL, NULL, NULL, NULL, NULL), ('maria', 'Lek', NULL, NULL, NULL, NULL, NULL), ('maria', 'Lk', NULL, NULL, NULL, NULL, NULL), ('John', 'Papas', NULL, NULL, NULL, NULL, NULL)";
+            string query = $"INSERT INTO dbo.Customers(FirstName, LastName, Nickname, Phone, Email, FirstVisit, Gender) VALUES ('Jim', 'Lk', NULL, NULL, NULL, NULL, NULL), ('maria', 'Lek', NULL, NULL, NULL, NULL, NULL), ('maria', 'Lk', NULL, NULL, NULL, NULL, NULL), ('John', 'Papas', NULL, NULL, NULL, NULL, NULL), (N'Νίκος',  N'Καρδιβούρκης', NULL, NULL, NULL, NULL, NULL)";
             SqlCommand command = new SqlCommand(query, dbConn);
 
             command.ExecuteNonQuery();
@@ -278,23 +285,53 @@ namespace Salon_App_WPF
             OpenUserControl(new CustomerControl());
         }
 
-        private void OpenUserControl(UserControl userControl)
+        public static void OpenUserControl(UserControl userControl)
         {
-            if (this.openedControl != null) CloseUserControl();
+            mainWindow.logger.Section("User Control");
+            mainWindow.logger.Log("Opening user control.");
 
-            openedControl = userControl;
+            if (mainWindow.openedControl != null) CloseUserControl();
 
-            this.formsGrid.Children.Add(openedControl);
+            mainWindow.openedControl = userControl;
+
+            mainWindow.formsGrid.Children.Add(mainWindow.openedControl);
+
+            mainWindow.logger.Log("User control opened.");
         }
 
         public static void CloseUserControl()
         {
+            mainWindow.logger.Section("User Control");
+            mainWindow.logger.Log("Closing user control.");
+
             mainWindow.formsGrid.Children.Remove(mainWindow.openedControl);
+            mainWindow.openedControl = null;
+
+            mainWindow.logger.Log("User control closed.");
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            logger.Section("Window");
+            logger.Log("Window closing");
+
+            BackUpManager BUManager = new BackUpManager();
+            Thread t = new Thread(BUManager.Initialize);
+            t.Start();
+            t.Join();
+
+            logger.Log("Window close");
+        }
+
+        private void WindowClose_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            System.Windows.Application.Current.Shutdown();
         }
 
         private void ExportDBBtn_MouseDown(object sender, MouseButtonEventArgs e)
         {
             logger.Section("DB export");
+
             OpenFileDialog openFileDialog = new OpenFileDialog();
 
             openFileDialog.Title = "Επιλογή τοποθεσίας αποθήκευσης";
@@ -328,6 +365,7 @@ namespace Salon_App_WPF
                     userControl = userControl.Substring(lastIndex, userControl.Length - lastIndex);
                 }
 
+                logger.Log("Opening configuration control.");
                 ConfigurationPopup.Child = new ConfigurationControl(userControl);
                 ConfigurationPopup.IsOpen = true;
             }

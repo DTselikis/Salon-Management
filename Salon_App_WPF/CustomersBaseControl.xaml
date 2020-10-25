@@ -22,8 +22,7 @@
             AutoGenerateColumns="False"
             HeadersVisibility="All"
             IsReadOnly="True"
-            Background="{Binding Source={x:Static prs:Settings.Default}, Path=GridBackground}" 
-            MouseDown="EditBtn_Click"
+            Background="{Binding Source={x:Static prs:Settings.Default}, Path=GridBackground}"
             >
             <DataGrid.ContextMenu>
                 <ContextMenu>
