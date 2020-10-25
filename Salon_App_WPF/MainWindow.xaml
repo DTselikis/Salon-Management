@@ -193,20 +193,20 @@
                                 </Style.Triggers>
                             </Style>
                         </StackPanel.Resources>
-                        <!--// Customer Button //-->
+                        <!--// Home Button //-->
                         <StackPanel
-                            x:Name="customerBtn"
+                            x:Name="HomeBtn"
                             Style="{StaticResource SideStack}"
-                            MouseLeftButtonDown="customerBtn_MouseLeftButtonDown">
+                            MouseLeftButtonDown="HomeBtn_MouseLeftButtonDown">
                             <!--// Grid is placeholder for select indication //-->
                             <Grid Width="5"/>
                             <fa:IconBlock
                                 x:Name="customerIcon"
-                                Icon="User" 
+                                Icon="Home" 
                                 Style="{StaticResource SideIcon}"/>
                             <TextBlock
                                 x:Name="custonmerText"
-                                Text="Πελάτης"
+                                Text="Αρχική"
                                 Style="{StaticResource SideText}"/>
                         </StackPanel>
 

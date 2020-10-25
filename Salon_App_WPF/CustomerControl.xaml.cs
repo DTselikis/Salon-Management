@@ -419,7 +419,7 @@ namespace Salon_App_WPF
                 MessageBoxImage.Information,
                 MessageBoxResult.OK);
 
-            MainWindow.CloseUserControl();
+            MainWindow.OpenUserControl(new HomeControl());
         }
 
         private int checkIfRecordExists()

@@ -121,9 +121,14 @@ namespace Salon_App_WPF
             }
         }
 
-        private void customerBtn_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void HomeBtn_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            ActivateButton(sender, new SolidColorBrush(Color.FromRgb(249, 46, 151)));
+            if (openedControl.GetType() != typeof(HomeControl))
+            {
+                ActivateButton(sender, new SolidColorBrush(Color.FromRgb(249, 46, 151)));
+
+                OpenUserControl(new HomeControl());
+            }    
         }
 
         private void customersBtn_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
