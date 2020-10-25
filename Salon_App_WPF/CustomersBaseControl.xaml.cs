@@ -1,4 +1,4 @@
-﻿using MaterialDesignThemes.Wpf;
+using MaterialDesignThemes.Wpf;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -228,9 +228,19 @@ namespace Salon_App_WPF
         }
 
         private void DeleteBtn_Click(object sender, RoutedEventArgs e)
-        { 
-            DeleteRecord((Customer)CustomersBase.SelectedItems[0]);
-            Customers.RemoveAt(CustomersBase.SelectedIndex);
+        {
+            logger.Section("CustomerBaseControl: DeleteBtn");
+
+            if (CustomersBase.SelectedIndex > -1)
+            {
+                logger.Log("Deleting customer: " + Customers[CustomersBase.SelectedIndex].CustomerID);
+                DeleteRecord((Customer)CustomersBase.SelectedItems[0]);
+                Customers.RemoveAt(CustomersBase.SelectedIndex);
+            }
+            else
+            {
+                logger.Log("No customer was selected.");
+            }
         }
 
         private void UserControl_Unloaded(object sender, RoutedEventArgs e)
@@ -242,17 +252,25 @@ namespace Salon_App_WPF
         {
             logger.Section("CustomerBaseControl: EditBtn");
 
-            CustomerGrid customer = (CustomerGrid)CustomersBase.SelectedItem;
-            int id = customer.CustomerID;
-            string firstaName = customer.FirstName;
-            string lastName = customer.LastName;
-            string nickName = customer.NickName;
-            string phone = customer.Phone;
-            string email = customer.Email;
-            Nullable<DateTime> firstVisit = customer.FirstVisit;
-            char gender = customer.Gender;
+            if (CustomersBase.SelectedIndex > -1)
+            {
+                CustomerGrid customer = (CustomerGrid)CustomersBase.SelectedItem;
+                int id = customer.CustomerID;
+                string firstaName = customer.FirstName;
+                string lastName = customer.LastName;
+                string nickName = customer.NickName;
+                string phone = customer.Phone;
+                string email = customer.Email;
+                Nullable<DateTime> firstVisit = customer.FirstVisit;
+                char gender = customer.Gender;
 
-            MainWindow.OpenUserControl(new CustomerControl(new Customer(id, firstaName, lastName, nickName, phone, email, firstVisit, gender)));
+                logger.Log("Showing customer: " + id);
+                MainWindow.OpenUserControl(new CustomerControl(new Customer(id, firstaName, lastName, nickName, phone, email, firstVisit, gender)));
+            }
+            else
+            {
+                logger.Log("No customer was selected.");
+            }
         }
     }
 }

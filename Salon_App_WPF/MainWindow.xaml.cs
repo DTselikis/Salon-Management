@@ -50,17 +50,20 @@ namespace Salon_App_WPF
             InitializeComponent();
 
             logger = new Logger();
+            logger.Section("MainWindow: Default Constructor");
+
             mainWindow = this;
             results = new ObservableCollection<Result>();
 
             try
             {
+                logger.Log("Connecting to DB");
                 dbConn = new SqlConnection(connStr);
                 dbConn.Open();
             }
             catch (SqlException ex)
             {
-                logger.Section("MainWindow: DBconnect");
+                logger.Log("Error while connecting to DB.");
                 logger.Log(ex.ToString());
 
                 MessageBox.Show("Παρουσιάστηκε πρόβλημα κατά στη σύνδεση. Παρακαλούμε επικοινωνήστε με το τεχνικό τμήμα.",
@@ -292,8 +295,8 @@ namespace Salon_App_WPF
 
         public static void OpenUserControl(UserControl userControl)
         {
-            mainWindow.logger.Section("User Control");
-            mainWindow.logger.Log("Opening user control.");
+            mainWindow.logger.Section("MainWindow: OpenUserControl");
+            mainWindow.logger.Log("Opening user control: " + userControl);
 
             if (mainWindow.openedControl != null) CloseUserControl();
 

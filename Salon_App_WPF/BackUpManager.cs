@@ -1,4 +1,4 @@
-﻿using Microsoft.Win32;
+using Microsoft.Win32;
 using Salon_App_WPF.CustomersDataSetTableAdapters;
 using System;
 using System.Collections.Generic;
@@ -104,9 +104,12 @@ namespace Salon_App_WPF
                     TimeSpan interval = DateTime.Today - DateTime.Parse(dirName.Replace('_', '/'));
 
                     logger.Log("Daily");
-                    logger.Log("Deleting directory: " + directory);
                     // Delete records of last week
-                    if (interval.Days >= 7) Directory.Delete(directory, true);
+                    if (interval.Days >= 7)
+                    {
+                        logger.Log("Deleting directory: " + directory);
+                        Directory.Delete(directory, true);
+                    }  
                 }
 
                 foreach (string directory in Directory.GetDirectories(monthlyPath))
@@ -117,9 +120,13 @@ namespace Salon_App_WPF
                     TimeSpan interval = DateTime.Today - DateTime.Parse(dirName.Replace('_', '/'));
 
                     logger.Log("Monthly");
-                    logger.Log("Deleting directory: " + directory);
                     // Delete records of last three months
-                    if (interval.Days >= 90) Directory.Delete(directory, true);
+                    if (interval.Days >= 90)
+                    {
+                        logger.Log("Deleting directory: " + directory);
+                        Directory.Delete(directory, true);
+                    }
+                        
                 }
             }
             catch (DirectoryNotFoundException ex)
@@ -387,8 +394,18 @@ namespace Salon_App_WPF
                 command.Parameters.AddWithValue("@Path", System.Data.SqlDbType.NVarChar);
                 command.Parameters["@DBPath"].Value = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "SalonDB.mdf");
                 command.Parameters["@Path"].Value = Path.Combine(dbBasePath, "SalonDB.mdf");
-
-                command.ExecuteNonQuery();
+                
+                try
+                {
+                    logger.Log("Executing query");
+                    command.ExecuteNonQuery();
+                }
+                catch (SqlException ex)
+                {
+                    logger.Log("Error while executing query");
+                    logger.Log(ex.ToString());
+                }
+                
 
                 command.Dispose();
                 dbConn.Close();
