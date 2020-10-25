@@ -12,7 +12,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Data.SqlClient;
 using System.Windows.Controls.Primitives;
 using System.Runtime.Remoting.Metadata.W3cXsd2001;
@@ -34,7 +33,7 @@ namespace Salon_App_WPF
     {
 
         private StackPanel currentBtn;
-        private string connStr = Properties.Settings.Default.DBConnStr;
+        private string connStr = Properties.DefaultSettings.Default.DBConnStr.Replace("Path", Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Salon Management", "Resources"));
         private SqlConnection dbConn;
         private short keysPressed = 0;
         private UserControl openedControl = null;

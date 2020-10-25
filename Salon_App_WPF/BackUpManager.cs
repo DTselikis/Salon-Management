@@ -1,4 +1,4 @@
-using Microsoft.Win32;
+﻿using Microsoft.Win32;
 using Salon_App_WPF.CustomersDataSetTableAdapters;
 using System;
 using System.Collections.Generic;
@@ -17,7 +17,7 @@ namespace Salon_App_WPF
 {
     public class BackUpManager
     {
-        private string connStr = Properties.Settings.Default.DBConnStr;
+        private string connStr = Properties.DefaultSettings.Default.DBConnStr.Replace("Path", Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Salon Management", "Resources"));
 
         private const string Package = "Salon Management";
         private const string BackUpFolder = "BackUp";
@@ -392,7 +392,7 @@ namespace Salon_App_WPF
                 SqlCommand command = new SqlCommand(query, dbConn);
                 command.Parameters.AddWithValue("@DBPath", System.Data.SqlDbType.NVarChar);
                 command.Parameters.AddWithValue("@Path", System.Data.SqlDbType.NVarChar);
-                command.Parameters["@DBPath"].Value = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "SalonDB.mdf");
+                command.Parameters["@DBPath"].Value = Path.Combine(appData, Package, ResourcesFolder, "SalonDB.mdf");
                 command.Parameters["@Path"].Value = Path.Combine(dbBasePath, "SalonDB.mdf");
                 
                 try

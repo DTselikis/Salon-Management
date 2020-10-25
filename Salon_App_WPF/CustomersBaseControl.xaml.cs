@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,7 +17,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Salon_App_WPF
 {
@@ -25,7 +25,7 @@ namespace Salon_App_WPF
     /// </summary>
     public partial class CustomersBaseControl : UserControl
     {
-        private string connStr = Properties.Settings.Default.DBConnStr;
+        private string connStr = Properties.DefaultSettings.Default.DBConnStr.Replace("Path", Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Salon Management", "Resources"));
 
         private Logger logger;
         private ObservableCollection<CustomerGrid> Customers { get; set; }

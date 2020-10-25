@@ -15,7 +15,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
 using MaterialDesignThemes;
 using Microsoft.Win32;
 using System.IO;
@@ -29,7 +28,7 @@ namespace Salon_App_WPF
     public partial class CustomerControl : UserControl
     {
 
-        private string connStr = Properties.Settings.Default.DBConnStr;
+        private string connStr = Properties.DefaultSettings.Default.DBConnStr.Replace("Path", Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Salon Management", "Resources"));
         private Customer customer;
         private string imageFilePath;
         private bool hadProfileImage = false;
