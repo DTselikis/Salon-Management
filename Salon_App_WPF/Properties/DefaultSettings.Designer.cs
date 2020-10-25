@@ -138,5 +138,29 @@ namespace Salon_App_WPF.Properties {
                 this["MainWindowText"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0.4")]
+        public string HomeOpacity {
+            get {
+                return ((string)(this["HomeOpacity"]));
+            }
+            set {
+                this["HomeOpacity"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("#DDCBAC59")]
+        public string HomeText {
+            get {
+                return ((string)(this["HomeText"]));
+            }
+            set {
+                this["HomeText"] = value;
+            }
+        }
     }
 }

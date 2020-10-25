@@ -43,5 +43,11 @@
     <Setting Name="MainWindowText" Type="System.String" Scope="User">
       <Value Profile="(Default)">Gainsboro</Value>
     </Setting>
+    <Setting Name="HomeOpacity" Type="System.String" Scope="User">
+      <Value Profile="(Default)">0.4</Value>
+    </Setting>
+    <Setting Name="HomeText" Type="System.String" Scope="User">
+      <Value Profile="(Default)">#DDCBAC59</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

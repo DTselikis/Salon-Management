@@ -303,16 +303,23 @@ namespace Salon_App_WPF
 
         private void ConfigurationBtn_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            string userControl = string.Empty;
-            if (mainWindow.openedControl != null)
+            if (!ConfigurationPopup.IsOpen)
             {
-                userControl = mainWindow.openedControl.ToString();
-                int lastIndex = userControl.LastIndexOf('.') + 1;
-                userControl = userControl.Substring(lastIndex, userControl.Length - lastIndex);
-            }
+                string userControl = string.Empty;
+                if (mainWindow.openedControl != null)
+                {
+                    userControl = mainWindow.openedControl.ToString();
+                    int lastIndex = userControl.LastIndexOf('.') + 1;
+                    userControl = userControl.Substring(lastIndex, userControl.Length - lastIndex);
+                }
 
-            ConfigurationPopup.Child = new ConfigurationControl(userControl);
-            ConfigurationPopup.IsOpen = true;
+                ConfigurationPopup.Child = new ConfigurationControl(userControl);
+                ConfigurationPopup.IsOpen = true;
+            }
+            else
+            {
+                ConfigurationPopupClose();
+            }
              
         }
 
