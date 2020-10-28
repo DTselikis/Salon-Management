@@ -63,6 +63,7 @@ namespace Salon_App_WPF
             logger.Section("CustoemrControl: Default Constructor");
 
             this.customer = customer;
+            this.imageFilePath = string.Empty;
 
             InitializeComponent();
 
@@ -360,7 +361,6 @@ namespace Salon_App_WPF
 
                 if (hadProfileImage && imageFilePath.Contains("AppData"))
                 {
-                    logger.Log("Deleting image");
 
                     string picQuery = "DELETE dbo.ProfileImages WHERE CustomerID = @ID";
 
@@ -372,7 +372,17 @@ namespace Salon_App_WPF
                     dataAdapter.DeleteCommand.ExecuteNonQuery();
 
                     hadProfileImage = false;
-                    File.Delete(imageFilePath);
+                    try
+                    {
+                        logger.Log("Deleting image: " + imageFilePath);
+                        File.Delete(imageFilePath);
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.Log("Error while deleting image: " + imageFilePath);
+                        logger.Log(ex.ToString());
+                    }
+                    
                 }
 
                 if (Notes != null)
@@ -764,13 +774,12 @@ namespace Salon_App_WPF
 
                 if (dataReader.Read())
                 {
-                    hadProfileImage = true;
-
+                    this.hadProfileImage = true;
                     string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
                     string[] pathStrs = { appDataPath, "Salon Management", "Resources", "Images", "ProfileImages", dataReader.GetString(0) };
-                    string imageFilePath = System.IO.Path.Combine(pathStrs);
+                    this.imageFilePath = System.IO.Path.Combine(pathStrs);
 
-                    openProfileImage(imageFilePath);
+                    openProfileImage(this.imageFilePath);
                 }
 
                 command.Dispose();
@@ -792,7 +801,7 @@ namespace Salon_App_WPF
                     // Use stream to be able to delete image later
                     var stream = File.OpenRead(imageFilePath);
 
-                    customerBitMap = new BitmapImage();
+                    logger.Log("Creating bitmap");
                     customerBitMap = new BitmapImage();
                     customerBitMap.BeginInit();
                     customerBitMap.CacheOption = BitmapCacheOption.OnLoad;
@@ -818,6 +827,10 @@ namespace Salon_App_WPF
                 CustomerPicture.Height = 100;
                 CustomerPicture.Visibility = Visibility.Visible;
             }
+            else
+            {
+                logger.Log("Image does not exist: " + imageFilePath);
+            }
         }
 
         private void SaveProfileImage()
@@ -839,7 +852,7 @@ namespace Salon_App_WPF
             }
             catch (Exception ex) 
             {
-                logger.Log("Erro while coping file :" + imageFilePath + ex.ToString());
+                logger.Log("Error while coping file :" + imageFilePath + ex.ToString());
             }
 
             openProfileImage(imageFilePath);
@@ -867,11 +880,15 @@ namespace Salon_App_WPF
                 if (hadProfileImage) query = "UPDATE dbo.ProfileImages SET FileName = @FName WHERE CustomerID = @ID";
                 else query = "INSERT INTO dbo.ProfileImages (CustomerID, FileName) VALUES (@ID, @FName)";
 
+                string imgSource = this.imageFilePath;
+                int lastIndex = imgSource.LastIndexOf('.');
+                string imgExtension = imgSource.Substring(lastIndex, imgSource.Length - lastIndex);
+
                 SqlCommand command = new SqlCommand(query, dbConn);
                 command.Parameters.AddWithValue("@ID", System.Data.DbType.Int32);
                 command.Parameters.AddWithValue("@FName", System.Data.DbType.String);
                 command.Parameters["@ID"].Value = this.customer.CustomerID;
-                command.Parameters["@FName"].Value = fileName;
+                command.Parameters["@FName"].Value = customer.CustomerID + imgExtension;
 
                 SqlDataAdapter adapter = new SqlDataAdapter();
 

@@ -1,4 +1,4 @@
-using MaterialDesignThemes.Wpf;
+﻿using MaterialDesignThemes.Wpf;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -140,11 +140,13 @@ namespace Salon_App_WPF
                 noteCommand.Dispose();
                 noteAdapter.Dispose();
 
+                DeleteProfileImage(customer.CustomerID);
+
                 string imageQuery = "DELETE dbo.ProFileImages WHERE CustomerID = @ID";
 
                 SqlCommand imageCommand = new SqlCommand(imageQuery, dbConn);
-                noteCommand.Parameters.AddWithValue("@ID", System.Data.SqlDbType.Int);
-                noteCommand.Parameters["@ID"].Value = customer.CustomerID;
+                imageCommand.Parameters.AddWithValue("@ID", System.Data.SqlDbType.Int);
+                imageCommand.Parameters["@ID"].Value = customer.CustomerID;
 
                 SqlDataAdapter imageAdapter = new SqlDataAdapter();
                 imageAdapter.DeleteCommand = imageCommand;
@@ -224,6 +226,54 @@ namespace Salon_App_WPF
                 dbConn.Close();
 
                 return lastNote;
+            }
+        }
+
+        private void DeleteProfileImage(int customerID)
+        {
+            logger.Section("CustomerBaseControl: DeleteProfileImage");
+
+            using (SqlConnection dbConn = new SqlConnection(connStr))
+            {
+                try
+                {
+                    logger.Log("Connecting to DB.");
+                    dbConn.Open();
+                }
+                catch (SqlException ex)
+                {
+                    logger.Log("Error while connecting to DB: " + ex.ToString());
+                }
+
+                string query = "SELECT FileName FROM dbo.ProfileImages WHERE CustomerID = @ID";
+
+                SqlCommand command = new SqlCommand(query, dbConn);
+                command.Parameters.AddWithValue("@ID", System.Data.SqlDbType.Int);
+                command.Parameters["@ID"].Value = customerID;
+
+                logger.Log("Executing query");
+                SqlDataReader dataReader = command.ExecuteReader();
+
+                if (dataReader.Read())
+                {
+                    string appData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+                    string[] paths = { appData, "Salon Management", "Resources", "Images", "ProfileImages", dataReader.GetString(0) };
+                    string filePath = Path.Combine(paths);
+
+                    try
+                    {
+                        logger.Log("Deleting file: " + filePath);
+                        File.Delete(filePath);
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.Log("Error while deleting file: " + filePath);
+                        logger.Log(ex.ToString());                    }
+                }
+                else
+                {
+                    logger.Log("Customer had no image.");
+                }
             }
         }
 
