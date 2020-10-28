@@ -25,17 +25,6 @@ namespace Salon_App_WPF.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
-        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\\SalonDB.mdf;I" +
-            "ntegrated Security=True")]
-        public string DBConnStr {
-            get {
-                return ((string)(this["DBConnStr"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("#4c4d6b")]
         public string TopGrid {
             get {
@@ -160,6 +149,17 @@ namespace Salon_App_WPF.Properties {
             }
             set {
                 this["HomeText"] = value;
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=Path\\SalonDB.mdf;Integrated S" +
+            "ecurity=False")]
+        public string DBConnStr {
+            get {
+                return ((string)(this["DBConnStr"]));
             }
         }
     }

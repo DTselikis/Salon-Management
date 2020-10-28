@@ -399,6 +399,36 @@ namespace Salon_App_WPF
 
             mainWindow.WindowState = WindowState.Minimized;
         }
+
+        private void PackIcon_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            double left = SystemParameters.WorkArea.Left;
+            double top = SystemParameters.WorkArea.Top;
+            double height = SystemParameters.WorkArea.Height;
+            double width = SystemParameters.WorkArea.Width;
+
+            if (this.Left != left || this.Top != top || this.Height != height || this.Width != width)
+            {
+                Properties.Settings.Default.WindowTop = this.Top;
+                Properties.Settings.Default.WindowLeft = this.Left;
+                Properties.Settings.Default.WindowHeight = this.Height;
+                Properties.Settings.Default.WindowWidth = this.Width;
+
+                this.Top = top;
+                this.Left = left;
+                this.Height = height;
+                this.Width = width;
+            }
+        
+            else
+            {
+                this.Top = Properties.Settings.Default.WindowTop;
+                this.Left = Properties.Settings.Default.WindowLeft;
+                this.Height = Properties.Settings.Default.WindowHeight;
+                this.Width = Properties.Settings.Default.WindowWidth;
+            }
+        }
+
         private void InfoBtn_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (InfoPopup.IsOpen) InfoPopup.IsOpen = false;
