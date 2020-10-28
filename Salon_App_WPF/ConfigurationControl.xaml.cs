@@ -108,7 +108,7 @@ namespace Salon_App_WPF
                 case "HomeControl":
                     {
                         labels.Add("HomeOpacity", "Διαφάνεια λογότυπου");
-                        labels.Add("HomeText", "Ώρα = Ημ/νια");
+                        labels.Add("HomeText", "Ώρα - Ημ/νία");
 
                         names.Add("HomeOpacity");
                         names.Add("HomeText");
@@ -232,7 +232,7 @@ namespace Salon_App_WPF
             }
         }
 
-        private void CanceBtn_Click(object sender, RoutedEventArgs e)
+        private void CancelBtn_Click(object sender, RoutedEventArgs e)
         {
 
             if (opacity != null)
@@ -343,8 +343,9 @@ namespace Salon_App_WPF
             Properties.Settings.Default.HomeText = Properties.DefaultSettings.Default.HomeText;
         }
 
-        private void ExitBtn_Click(object sender, RoutedEventArgs e)
+        private void SaveBtn_Click(object sender, RoutedEventArgs e)
         {
+            Properties.Settings.Default.Save();
             MainWindow.ConfigurationPopupClose();
         }
     }

@@ -23,6 +23,7 @@ using System.IO;
 using Microsoft.Win32;
 using System.Windows.Interop;
 using System.Diagnostics;
+using System.CodeDom;
 
 namespace Salon_App_WPF
 {
@@ -39,7 +40,7 @@ namespace Salon_App_WPF
         private UserControl openedControl = null;
         private static MainWindow mainWindow;
         private Logger logger;
-        private ObservableCollection<Result> results{ get; set; }
+        private ObservableCollection<Result> results { get; set; }
 
         private IDictionary<int, int> customerIDs = new Dictionary<int, int>();
 
@@ -72,7 +73,7 @@ namespace Salon_App_WPF
                     MessageBoxResult.OK);
             }
 
-            InsertRecords();
+            //InsertRecords();
 
             BackUpManager BUManager = new BackUpManager();
 
@@ -130,7 +131,7 @@ namespace Salon_App_WPF
                 ActivateButton(sender, new SolidColorBrush(Color.FromRgb(249, 46, 151)));
 
                 OpenUserControl(new HomeControl());
-            }    
+            }
         }
 
         private void customersBtn_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -220,45 +221,48 @@ namespace Salon_App_WPF
 
         private void SearchResultsGrid_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            Result selection = (Result)SearchResultsGrid.SelectedItem;
+            if (SearchResultsGrid.SelectedIndex > -1)
+            {
+                Result selection = (Result)SearchResultsGrid.SelectedItem;
 
-            String query = "SELECT * FROM dbo.Customers WHERE CustomerID = @ID";
+                String query = "SELECT * FROM dbo.Customers WHERE CustomerID = @ID";
 
-            SqlCommand sqlCmd = new SqlCommand(query, dbConn);
-            sqlCmd.Parameters.Add("@ID", System.Data.SqlDbType.Int);
-            sqlCmd.Parameters["@ID"].Value = selection.ID;
+                SqlCommand sqlCmd = new SqlCommand(query, dbConn);
+                sqlCmd.Parameters.Add("@ID", System.Data.SqlDbType.Int);
+                sqlCmd.Parameters["@ID"].Value = selection.ID;
 
-            logger.Section("Customer choose");
-            logger.Log("Executing query");
+                logger.Section("Customer choose");
+                logger.Log("Executing query");
 
-            SqlDataReader dataReader = sqlCmd.ExecuteReader();
+                SqlDataReader dataReader = sqlCmd.ExecuteReader();
 
-            dataReader.Read();
+                dataReader.Read();
 
-            int customerID;
-            string firstName;
-            string lastName;
-            string nickName;
-            string phone;
-            string email;
-            Nullable<DateTime> dateTime = null;
-            char gender;
+                int customerID;
+                string firstName;
+                string lastName;
+                string nickName;
+                string phone;
+                string email;
+                Nullable<DateTime> dateTime = null;
+                char gender;
 
-            customerID = dataReader.GetInt32(0);
-            if (dataReader[1] != System.DBNull.Value) firstName = dataReader.GetString(1); else firstName = String.Empty;
-            if (dataReader[2] != System.DBNull.Value) lastName = dataReader.GetString(2); else lastName = String.Empty;
-            if (dataReader[3] != System.DBNull.Value) nickName = dataReader.GetString(3); else nickName = String.Empty;
-            if (dataReader[4] != System.DBNull.Value) phone = dataReader.GetString(4); else phone = String.Empty;
-            if (dataReader[5] != System.DBNull.Value) email = dataReader.GetString(5); else email = String.Empty;
-            if (dataReader[6] != System.DBNull.Value) dateTime = dataReader.GetDateTime(6); else dateTime = null;
-            if (dataReader[7] != System.DBNull.Value) gender = Char.Parse(dataReader.GetString(7).Substring(0, 1)); else gender = '\0';
+                customerID = dataReader.GetInt32(0);
+                if (dataReader[1] != System.DBNull.Value) firstName = dataReader.GetString(1); else firstName = String.Empty;
+                if (dataReader[2] != System.DBNull.Value) lastName = dataReader.GetString(2); else lastName = String.Empty;
+                if (dataReader[3] != System.DBNull.Value) nickName = dataReader.GetString(3); else nickName = String.Empty;
+                if (dataReader[4] != System.DBNull.Value) phone = dataReader.GetString(4); else phone = String.Empty;
+                if (dataReader[5] != System.DBNull.Value) email = dataReader.GetString(5); else email = String.Empty;
+                if (dataReader[6] != System.DBNull.Value) dateTime = dataReader.GetDateTime(6); else dateTime = null;
+                if (dataReader[7] != System.DBNull.Value) gender = Char.Parse(dataReader.GetString(7).Substring(0, 1)); else gender = '\0';
 
-            // Clear results and close popup
-            SearchResults.IsOpen = false;
-            results.Clear();
-            dataReader.Close();
+                // Clear results and close popup
+                SearchResults.IsOpen = false;
+                results.Clear();
+                dataReader.Close();
 
-            OpenUserControl(new CustomerControl(new Customer(customerID, firstName, lastName, nickName, phone, email, dateTime, gender)));
+                OpenUserControl(new CustomerControl(new Customer(customerID, firstName, lastName, nickName, phone, email, dateTime, gender)));
+            }
         }
 
         private void InsertRecords()
@@ -327,6 +331,7 @@ namespace Salon_App_WPF
             t.Start();
             t.Join();
 
+            Properties.Settings.Default.Save();
             logger.Log("Window close");
         }
 
@@ -380,7 +385,7 @@ namespace Salon_App_WPF
             {
                 ConfigurationPopupClose();
             }
-             
+
         }
 
         public static void ConfigurationPopupClose()
@@ -440,8 +445,8 @@ namespace Salon_App_WPF
             message.Append("Διαδρομή αχείου βάσης δεδομένων: \"").Append(Path.Combine(appData, "Salon Management", "Resources", "SalonBB.mdf")).Append("\"").Append(Environment.NewLine);
             message.Append("Διαδρομή αντιγράφων ασφαλείας: \"").Append(Path.Combine(appData, "Salon Management", "Backup")).Append("\"").Append(Environment.NewLine);
             message.Append("Διαδρομή αρχείων καταγραφής (.log): \"").Append(Path.Combine(appData, "Salon Management", "Resources")).Append("\"").Append(Environment.NewLine);
-            message.Append(Environment.NewLine).Append("Τα ημερήσια αντίγραφη έχουν ισχύς 7 ημερολογιακές ημέρες από την ημέρα δημιουργία τους.").Append(Environment.NewLine);
-            message.Append("Τα μηνιαία αντίγραφη ασφαλείας έχουν ισχύς 90 ημέρες από την ημέρα δημιουργία τους.");
+            message.Append(Environment.NewLine).Append("Τα ημερήσια αντίγραφα έχουν ισχύς 7 ημερολογιακές ημέρες από την ημέρα δημιουργίας τους.").Append(Environment.NewLine);
+            message.Append("Τα μηνιαία αντίγραφα ασφαλείας έχουν ισχύς 90 ημέρες από την ημέρα δημιουργίας τους.");
 
             InfoTextBox.Text = message.ToString();
         }

@@ -15,19 +15,19 @@
             <StackPanel x:Name="Controls">
             </StackPanel>
             <Button
-                x:Name="ExitBtn"
+                x:Name="SaveBtn"
                 Style="{DynamicResource  MaterialDesignFlatButton}"
                 Content="Αποθήκευση"
                 ToolTip="Αποθήκευση αλλαγών"
                 Foreground="#FFD13397"
-                Click="ExitBtn_Click"/>
+                Click="SaveBtn_Click"/>
             <Button
-                x:Name="CanceBtn"
+                x:Name="CancelBtn"
                 Style="{DynamicResource  MaterialDesignFlatButton}"
                 Content="Ακύρωση"
                 ToolTip="Ακύρωση αλλαγών"
                 Foreground="#FFD13397"
-                Click="CanceBtn_Click"/>
+                Click="CancelBtn_Click"/>
             <Button
                 x:Name="DefaultBtn"
                 Style="{DynamicResource  MaterialDesignFlatButton}"
