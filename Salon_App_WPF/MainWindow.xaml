@@ -1,4 +1,4 @@
-﻿<Window x:Class="Salon_App_WPF.MainWindow"
+<Window x:Class="Salon_App_WPF.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -81,6 +81,7 @@
                     <TextBox
                         x:Name="SearchTextBox"
                         materialDesign:HintAssist.Hint="Αναζήτηση πελάτη"
+                        ToolTip="Πληκτρολογήστε όνομα ή/και επώνυμο πελάτη"
                         Width="250"
                         VerticalAlignment="Center"
                         FontSize="20"
@@ -107,6 +108,7 @@
                                 <Trigger Property="IsMouseOver" Value="true">
                                     <Setter Property="Foreground" Value="{Binding Source={x:Static prs:Settings.Default}, Path=OverIcon}" />
                                     <Setter Property="Background" Value="{Binding Source={x:Static prs:Settings.Default}, Path=MouseOver}" />
+                                    <Setter Property="Cursor" Value="Hand" />
                                 </Trigger>
                             </Style.Triggers>
                         </Style>
@@ -207,6 +209,7 @@
                             <TextBlock
                                 x:Name="custonmerText"
                                 Text="Αρχική"
+                                ToolTip="Επιστροφή στο αρχικό μενού"
                                 Style="{StaticResource SideText}"/>
                         </StackPanel>
 
@@ -224,11 +227,20 @@
                             <TextBlock
                                 x:Name="custonmersText"
                                 Text="Πελατολόγιο"
+                                ToolTip="Εμφάνιση πελατολογίου"
                                 Style="{StaticResource SideText}"/>
                         </StackPanel>
 
                         <!--// New customer button //-->
-                        <materialDesign:PackIcon x:Name="NewRecordLeft" Kind="AccountPlus" Height="65" Width="65" HorizontalAlignment="Center" Margin="0, 120, 0, 0" MouseLeftButtonDown="NewRecordLeft_MouseLeftButtonDown">
+                        <materialDesign:PackIcon
+                            x:Name="NewRecordLeft"
+                            Kind="AccountPlus"
+                            ToolTip="Προσθήκη πελάτη"
+                            Height="65"
+                            Width="65"
+                            HorizontalAlignment="Center"
+                            Margin="0, 120, 0, 0"
+                            MouseLeftButtonDown="NewRecordLeft_MouseLeftButtonDown">
                             <materialDesign:PackIcon.Style>
                                 <Style TargetType="materialDesign:PackIcon">
                                     <Setter Property="Foreground" Value="{Binding Source={x:Static prs:Settings.Default}, Path=MainWindowIcon}" />
@@ -267,6 +279,7 @@
                             x:Name="ConfigurationBtn"
                             Style="{StaticResource OptionsIcon}"
                             Kind="Cog"
+                            ToolTip="Ρυθμίσεις"
                             MouseDown="ConfigurationBtn_MouseDown"
                             />
                         <Popup
@@ -280,9 +293,35 @@
                         <materialDesign:PackIcon
                             x:Name="ExportDBBtn"
                             Style="{StaticResource OptionsIcon}"
-                            Kind="DatabaseExport" 
-                            MouseDown="ExportDBBtn_MouseDown">
-                        </materialDesign:PackIcon>
+                            Kind="DatabaseExport"
+                            ToolTip="Δημιουργία αντιγράφου ασφαλείας"
+                            MouseDown="ExportDBBtn_MouseDown" />
+
+                        <materialDesign:PackIcon
+                            x:Name="InfoBtn"
+                            Style="{StaticResource OptionsIcon}"
+                            Kind="Information"
+                            ToolTip="Πληροφορίες"
+                            MouseDown="InfoBtn_MouseDown"
+                            />
+
+                        <Popup
+                            x:Name="InfoPopup" 
+                            PlacementTarget="{Binding ElementName=InfoBtn}"
+                            HorizontalOffset="50"
+                            VerticalOffset="-123"
+                            Height="auto"
+                            Visibility="Hidden">
+
+                            <TextBox
+                                x:Name="InfoTextBox"
+                                Foreground="{Binding Source={x:Static prs:Settings.Default}, Path=MainWindowText}"
+                                Background="#292c3b"
+                                FontSize="15"
+                                MouseLeave="InfoTextBox_MouseLeave"
+                                />
+                        </Popup>
+
                     </StackPanel>
                 </Grid>
             </Border>

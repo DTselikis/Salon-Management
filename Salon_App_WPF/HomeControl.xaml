@@ -7,7 +7,7 @@
              xmlns:prs="clr-namespace:Salon_App_WPF.Properties"
              Background="{Binding Source={x:Static prs:Settings.Default}, Path=FormsGrid}"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800" Loaded="UserControl_Loaded">
+             d:DesignHeight="450" d:DesignWidth="800" Initialized="UserControl_Initialized">
     <Grid>
         <Image
             Grid.Row="0"
@@ -15,11 +15,12 @@
             Opacity="{Binding Source={x:Static prs:Settings.Default}, Path=HomeOpacity}"
             />
 
-        <Grid Grid.Row="0" HorizontalAlignment="Center">
+        <Grid Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Top">
             <Grid.Resources>
                 <Style x:Key="Label" TargetType="Label">
                     <Setter Property="HorizontalAlignment" Value="Center" />
-                    <Setter Property="FontSize" Value="48" />
+                    <Setter Property="VerticalAlignment" Value="Top" />
+                    <Setter Property="FontSize" Value="41" />
                     <Setter Property="Foreground" Value="{Binding Source={x:Static prs:Settings.Default}, Path=HomeText}" />
                 </Style>
             </Grid.Resources>

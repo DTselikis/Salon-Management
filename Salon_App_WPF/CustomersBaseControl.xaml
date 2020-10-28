@@ -27,7 +27,7 @@
             <DataGrid.ContextMenu>
                 <ContextMenu>
                     <MenuItem x:Name="DeleteBtn" Header="Διαγραφή" Click="DeleteBtn_Click" />
-                    <MenuItem x:Name="EditBtn" Header="Επεξεργασία" Click="EditBtn_Click"/>
+                    <MenuItem x:Name="EditBtn" Header="Εμφάνιση καρτέλας" Click="EditBtn_Click"/>
                 </ContextMenu>
             </DataGrid.ContextMenu>
             <DataGrid.Columns>

@@ -399,6 +399,27 @@ namespace Salon_App_WPF
 
             mainWindow.WindowState = WindowState.Minimized;
         }
+        private void InfoBtn_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (InfoPopup.IsOpen) InfoPopup.IsOpen = false;
+            else InfoPopup.IsOpen = true;
+
+            StringBuilder message = new StringBuilder();
+            string appData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+
+            message.Append("Διαδρομή αχείου βάσης δεδομένων: \"").Append(Path.Combine(appData, "Salon Management", "Resources", "SalonBB.mdf")).Append("\"").Append(Environment.NewLine);
+            message.Append("Διαδρομή αντιγράφων ασφαλείας: \"").Append(Path.Combine(appData, "Salon Management", "Backup")).Append("\"").Append(Environment.NewLine);
+            message.Append("Διαδρομή αρχείων καταγραφής (.log): \"").Append(Path.Combine(appData, "Salon Management", "Resources")).Append("\"").Append(Environment.NewLine);
+            message.Append(Environment.NewLine).Append("Τα ημερήσια αντίγραφη έχουν ισχύς 7 ημερολογιακές ημέρες από την ημέρα δημιουργία τους.").Append(Environment.NewLine);
+            message.Append("Τα μηνιαία αντίγραφη ασφαλείας έχουν ισχύς 90 ημέρες από την ημέρα δημιουργία τους.");
+
+            InfoTextBox.Text = message.ToString();
+        }
+
+        private void InfoTextBox_MouseLeave(object sender, MouseEventArgs e)
+        {
+            InfoPopup.IsOpen = false;
+        }
     }
 
     public class Result

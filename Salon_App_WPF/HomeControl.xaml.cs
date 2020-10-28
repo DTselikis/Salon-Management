@@ -32,10 +32,12 @@ namespace Salon_App_WPF
             logger.Log("Initializing.");
         }
 
-        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        private void UserControl_Initialized(object sender, EventArgs e)
         {
-            logger.Section("HomeControl: UserControl_Loaded");
-            
+            logger = new Logger();
+
+            logger.Section("HomeControl: UserControl_Initialized");
+
             DispatcherTimer timer = new DispatcherTimer();
             timer.Interval = TimeSpan.FromSeconds(1);
             timer.Tick += TimerTick;
@@ -46,12 +48,10 @@ namespace Salon_App_WPF
 
         private void TimerTick(object sender, EventArgs e)
         {
-            logger.Section("HomeControl: TimerTick");
-
-            TimeLabel.Content = DateTime.Now.ToLongTimeString();
+            TimeLabel.Content = DateTime.Now.ToString("HH:MM:ss tt");
             DayLabel.Content = DateTime.Now.ToLongDateString();
-
-            logger.Log("Content updated");
         }
+
+        
     }
 }
