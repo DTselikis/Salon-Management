@@ -80,6 +80,7 @@ namespace Salon_App_WPF
             new Thread(BUManager.Initialize).Start();
 
             OpenUserControl(new HomeControl());
+
         }
 
         private void ActivateButton(object senderBtn, SolidColorBrush color)
@@ -405,7 +406,7 @@ namespace Salon_App_WPF
             mainWindow.WindowState = WindowState.Minimized;
         }
 
-        private void PackIcon_MouseDown(object sender, MouseButtonEventArgs e)
+        private void WindowMaximize_MouseDown(object sender, MouseButtonEventArgs e)
         {
             double left = SystemParameters.WorkArea.Left;
             double top = SystemParameters.WorkArea.Top;
@@ -414,10 +415,10 @@ namespace Salon_App_WPF
 
             if (this.Left != left || this.Top != top || this.Height != height || this.Width != width)
             {
-                Properties.Settings.Default.WindowTop = this.Top;
-                Properties.Settings.Default.WindowLeft = this.Left;
-                Properties.Settings.Default.WindowHeight = this.Height;
-                Properties.Settings.Default.WindowWidth = this.Width;
+                Properties.Settings.Default.WindowTop = this.Top.ToString();
+                Properties.Settings.Default.WindowLeft = this.Left.ToString();
+                Properties.Settings.Default.WindowHeight = this.Height.ToString();
+                Properties.Settings.Default.WindowWidth = this.Width.ToString();
 
                 this.Top = top;
                 this.Left = left;
@@ -427,10 +428,10 @@ namespace Salon_App_WPF
         
             else
             {
-                this.Top = Properties.Settings.Default.WindowTop;
-                this.Left = Properties.Settings.Default.WindowLeft;
-                this.Height = Properties.Settings.Default.WindowHeight;
-                this.Width = Properties.Settings.Default.WindowWidth;
+                this.Top = Double.Parse(Properties.Settings.Default.WindowTop);
+                this.Left = Double.Parse(Properties.Settings.Default.WindowLeft);
+                this.Height = Double.Parse(Properties.Settings.Default.WindowHeight);
+                this.Width = Double.Parse(Properties.Settings.Default.WindowWidth);
             }
         }
 
@@ -454,6 +455,15 @@ namespace Salon_App_WPF
         private void InfoTextBox_MouseLeave(object sender, MouseEventArgs e)
         {
             InfoPopup.IsOpen = false;
+        }
+
+        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            // Save new window location and size
+            Properties.Settings.Default.WindowTop = this.Top.ToString();
+            Properties.Settings.Default.WindowLeft = this.Left.ToString();
+            Properties.Settings.Default.WindowHeight = this.Height.ToString();
+            Properties.Settings.Default.WindowWidth = this.Width.ToString();
         }
     }
 

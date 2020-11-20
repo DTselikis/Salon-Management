@@ -192,10 +192,10 @@ namespace Salon_App_WPF.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public double WindowLeft {
+        [global::System.Configuration.DefaultSettingValueAttribute("142")]
+        public string WindowLeft {
             get {
-                return ((double)(this["WindowLeft"]));
+                return ((string)(this["WindowLeft"]));
             }
             set {
                 this["WindowLeft"] = value;
@@ -204,10 +204,10 @@ namespace Salon_App_WPF.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public double WindowTop {
+        [global::System.Configuration.DefaultSettingValueAttribute("238")]
+        public string WindowTop {
             get {
-                return ((double)(this["WindowTop"]));
+                return ((string)(this["WindowTop"]));
             }
             set {
                 this["WindowTop"] = value;
@@ -216,10 +216,10 @@ namespace Salon_App_WPF.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public double WindowHeight {
+        [global::System.Configuration.DefaultSettingValueAttribute("659")]
+        public string WindowHeight {
             get {
-                return ((double)(this["WindowHeight"]));
+                return ((string)(this["WindowHeight"]));
             }
             set {
                 this["WindowHeight"] = value;
@@ -228,10 +228,10 @@ namespace Salon_App_WPF.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public double WindowWidth {
+        [global::System.Configuration.DefaultSettingValueAttribute("989")]
+        public string WindowWidth {
             get {
-                return ((double)(this["WindowWidth"]));
+                return ((string)(this["WindowWidth"]));
             }
             set {
                 this["WindowWidth"] = value;

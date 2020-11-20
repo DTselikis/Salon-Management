@@ -9,14 +9,17 @@
         xmlns:local="clr-namespace:Salon_App_WPF"
         
         mc:Ignorable="d"
-        Title="MainWindow" Height="756" Width="1444"
+        Title="MainWindow" 
+        Left="{Binding Source={x:Static prs:Settings.Default}, Path=WindowLeft, Mode=TwoWay}"
+        Top="{Binding Source={x:Static prs:Settings.Default}, Path=WindowTop, Mode=TwoWay}"
+        Height="{Binding Source={x:Static prs:Settings.Default}, Path=WindowHeight, Mode=TwoWay}" 
+        Width="{Binding Source={x:Static prs:Settings.Default}, Path=WindowWidth, Mode=TwoWay}"
         WindowStyle="None"
         ResizeMode="CanResize"
         AllowsTransparency="True"
         Background="Transparent"
         Icon="Resources\Images\logo.ico"
-        WindowStartupLocation="CenterScreen"
-        Closing="Window_Closing"
+        Closing="Window_Closing" SizeChanged="Window_SizeChanged"
         >
 
     <WindowChrome.WindowChrome>
@@ -134,7 +137,8 @@
                     <materialDesign:PackIcon
                         Kind="WindowMaximize"
                         Grid.Column="1"
-                        Style="{StaticResource HeaderButton}" MouseDown="PackIcon_MouseDown" />
+                        Style="{StaticResource HeaderButton}"
+                        MouseDown="WindowMaximize_MouseDown" />
                     <materialDesign:PackIcon
                         x:Name="WindowClose"
                         Kind="Close"
