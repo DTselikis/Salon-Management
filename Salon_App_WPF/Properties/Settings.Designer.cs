@@ -237,5 +237,17 @@ namespace Salon_App_WPF.Properties {
                 this["WindowWidth"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("#292c3b")]
+        public string RightBottomBorder {
+            get {
+                return ((string)(this["RightBottomBorder"]));
+            }
+            set {
+                this["RightBottomBorder"] = value;
+            }
+        }
     }
 }

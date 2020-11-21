@@ -61,5 +61,8 @@
     <Setting Name="WindowWidth" Type="System.String" Scope="User">
       <Value Profile="(Default)">989</Value>
     </Setting>
+    <Setting Name="RightBottomBorder" Type="System.String" Scope="User">
+      <Value Profile="(Default)">#292c3b</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

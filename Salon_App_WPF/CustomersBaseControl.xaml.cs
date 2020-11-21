@@ -37,6 +37,9 @@ namespace Salon_App_WPF
 
             logger.Section("CustomerBaseControl: Constructor");
 
+            // Change the color of the border to persist corner radius
+            Properties.Settings.Default.RightBottomBorder = "White";
+
             using (SqlConnection dbConn = new SqlConnection(connStr))
             {
                 try

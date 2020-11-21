@@ -28,6 +28,9 @@ namespace Salon_App_WPF
 
             logger = new Logger();
 
+            // Change the color of the border to persist corner radius
+            Properties.Settings.Default.RightBottomBorder = Properties.Settings.Default.FormsGrid;
+
             logger.Section("HomeControl: Default Constructor");
             logger.Log("Initializing.");
         }

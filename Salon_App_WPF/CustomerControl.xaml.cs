@@ -45,6 +45,9 @@ namespace Salon_App_WPF
 
             InitializeComponent();
 
+            // Change the color of the border to persist corner radius
+            Properties.Settings.Default.RightBottomBorder = Properties.Settings.Default.FormsGrid;
+
             firstVisitDatePicker.SelectedDate = DateTime.Now;
 
             OptionsLeftBtn.ToolTip = "Καταχώρηση νέου πελάτη";
@@ -66,6 +69,9 @@ namespace Salon_App_WPF
             this.imageFilePath = string.Empty;
 
             InitializeComponent();
+
+            // Change the color of the border to persist corner radius
+            Properties.Settings.Default.RightBottomBorder = Properties.Settings.Default.FormsGrid;
 
             NameTextBox.Text = customer.FirstName;
             LastNameTextBox.Text = customer.LastName;

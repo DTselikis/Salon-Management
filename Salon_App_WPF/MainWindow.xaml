@@ -36,6 +36,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="45"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
 
         <!--#region Top Panel-->
@@ -154,6 +155,7 @@
         </Border>
         <!--#endregion-->
 
+
         <!--#region Rest Panel-->
         <!--// Rest Grid //-->
         <Grid Grid.Row="1">
@@ -165,43 +167,94 @@
 
             <!--#region Side menu-->
             <!--// Individual border for Menu Grid //
-            Apply radius only at the left bottom corner-->
-            <Border CornerRadius="0,0,0,12" BorderThickness="6">
-                <Border.BorderBrush>
-                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                        <GradientStop Color="{Binding Source={x:Static prs:Settings.Default}, Path=SideMenu}" Offset="0"/>
-                        <GradientStop Color="{Binding Source={x:Static prs:Settings.Default}, Path=SideMenu}" Offset="1"/>
-                    </LinearGradientBrush>
-                </Border.BorderBrush>
+                Apply radius only at the left bottom corner-->
 
-                <Grid Grid.Column="0" Background="{Binding Source={x:Static prs:Settings.Default}, Path=SideMenu}">
-                    <!--// Blank / Controls //-->
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="45"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="auto" />
-                    </Grid.RowDefinitions>
 
-                    <StackPanel Grid.Row="1">
-                        <StackPanel.Resources>
-                            <Style x:Key="SideIcon" TargetType="fa:IconBlock">
+            <Grid Grid.Column="0" Background="{Binding Source={x:Static prs:Settings.Default}, Path=SideMenu}">
+                <!--// Blank / Controls //-->
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="45"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="auto" />
+                </Grid.RowDefinitions>
+
+                <StackPanel Grid.Row="1">
+                    <StackPanel.Resources>
+                        <Style x:Key="SideIcon" TargetType="fa:IconBlock">
+                            <Setter Property="Foreground" Value="{Binding Source={x:Static prs:Settings.Default}, Path=MainWindowIcon}" />
+                            <Setter Property="FontSize" Value="35" />
+                            <Setter Property="HorizontalAlignment" Value="Left" />
+                            <Setter Property="VerticalAlignment" Value="Center" />
+                            <Setter Property="Margin" Value="10, 0, 10, 0" />
+                        </Style>
+                        <Style x:Key="SideText" TargetType="TextBlock">
+                            <Setter Property="Foreground" Value="{Binding Source={x:Static prs:Settings.Default}, Path=MainWindowText}" />
+                            <Setter Property="FontSize" Value="25" />
+                            <Setter Property="HorizontalAlignment" Value="Center" />
+                            <Setter Property="VerticalAlignment" Value="Center" />
+                            <Setter Property="Margin" Value="0, 0, 10, 0" />
+                        </Style>
+                        <Style x:Key="SideStack" TargetType="StackPanel">
+                            <Setter Property="Orientation" Value="Horizontal" />
+                            <Setter Property="Height" Value="65" />
+                            <!--// Change color and cursor on mouse over //-->
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="{Binding Source={x:Static prs:Settings.Default}, Path=MouseOver}"/>
+                                    <Setter Property="Cursor" Value="Hand"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Resources>
+                    <!--// Home Button //-->
+                    <StackPanel
+                                x:Name="HomeBtn"
+                                Style="{StaticResource SideStack}"
+                                MouseLeftButtonDown="HomeBtn_MouseLeftButtonDown">
+                        <!--// Grid is placeholder for select indication //-->
+                        <Grid Width="5"/>
+                        <fa:IconBlock
+                                    x:Name="customerIcon"
+                                    Icon="Home" 
+                                    Style="{StaticResource SideIcon}"/>
+                        <TextBlock
+                                    x:Name="custonmerText"
+                                    Text="Αρχική"
+                                    ToolTip="Επιστροφή στο αρχικό μενού"
+                                    Style="{StaticResource SideText}"/>
+                    </StackPanel>
+
+                    <!--// List of customers Button //-->
+                    <StackPanel
+                                x:Name="customersBtn"
+                                Style="{StaticResource SideStack}"
+                                MouseLeftButtonDown="customersBtn_MouseLeftButtonDown">
+                        <!--// Grid is placeholder for select indication //-->
+                        <Grid Width="5"/>
+                        <fa:IconBlock
+                                    x:Name="customersIcon"
+                                    Icon="User"
+                                    Style="{StaticResource SideIcon}"/>
+                        <TextBlock
+                                    x:Name="custonmersText"
+                                    Text="Πελατολόγιο"
+                                    ToolTip="Εμφάνιση πελατολογίου"
+                                    Style="{StaticResource SideText}"/>
+                    </StackPanel>
+
+                    <!--// New customer button //-->
+                    <materialDesign:PackIcon
+                                x:Name="NewRecordLeft"
+                                Kind="AccountPlus"
+                                ToolTip="Προσθήκη πελάτη"
+                                Height="65"
+                                Width="65"
+                                HorizontalAlignment="Center"
+                                Margin="0, 120, 0, 0"
+                                MouseLeftButtonDown="NewRecordLeft_MouseLeftButtonDown">
+                        <materialDesign:PackIcon.Style>
+                            <Style TargetType="materialDesign:PackIcon">
                                 <Setter Property="Foreground" Value="{Binding Source={x:Static prs:Settings.Default}, Path=MainWindowIcon}" />
-                                <Setter Property="FontSize" Value="35" />
-                                <Setter Property="HorizontalAlignment" Value="Left" />
-                                <Setter Property="VerticalAlignment" Value="Center" />
-                                <Setter Property="Margin" Value="10, 0, 10, 0" />
-                            </Style>
-                            <Style x:Key="SideText" TargetType="TextBlock">
-                                <Setter Property="Foreground" Value="{Binding Source={x:Static prs:Settings.Default}, Path=MainWindowText}" />
-                                <Setter Property="FontSize" Value="25" />
-                                <Setter Property="HorizontalAlignment" Value="Center" />
-                                <Setter Property="VerticalAlignment" Value="Center" />
-                                <Setter Property="Margin" Value="0, 0, 10, 0" />
-                            </Style>
-                            <Style x:Key="SideStack" TargetType="StackPanel">
-                                <Setter Property="Orientation" Value="Horizontal" />
-                                <Setter Property="Height" Value="65" />
-                                <!--// Change color and cursor on mouse over //-->
                                 <Style.Triggers>
                                     <Trigger Property="IsMouseOver" Value="True">
                                         <Setter Property="Background" Value="{Binding Source={x:Static prs:Settings.Default}, Path=MouseOver}"/>
@@ -209,73 +262,50 @@
                                     </Trigger>
                                 </Style.Triggers>
                             </Style>
-                        </StackPanel.Resources>
-                        <!--// Home Button //-->
-                        <StackPanel
-                            x:Name="HomeBtn"
-                            Style="{StaticResource SideStack}"
-                            MouseLeftButtonDown="HomeBtn_MouseLeftButtonDown">
-                            <!--// Grid is placeholder for select indication //-->
-                            <Grid Width="5"/>
-                            <fa:IconBlock
-                                x:Name="customerIcon"
-                                Icon="Home" 
-                                Style="{StaticResource SideIcon}"/>
-                            <TextBlock
-                                x:Name="custonmerText"
-                                Text="Αρχική"
-                                ToolTip="Επιστροφή στο αρχικό μενού"
-                                Style="{StaticResource SideText}"/>
-                        </StackPanel>
+                        </materialDesign:PackIcon.Style>
+                    </materialDesign:PackIcon>
+                </StackPanel>
+            </Grid>
 
-                        <!--// List of customers Button //-->
-                        <StackPanel
-                            x:Name="customersBtn"
-                            Style="{StaticResource SideStack}"
-                            MouseLeftButtonDown="customersBtn_MouseLeftButtonDown">
-                            <!--// Grid is placeholder for select indication //-->
-                            <Grid Width="5"/>
-                            <fa:IconBlock
-                                x:Name="customersIcon"
-                                Icon="User"
-                                Style="{StaticResource SideIcon}"/>
-                            <TextBlock
-                                x:Name="custonmersText"
-                                Text="Πελατολόγιο"
-                                ToolTip="Εμφάνιση πελατολογίου"
-                                Style="{StaticResource SideText}"/>
-                        </StackPanel>
+            <!--#endregion-->
 
-                        <!--// New customer button //-->
-                        <materialDesign:PackIcon
-                            x:Name="NewRecordLeft"
-                            Kind="AccountPlus"
-                            ToolTip="Προσθήκη πελάτη"
-                            Height="65"
-                            Width="65"
-                            HorizontalAlignment="Center"
-                            Margin="0, 120, 0, 0"
-                            MouseLeftButtonDown="NewRecordLeft_MouseLeftButtonDown">
-                            <materialDesign:PackIcon.Style>
-                                <Style TargetType="materialDesign:PackIcon">
-                                    <Setter Property="Foreground" Value="{Binding Source={x:Static prs:Settings.Default}, Path=MainWindowIcon}" />
-                                    <Style.Triggers>
-                                        <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter Property="Background" Value="{Binding Source={x:Static prs:Settings.Default}, Path=MouseOver}"/>
-                                            <Setter Property="Cursor" Value="Hand"/>
-                                        </Trigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </materialDesign:PackIcon.Style>
-                        </materialDesign:PackIcon>
-                    </StackPanel>
+            <!--#region Forms-->
+            <!--// Helping grid to apply second border within the same grid //-->
+            <Grid Grid.Column="1" Background="Transparent">
+                <!--// Individual border for Forms grid //
+                    Apply radius only at the right bottom corner-->
 
+                <!--// Actual Forms Grid //-->
+                <Grid x:Name="formsGrid" Background="{Binding Source={x:Static prs:Settings.Default}, Path=FormsGrid}">
+
+                </Grid>
+            </Grid>
+            <!--#endregion-->
+
+        </Grid>
+        <!--#endregion-->
+        
+        <!-- New row for bottom corner borders -->
+        <Grid Grid.Row="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="210"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0" CornerRadius="0,0,0,12" BorderThickness="6">
+                <Border.BorderBrush>
+                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                        <GradientStop Color="{Binding Source={x:Static prs:Settings.Default}, Path=SideMenu}" Offset="0"/>
+                        <GradientStop Color="{Binding Source={x:Static prs:Settings.Default}, Path=SideMenu}" Offset="1"/>
+                    </LinearGradientBrush>
+                </Border.BorderBrush>
+                <Grid Grid.Column="0" Background="{Binding Source={x:Static prs:Settings.Default}, Path=SideMenu}">
                     <StackPanel
-                        Grid.Row="3"
-                        Orientation="Horizontal"
-                        VerticalAlignment="Bottom"
-                        HorizontalAlignment="Left"
-                        >
+                            Grid.Row="3"
+                            Orientation="Horizontal"
+                            VerticalAlignment="Bottom"
+                            HorizontalAlignment="Left"
+                            >
                         <StackPanel.Resources>
                             <Style x:Key="OptionsIcon" TargetType="materialDesign:PackIcon">
                                 <Setter Property="VerticalAlignment" Value="Bottom"/>
@@ -291,81 +321,66 @@
                             </Style>
                         </StackPanel.Resources>
                         <materialDesign:PackIcon
-                            x:Name="ConfigurationBtn"
-                            Style="{StaticResource OptionsIcon}"
-                            Kind="Cog"
-                            ToolTip="Ρυθμίσεις"
-                            MouseDown="ConfigurationBtn_MouseDown"
-                            />
+                                x:Name="ConfigurationBtn"
+                                Style="{StaticResource OptionsIcon}"
+                                Kind="Cog"
+                                ToolTip="Ρυθμίσεις"
+                                MouseDown="ConfigurationBtn_MouseDown"
+                                />
                         <Popup
-                            x:Name="ConfigurationPopup" 
-                            PlacementTarget="{Binding ElementName=ConfigurationBtn}"
-                            HorizontalOffset="190"
-                            VerticalOffset="23"
-                            Height="auto"
-                            Visibility="Hidden"/>
+                                x:Name="ConfigurationPopup" 
+                                PlacementTarget="{Binding ElementName=ConfigurationBtn}"
+                                HorizontalOffset="190"
+                                VerticalOffset="23"
+                                Height="auto"
+                                Visibility="Hidden"/>
 
                         <materialDesign:PackIcon
-                            x:Name="ExportDBBtn"
-                            Style="{StaticResource OptionsIcon}"
-                            Kind="DatabaseExport"
-                            ToolTip="Δημιουργία αντιγράφου ασφαλείας"
-                            MouseDown="ExportDBBtn_MouseDown" />
+                                x:Name="ExportDBBtn"
+                                Style="{StaticResource OptionsIcon}"
+                                Kind="DatabaseExport"
+                                ToolTip="Δημιουργία αντιγράφου ασφαλείας"
+                                MouseDown="ExportDBBtn_MouseDown" />
 
                         <materialDesign:PackIcon
-                            x:Name="InfoBtn"
-                            Style="{StaticResource OptionsIcon}"
-                            Kind="Information"
-                            ToolTip="Πληροφορίες"
-                            MouseDown="InfoBtn_MouseDown"
-                            />
+                                x:Name="InfoBtn"
+                                Style="{StaticResource OptionsIcon}"
+                                Kind="Information"
+                                ToolTip="Πληροφορίες"
+                                MouseDown="InfoBtn_MouseDown"
+                                />
 
                         <Popup
-                            x:Name="InfoPopup" 
-                            PlacementTarget="{Binding ElementName=InfoBtn}"
-                            HorizontalOffset="50"
-                            VerticalOffset="-123"
-                            Height="auto"
-                            Visibility="Hidden">
+                                x:Name="InfoPopup" 
+                                PlacementTarget="{Binding ElementName=InfoBtn}"
+                                HorizontalOffset="50"
+                                VerticalOffset="-123"
+                                Height="auto"
+                                Visibility="Hidden">
 
                             <TextBox
-                                x:Name="InfoTextBox"
-                                Foreground="{Binding Source={x:Static prs:Settings.Default}, Path=MainWindowText}"
-                                Background="#292c3b"
-                                FontSize="15"
-                                MouseLeave="InfoTextBox_MouseLeave"
-                                />
+                                    x:Name="InfoTextBox"
+                                    Foreground="{Binding Source={x:Static prs:Settings.Default}, Path=MainWindowText}"
+                                    Background="#292c3b"
+                                    FontSize="15"
+                                    MouseLeave="InfoTextBox_MouseLeave"
+                                    />
                         </Popup>
 
                     </StackPanel>
                 </Grid>
             </Border>
 
-            <!--#endregion-->
-
-            <!--#region Forms-->
-            <!--// Helping grid to apply second border within the same grid //-->
-            <Grid Grid.Column="1" Background="Transparent">
-                <!--// Individual border for Forms grid //
-                Apply radius only at the right bottom corner-->
-                <Border CornerRadius="0,0,12,0" BorderThickness="6">
-                    <Border.BorderBrush>
-                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                            <GradientStop Color="{Binding Source={x:Static prs:Settings.Default}, Path=FormsGrid}" Offset="0"/>
-                            <GradientStop Color="{Binding Source={x:Static prs:Settings.Default}, Path=FormsGrid}" Offset="1"/>
-                        </LinearGradientBrush>
-                    </Border.BorderBrush>
-
-                    <!--// Actual Forms Grid //-->
-                    <Grid x:Name="formsGrid" Background="{Binding Source={x:Static prs:Settings.Default}, Path=FormsGrid}">
-
-                    </Grid>
-                </Border>
-            </Grid>
-            <!--#endregion-->
-
+            <Border Grid.Column="1" CornerRadius="0,0,12,0" BorderThickness="6">
+                <Border.BorderBrush>
+                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                        <GradientStop Color="{Binding Source={x:Static prs:Settings.Default}, Path=RightBottomBorder}" Offset="0"/>
+                        <GradientStop Color="{Binding Source={x:Static prs:Settings.Default}, Path=RightBottomBorder}" Offset="1"/>
+                    </LinearGradientBrush>
+                </Border.BorderBrush>
+                <Grid Grid.Column="1" Background="{Binding Source={x:Static prs:Settings.Default}, Path=RightBottomBorder}"/>
+            </Border>
         </Grid>
-        <!--#endregion-->
-
+        
     </Grid>
 </Window>
