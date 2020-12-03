@@ -73,8 +73,6 @@ namespace Salon_App_WPF
                     MessageBoxResult.OK);
             }
 
-            //InsertRecords();
-
             BackUpManager BUManager = new BackUpManager();
 
             new Thread(BUManager.Initialize).Start();
@@ -264,32 +262,6 @@ namespace Salon_App_WPF
 
                 OpenUserControl(new CustomerControl(new Customer(customerID, firstName, lastName, nickName, phone, email, dateTime, gender)));
             }
-        }
-
-        private void InsertRecords()
-        {
-            string query = $"INSERT INTO dbo.Customers(FirstName, LastName, Nickname, Phone, Email, FirstVisit, Gender) VALUES ('Jim', 'Lk', NULL, NULL, NULL, NULL, NULL), ('maria', 'Lek', NULL, NULL, NULL, NULL, NULL), ('maria', 'Lk', NULL, NULL, NULL, NULL, NULL), ('John', 'Papas', NULL, NULL, NULL, NULL, NULL), (N'Νίκος',  N'Καρδιβούρκης', NULL, NULL, NULL, NULL, NULL)";
-            SqlCommand command = new SqlCommand(query, dbConn);
-
-            command.ExecuteNonQuery();
-
-            command.Dispose();
-
-            string query2 = "INSERT INTO dbo.Notes(CustomerID, Note, CreationDate) VALUES (@ID, @Note, @Date), (@ID, @Note2, @Date)";
-            SqlCommand com2 = new SqlCommand(query2, dbConn);
-            com2.Parameters.AddWithValue("@ID", System.Data.SqlDbType.Int);
-            com2.Parameters.AddWithValue("@Note", System.Data.SqlDbType.NVarChar);
-            com2.Parameters.AddWithValue("@Note2", System.Data.SqlDbType.NVarChar);
-            com2.Parameters.AddWithValue("@Date", System.Data.SqlDbType.DateTime);
-
-            com2.Parameters["@ID"].Value = 4;
-            com2.Parameters["@Note"].Value = "Some text";
-            com2.Parameters["@Note2"].Value = "Some other text";
-            com2.Parameters["@Date"].Value = DateTime.Now;
-
-            com2.ExecuteNonQuery();
-            com2.Dispose();
-
         }
 
         private void NewRecordLeft_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
