@@ -80,12 +80,13 @@
                     EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}"
                     />
 
+                <!-- '*' at Width causes horizontal scrollbar to not appear -->
                 <materialDesign:DataGridTextColumn
                     Header="Τελευταία σημείωση"
                     Binding="{Binding LastNote}"
                     ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"
                     EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}"
-                    Width="*"
+                    Width="auto"
                     />
 
             </DataGrid.Columns>
