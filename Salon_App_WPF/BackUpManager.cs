@@ -17,7 +17,7 @@ namespace Salon_App_WPF
 {
     public class BackUpManager
     {
-        private string connStr = Properties.DefaultSettings.Default.DBConnStr.Replace("Path", Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Salon Management", "Resources"));
+        private string connStr = MainWindow.ConnStr;
 
         private const string Package = "Salon Management";
         private const string BackUpFolder = "BackUp";

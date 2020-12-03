@@ -34,7 +34,7 @@ namespace Salon_App_WPF
     {
 
         private StackPanel currentBtn;
-        private string connStr = Properties.DefaultSettings.Default.DBConnStr.Replace("Path", Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Salon Management", "Resources"));
+        private string connStr;
         private SqlConnection dbConn;
         private short keysPressed = 0;
         private UserControl openedControl = null;
@@ -44,6 +44,7 @@ namespace Salon_App_WPF
 
         private IDictionary<int, int> customerIDs = new Dictionary<int, int>();
 
+        public static string ConnStr { get { return mainWindow.connStr; } } 
 
         public MainWindow()
         {
@@ -54,6 +55,8 @@ namespace Salon_App_WPF
 
             mainWindow = this;
             results = new ObservableCollection<Result>();
+
+            connStr = Properties.DefaultSettings.Default.DBConnStr.Replace("Path", GetDBPath());
 
             try
             {
@@ -81,6 +84,16 @@ namespace Salon_App_WPF
 
         }
 
+        private string GetDBPath()
+        {
+            if (Properties.Settings.Default.DBPath.Equals(String.Empty))
+            {
+                string appData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+                Properties.Settings.Default.DBPath = Path.Combine(appData, "Salon Management", "Resources", "SalonDB.mdf");
+            }
+
+            return Properties.Settings.Default.DBPath;
+        }
         private void ActivateButton(object senderBtn, SolidColorBrush color)
         {
             if (senderBtn != null)

@@ -25,7 +25,7 @@ namespace Salon_App_WPF
     /// </summary>
     public partial class CustomersBaseControl : UserControl
     {
-        private string connStr = Properties.DefaultSettings.Default.DBConnStr.Replace("Path", Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Salon Management", "Resources"));
+        private string connStr = MainWindow.ConnStr;
 
         private Logger logger;
         private ObservableCollection<CustomerGrid> Customers { get; set; }

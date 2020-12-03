@@ -64,5 +64,8 @@
     <Setting Name="RightBottomBorder" Type="System.String" Scope="User">
       <Value Profile="(Default)">#292c3b</Value>
     </Setting>
+    <Setting Name="DBPath" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
   </Settings>
 </SettingsFile>

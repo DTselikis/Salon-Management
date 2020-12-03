@@ -155,8 +155,8 @@ namespace Salon_App_WPF.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
-        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=Path\\SalonDB.mdf;Integrated S" +
-            "ecurity=False")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=Path;Integrated Security=Fals" +
+            "e")]
         public string DBConnStr {
             get {
                 return ((string)(this["DBConnStr"]));

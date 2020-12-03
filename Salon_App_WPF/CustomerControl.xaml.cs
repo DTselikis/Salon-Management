@@ -28,7 +28,7 @@ namespace Salon_App_WPF
     public partial class CustomerControl : UserControl
     {
 
-        private string connStr = Properties.DefaultSettings.Default.DBConnStr.Replace("Path", Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Salon Management", "Resources"));
+        private string connStr = MainWindow.ConnStr;
         private Customer customer;
         private string imageFilePath;
         private bool hadProfileImage = false;
