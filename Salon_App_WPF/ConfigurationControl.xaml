@@ -35,6 +35,14 @@
                 ToolTip="Επαναφορά προεπιλογών"
                 Foreground="#FFD13397"
                 Click="DefaultBtn_Click"/>
+            <Button
+                x:Name="DefaultAllBtn"
+                Style="{DynamicResource  MaterialDesignFlatButton}"
+                Content="Επαναφορά όλων"
+                ToolTip="Επαναφορά προεπιλογών"
+                Foreground="#FFD13397" 
+                Click="DefaultAllBtn_Click"
+                />
         </StackPanel>
     </Grid>
 </UserControl>
