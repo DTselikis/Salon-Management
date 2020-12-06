@@ -1,24 +1,15 @@
-﻿using MaterialDesignThemes.Wpf;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using MaterialDesignThemes;
 using Microsoft.Win32;
 using System.IO;
-using System.Diagnostics.Eventing.Reader;
 
 namespace Salon_App_WPF
 {
@@ -46,8 +37,11 @@ namespace Salon_App_WPF
             InitializeComponent();
 
             // Change the color of the border to persist corner radius
+            // This will change the UI color cause of binding
             Properties.Settings.Default.RightBottomBorder = Properties.Settings.Default.FormsGrid;
 
+            // Suppose the insertion is done the same day as the new customer
+            // came for the first time
             firstVisitDatePicker.SelectedDate = DateTime.Now;
 
             OptionsLeftBtn.ToolTip = "Καταχώρηση νέου πελάτη";
@@ -55,11 +49,12 @@ namespace Salon_App_WPF
             OptionsLeftBtn.Click += submitRecord;
             OptionsLeftBtn.Visibility = Visibility.Visible;
 
-            
-
             toggleControls(null, null);
 
         }
+
+        // Constructor for existing customer.
+        // Will update GUI with the information if this customer
         public CustomerControl(Customer customer)
         {
             logger = new Logger();
@@ -99,10 +94,12 @@ namespace Salon_App_WPF
             NewNoteTB.IsEnabled = true;
         }
 
+        // Update the detailes of the customer
         private void submitChanges(object sender, System.EventArgs e)
         {
             logger.Section("CustomerControl: SumbitChange");
             // If phone has changed and it wasn't null
+            // We use phone as an ultimate way to avoid duplicates
             if (!PhoneTextBox.Text.Equals(string.Empty) && !PhoneTextBox.Text.Equals(customer.Phone)) {
                 bool hasRows;
                 string queryPhone = "SELECT CustomerID FROM dbo.Customers WHERE Phone LIKE @Phone";
@@ -124,7 +121,7 @@ namespace Salon_App_WPF
                 }
             }
 
-            
+            // No duplicates detected
             string query = "UPDATE dbo.Customers SET FirstName = @Name, LastName = @LName, NickName = @NickName, Phone = @Phone, Email = @Email, FirstVisit = @FVisit, Gender = @Gender WHERE CustomerID = @ID";
 
             using (SqlConnection dbConn = new SqlConnection(connStr))
@@ -197,6 +194,7 @@ namespace Salon_App_WPF
 
                 adapter.Dispose();
 
+                // If profile has a picture
                 if (CustomerPicture.Visibility == Visibility.Visible)
                 {
                     SaveProfileImage();
@@ -216,6 +214,7 @@ namespace Salon_App_WPF
 
         }
 
+        // Insert new record
         private void submitRecord(object sender, System.EventArgs e)
         {
             logger.Section("CustomerControl: submitRecord");
@@ -365,6 +364,9 @@ namespace Salon_App_WPF
 
                 SqlDataAdapter dataAdapter = new SqlDataAdapter();
 
+                // Delete image only if it has been saved to appData.
+                // This prevent the case where the user changed the picture, decided to delete
+                // this customer but hadn't saved the new picture.
                 if (hadProfileImage && imageFilePath.Contains("AppData"))
                 {
 
@@ -391,6 +393,7 @@ namespace Salon_App_WPF
                     
                 }
 
+                // First delete the notes beacuse they are foreign key.
                 if (Notes != null)
                 {
                     logger.Log("Deleting notes");
@@ -493,6 +496,7 @@ namespace Salon_App_WPF
             return 0;
         }
 
+        // For the case we search only for firstName
         private bool executeQuery(string query, string field, string value)
         {
             logger.Section("CustomerControl: execureQuery");
@@ -533,6 +537,7 @@ namespace Salon_App_WPF
             return hasRows;
         }
 
+        // For the case we search only for firstName and LastName
         private bool executeQuery(string query, string firstField, string secondField, string firstValue, string secondValue)
         {
             logger.Section("CustomerControl: execureQuery");
@@ -609,6 +614,7 @@ namespace Salon_App_WPF
             }
         }
 
+        // Update customer info after new insertion or update existent record
         private void updateCustomerObject()
         {
             logger.Section("CustomerControl: updateCustomerObject");
@@ -1095,6 +1101,7 @@ namespace Salon_App_WPF
             
         }
 
+        // Use popup to enlarge the picture
         private void CustomerPicture_MouseEnter(object sender, MouseEventArgs e)
         {
             PopUpPicture.Source = CustomerPicture.Source;

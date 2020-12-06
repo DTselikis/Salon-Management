@@ -1,22 +1,11 @@
 ﻿
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Configuration;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Documents.DocumentStructures;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using MaterialDesignThemes;
 using Xceed.Wpf.Toolkit;
 
 namespace Salon_App_WPF
@@ -39,6 +28,8 @@ namespace Salon_App_WPF
 
         private Logger logger;
 
+        // Structure for keeping the horizontal and vertical alignment
+        // of the time/date label. It's used as a key and value for dictionaries
         public struct TimeAlignments
         {
             public string hAlignment;
@@ -54,18 +45,25 @@ namespace Salon_App_WPF
             InitializeComponent();
             previousValues = new Dictionary<string, string>();
 
+            // Store previous values of all properties in case user change its mind
+            // for the changes he made.
             foreach (SettingsProperty currentProperty in Properties.Settings.Default.Properties)
             {
                 // currentProperty.DefaultValue will always returns the default value
                 // even if the value has changed
                 previousValues.Add(currentProperty.Name, Properties.Settings.Default[currentProperty.Name].ToString());
             }
+            // XAML requires value with '.' but slider with ','
             previousValues["HomeOpacity"] = previousValues["HomeOpacity"].Replace('.', ',');
             previousValues["TimeTextSize"] = previousValues["TimeTextSize"].Replace('.', ',');
 
+            // Keep track of which and how many color pickers were generated
             List<string> clrPckrsNames = new List<string>();
             changedSettings = new List<string>();
+            colorPickers = new Dictionary<string, ColorPicker>();
 
+            // Generate label for each new control. Also helps
+            // to deretmine which control will be generated
             labels = new Dictionary<string, string>();
             labels.Add("TopGrid", "Επάνω μέρος");
             labels.Add("SideMenu", "Αριστερό μενού");
@@ -83,6 +81,7 @@ namespace Salon_App_WPF
             clrPckrsNames.Add("OverIcon");
             clrPckrsNames.Add("MainWindowText");
 
+            // Additional controls based active user control
             switch (activeUserContol)
             {
                 case "CustomerControl":
@@ -118,11 +117,10 @@ namespace Salon_App_WPF
             style.Setters.Add(new Setter(TextBlock.FontSizeProperty, 15.0));
             style.Setters.Add(new Setter(TextBlock.BackgroundProperty, Brushes.Transparent));
             style.Setters.Add(new Setter(TextBlock.ForegroundProperty, Brushes.Gainsboro));
-
-            colorPickers = new Dictionary<string, ColorPicker>();
+            
+            // Generate each color picker
             for (int i = 0; i < clrPckrsNames.Count(); i++)
             {
-               
                 TextBlock tb = new TextBlock();
                 tb.Text = labels[clrPckrsNames[i]];
                 tb.Style = style;
@@ -136,6 +134,7 @@ namespace Salon_App_WPF
                 Controls.Children.Add(colorPickers[clrPckrsNames[i]]);
             }
 
+            // Generate additional controls based on active user control
             if (labels.ContainsKey("HomeOpacity"))
             {
                 opacity = new Slider();
@@ -177,6 +176,7 @@ namespace Salon_App_WPF
                 tb.Style = style;
                 Controls.Children.Add(tb);
 
+                // Each position will be matched with a horizontal and a vertical alignment
                 string[,] alignments = new string[9, 2]
                 {
                     {"Left", "Top" },
@@ -192,7 +192,9 @@ namespace Salon_App_WPF
 
                 List<string> positions = new List<string> { "Πάνω αριστερά", "Πάνω", "Πάνω δεξιά", "Μέση αριστερά", "Μέση", "Μέση δεξιά", "Κάτω αριστερά", "Κάτω", "Κάτω δεξιά" };
 
+                // Provide a position name and get the horizontal and vertical alignment
                 posAlignment = new Dictionary<string, TimeAlignments>();
+                // Provide horizontal and vertical alignment and get position name
                 alignmentPos = new Dictionary<TimeAlignments, string>();
 
                 for (int i = 0; i < positions.Count; i++)
@@ -238,6 +240,7 @@ namespace Salon_App_WPF
         {
             ColorPicker cp = (ColorPicker)sender;
 
+            // Change property so it can be updated to the UI by binding
             Properties.Settings.Default[cp.Name] = cp.SelectedColor.ToString();
             changedSettings.Add(cp.Name);
         }
@@ -246,6 +249,7 @@ namespace Salon_App_WPF
         {
             logger.Section("ConfigurationControl: CancelBtn");
 
+            // Restore the previous value for each change the user made
             foreach (string property in changedSettings.ToList())
             {
                 try
@@ -255,31 +259,37 @@ namespace Salon_App_WPF
                 }
                 catch(KeyNotFoundException ex)
                 {
+                    // Some controls requires special treatment
                     switch(property)
                     {
                         case "TimeTextSize":
                             {
+                                // Slider_ValueChanged will be called
                                 timeSize.Value = Double.Parse(previousValues[property]);
                                 break;
                             }
                         case "HomeOpacity":
                             {
+                                // Slider_ValueChanged will be called
                                 opacity.Value = Double.Parse(previousValues[property]);
                                 break;
                             }
                         case "TimeDateEnabled":
                             {
+                                // Change property so it can be updated to the UI by binding
                                 Properties.Settings.Default[property] = previousValues[property];
                                 timeCheckBox.IsChecked = (previousValues[property].Equals("Visible")) ? true : false;
                                 break;
                             }
                         case "TimeHorizontalAlignment":
                             {
+                                // Change property so it can be updated to the UI by binding
                                 Properties.Settings.Default.TimeHorizontalAlignment = previousValues["TimeHorizontalAlignment"];
                                 Properties.Settings.Default.TimeVerticalAlignment = previousValues["TimeVerticalAlignment"];
 
                                 string horizontal = previousValues["TimeHorizontalAlignment"];
                                 string vertical = previousValues["TimeVerticalAlignment"];
+                                // PosComboBox_SelectionChanged will be called
                                 positionBox.Text = alignmentPos[new TimeAlignments() { hAlignment = horizontal, vAlignment = vertical }];
                                 break;
                             }
@@ -293,14 +303,17 @@ namespace Salon_App_WPF
             logger.Log("All changes canceled.");
         }
 
+        // Controls the behavior of both sliders
         private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             Slider slider = (Slider)sender;
 
             string s = string.Format("{0:0.00}", slider.Value).Replace(',', '.');
 
+            // Change property so it can be updated to the UI by binding
             Properties.Settings.Default[slider.Name] = s;
 
+            // Because each slider change will trigger this event
             if (!changedSettings.Contains(slider.Name))
             {
                 changedSettings.Add(slider.Name);
@@ -311,39 +324,47 @@ namespace Salon_App_WPF
         {
             logger.Section("ConfigurationControl: DefaultBtn");
 
+            // Restore default value for each change the user made
             foreach (string property in changedSettings.ToList())
             {
                 try
                 {
                     colorPickers[property].SelectedColor = (Color)ColorConverter.ConvertFromString(Properties.DefaultSettings.Default[property].ToString());
+                    // Change property so it can be updated to the UI by binding
                     Properties.Settings.Default[property] = Properties.DefaultSettings.Default[property];
                 }
                 catch (KeyNotFoundException ex)
                 {
+                    // Some controls requires special treatment
                     switch(property)
                     {
                         case "TimeTextSize":
                             {
+                                // Slider_ValueChanged will be called
                                 timeSize.Value = Double.Parse(previousValues[property]);
                                 break;
                             }
                         case "HomeOpacity":
                             {
+                                // Slider_ValueChanged will be called
                                 opacity.Value = Double.Parse(Properties.Settings.Default.HomeOpacity);
                                 break;
                             }
                         case "TimeDateEnabled":
                             {
+                                // Change property so it can be updated to the UI by binding
                                 Properties.Settings.Default[property] = Properties.DefaultSettings.Default[property];
                                 break;
                             }
                         case "TimeHorizontalAlignment":
                             {
+                                // Change property so it can be updated to the UI by binding
                                 Properties.Settings.Default["TimeHorizontalAlignment"] = Properties.DefaultSettings.Default["TimeHorizontalAlignment"];
                                 Properties.Settings.Default["TimeVerticalAlignment"] = Properties.DefaultSettings.Default["TimeVerticalAlignment"];
 
                                 string horizontal = Properties.DefaultSettings.Default["TimeHorizontalAlignment"].ToString();
                                 string vertical = Properties.DefaultSettings.Default["TimeVerticalAlignment"].ToString();
+                                // PosComboBox_SelectionChanged will be called
                                 positionBox.Text = alignmentPos[new TimeAlignments() { hAlignment = horizontal, vAlignment = vertical }];
                                 break;
                             }
@@ -359,29 +380,35 @@ namespace Salon_App_WPF
         {
             logger.Section("ConfigurationControl: DefaultAllBtn");
 
+            // Restore default values for all controls
             foreach (SettingsProperty property in Properties.DefaultSettings.Default.Properties)
             {
                 try
                 {
                     colorPickers[property.Name].SelectedColor = (Color)ColorConverter.ConvertFromString(property.DefaultValue.ToString());
+                    // Change property so it can be updated to the UI by binding
                     Properties.Settings.Default[property.Name] = Properties.DefaultSettings.Default[property.Name];
                 }
                 catch (KeyNotFoundException ex)
                 {
+                    // Some controls requires special treatment
                     switch(property.Name)
                     {
                         case "TimeTextSize":
                             {
+                                // Slider_ValueChanged will be called
                                 timeSize.Value = Double.Parse(Properties.DefaultSettings.Default.TimeTextSize.Replace('.', ','));
                                 break;
                             }
                         case "HomeOpacity":
                             {
+                                // Slider_ValueChanged will be called
                                 opacity.Value = Double.Parse(Properties.DefaultSettings.Default.HomeOpacity.Replace('.', ','));
                                 break;
                             }
                         case "TimeDateEnabled":
                             {
+                                // Change property so it can be updated to the UI by binding
                                 Properties.Settings.Default[property.Name] = Properties.DefaultSettings.Default[property.Name];
                                 break;
                             }
@@ -390,16 +417,19 @@ namespace Salon_App_WPF
                 }
             }
 
+            // Change property so it can be updated to the UI by binding
             Properties.Settings.Default["TimeHorizontalAlignment"] = Properties.DefaultSettings.Default["TimeHorizontalAlignment"];
             Properties.Settings.Default["TimeVerticalAlignment"] = Properties.DefaultSettings.Default["TimeVerticalAlignment"];
 
             string horizontal = Properties.DefaultSettings.Default["TimeHorizontalAlignment"].ToString();
             string vertical = Properties.DefaultSettings.Default["TimeVerticalAlignment"].ToString();
+            // PosComboBox_SelectionChanged will be called
             positionBox.Text = alignmentPos[new TimeAlignments() { hAlignment = horizontal, vAlignment = vertical }];
 
             logger.Log("All values restored to default values");
         }
 
+        // Save all changes and close pop up
         private void SaveBtn_Click(object sender, RoutedEventArgs e)
         {
             Properties.Settings.Default.Save();
@@ -429,6 +459,7 @@ namespace Salon_App_WPF
 
             try
             {
+                // Change property so it can be updated to the UI by binding
                 Properties.Settings.Default.TimeHorizontalAlignment = posAlignment[position].hAlignment;
                 Properties.Settings.Default.TimeVerticalAlignment = posAlignment[position].vAlignment;
 
@@ -439,7 +470,7 @@ namespace Salon_App_WPF
             }
             catch
             {
-
+                // When the comboBox.Text method is called by code, the position will be null
             }
 
             

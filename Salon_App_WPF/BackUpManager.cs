@@ -1,16 +1,8 @@
-﻿using Microsoft.Win32;
-using Salon_App_WPF.CustomersDataSetTableAdapters;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
-using System.Diagnostics.Eventing.Reader;
-using System.Dynamic;
 using System.IO;
-using System.Linq;
-using System.Net.Http.Headers;
 using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media.Animation;
 using System.Xml.Serialization;
 
 namespace Salon_App_WPF
@@ -19,6 +11,7 @@ namespace Salon_App_WPF
     {
         private string connStr = MainWindow.ConnStr;
 
+        // String to construct the various paths
         private const string Package = "Salon Management";
         private const string BackUpFolder = "BackUp";
         private const string Daily = "Daily";
@@ -62,6 +55,7 @@ namespace Salon_App_WPF
             destProfImgPath = Path.Combine(todayPath, ProfileImageFolder); 
         }
 
+        // This constructor calls only if user requested an export
         public BackUpManager(string destinationPath)
         {
             logger.Section("BackUpManager: General Constructor");
@@ -94,8 +88,10 @@ namespace Salon_App_WPF
         private void DeleteOld()
         {
             logger.Section("BackUpManager: DeleteOld");
+
             try
             {
+                logger.Log("Daily");
                 foreach (string directory in Directory.GetDirectories(dailyPath))
                 {
                     // Indexing starts from 0
@@ -103,7 +99,6 @@ namespace Salon_App_WPF
                     string dirName = directory.Substring(index, directory.Length - index);
                     TimeSpan interval = DateTime.Today - DateTime.Parse(dirName.Replace('_', '/'));
 
-                    logger.Log("Daily");
                     // Delete records of last week
                     if (interval.Days >= 7)
                     {
@@ -112,6 +107,9 @@ namespace Salon_App_WPF
                     }  
                 }
 
+                int numOfBackUps = Directory.GetDirectories(monthlyPath).GetLength(0);
+
+                logger.Log("Monthly");
                 foreach (string directory in Directory.GetDirectories(monthlyPath))
                 {
                     // Indexing starts from 0
@@ -119,12 +117,14 @@ namespace Salon_App_WPF
                     string dirName = directory.Substring(index, directory.Length - index);
                     TimeSpan interval = DateTime.Today - DateTime.Parse(dirName.Replace('_', '/'));
 
-                    logger.Log("Monthly");
-                    // Delete records of last three months
-                    if (interval.Days >= 90)
+                    // Delete records of last three months but be sure to keep at least one
+                    // in case the app have too many days to be opened
+                    if (interval.Days >= 90 && numOfBackUps > 1)
                     {
                         logger.Log("Deleting directory: " + directory);
                         Directory.Delete(directory, true);
+
+                        numOfBackUps--;
                     }
                         
                 }
@@ -242,6 +242,7 @@ namespace Salon_App_WPF
         private void BackUpDBToXML(Nullable<DateTime> today)
         {
             logger.Section("BackUpManager: BackUpDBToXML");
+
             using (SqlConnection dbConn = new SqlConnection(connStr))
             {
                 try
@@ -254,6 +255,8 @@ namespace Salon_App_WPF
                     logger.Log("Error while conntectin to DB: " + ex.ToString());
                 }
 
+                // If today is not null it means that after the backup at the start
+                // of the app new records was added, so we must back them up.
                 string query = "SELECT * FROM dbo.Customers";
                 if (today != null) query += " WHERE FirstVisit = @Today";
 
@@ -495,6 +498,7 @@ namespace Salon_App_WPF
         }
     }
 
+    // Helper class from XML exporting
     public class CustomerXML : Customer {
 
         [XmlArrayItem("Note")]
@@ -512,6 +516,7 @@ namespace Salon_App_WPF
         }
     }
 
+    // Helper class from XML exporting
     public class Note
     {
         private string _note;

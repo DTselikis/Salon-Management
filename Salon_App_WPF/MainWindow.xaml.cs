@@ -1,29 +1,16 @@
 using FontAwesome.Sharp;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Data.SqlClient;
-using System.Windows.Controls.Primitives;
-using System.Runtime.Remoting.Metadata.W3cXsd2001;
-using System.Data;
 using System.Collections.ObjectModel;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.IO;
 using Microsoft.Win32;
-using System.Windows.Interop;
-using System.Diagnostics;
-using System.CodeDom;
 
 namespace Salon_App_WPF
 {
@@ -76,16 +63,22 @@ namespace Salon_App_WPF
                     MessageBoxResult.OK);
             }
 
+            // Create a backup at the start of the app
             BackUpManager BUManager = new BackUpManager();
 
+            // Use a separate thread so GUI won't hang
             new Thread(BUManager.Initialize).Start();
 
             OpenUserControl(new HomeControl());
 
         }
 
+
         private string GetDBPath()
         {
+            // The first time this property will be empty
+            // because we don't know the username of current user
+            // on this machine
             if (Properties.Settings.Default.DBPath.Equals(String.Empty))
             {
                 string appData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
@@ -159,7 +152,8 @@ namespace Salon_App_WPF
             keysPressed++;
 
             string trimmedText = searchTextBox.Text.Trim();
-            // If two keys were pressed search for the ginen text
+            // If two keys were pressed search for the given text
+            // and also there are containt in it
             if (keysPressed == 2 && !trimmedText.Equals(string.Empty))
             {
                 SqlCommand command;
@@ -186,6 +180,7 @@ namespace Salon_App_WPF
                     command.Parameters["@Name"].Value = searchTextBox.Text + "%";
                 }
 
+                // Prepare for next search
                 keysPressed = 0;
 
                 logger.Section("Customer search");
@@ -233,6 +228,7 @@ namespace Salon_App_WPF
 
         private void SearchResultsGrid_MouseDown(object sender, MouseButtonEventArgs e)
         {
+            // To prevent program to hang if user right clicks in wrong area
             if (SearchResultsGrid.SelectedIndex > -1)
             {
                 Result selection = (Result)SearchResultsGrid.SelectedItem;
@@ -273,6 +269,7 @@ namespace Salon_App_WPF
                 results.Clear();
                 dataReader.Close();
 
+                // Show detailes for selected customer
                 OpenUserControl(new CustomerControl(new Customer(customerID, firstName, lastName, nickName, phone, email, dateTime, gender)));
             }
         }
@@ -287,6 +284,7 @@ namespace Salon_App_WPF
             mainWindow.logger.Section("MainWindow: OpenUserControl");
             mainWindow.logger.Log("Opening user control: " + userControl);
 
+            // Close previous opened user control
             if (mainWindow.openedControl != null) CloseUserControl();
 
             mainWindow.openedControl = userControl;
@@ -312,6 +310,7 @@ namespace Salon_App_WPF
             logger.Section("Window");
             logger.Log("Window closing");
 
+            // Backup any new records added after the app has started
             BackUpManager BUManager = new BackUpManager();
             Thread t = new Thread(BUManager.Initialize);
             t.Start();
@@ -355,6 +354,8 @@ namespace Salon_App_WPF
             logger.Section("MainWindow: Configuration");
             if (!ConfigurationPopup.IsOpen)
             {
+                // Get the name of the opened userControl to show
+                // the appropriate configurations
                 string userControl = string.Empty;
                 if (mainWindow.openedControl != null)
                 {
@@ -398,6 +399,7 @@ namespace Salon_App_WPF
             double height = SystemParameters.WorkArea.Height;
             double width = SystemParameters.WorkArea.Width;
 
+            // Maximize window to working area
             if (this.Left != left || this.Top != top || this.Height != height || this.Width != width)
             {
                 Properties.Settings.Default.WindowTop = this.Top.ToString();
@@ -410,7 +412,7 @@ namespace Salon_App_WPF
                 this.Height = height;
                 this.Width = width;
             }
-        
+            // Restore window to previous state
             else
             {
                 this.Top = Double.Parse(Properties.Settings.Default.WindowTop);
@@ -452,6 +454,8 @@ namespace Salon_App_WPF
         }
     }
 
+    // Helping class for search results
+    // Used as ItemSource for DataGrid
     public class Result
     {
         public int ID { get; set; }

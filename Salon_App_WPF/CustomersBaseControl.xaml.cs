@@ -1,22 +1,9 @@
-﻿using MaterialDesignThemes.Wpf;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Collections.ObjectModel;
-using System.Data;
 using System.Data.SqlClient;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 
 namespace Salon_App_WPF
 {
@@ -284,6 +271,8 @@ namespace Salon_App_WPF
         {
             logger.Section("CustomerBaseControl: DeleteBtn");
 
+            // In case user right clicked to wrong place.
+            // Programmer was bored fixing the UI
             if (CustomersBase.SelectedIndex > -1)
             {
                 logger.Log("Deleting customer: " + Customers[CustomersBase.SelectedIndex].CustomerID);
@@ -301,6 +290,8 @@ namespace Salon_App_WPF
             Customers.Clear();
         }
 
+        // Create a new Customer object and use it as argument
+        // for CustomerControl.
         private void EditBtn_Click(object sender, RoutedEventArgs e)
         {
             logger.Section("CustomerBaseControl: EditBtn");

@@ -31,6 +31,7 @@
                 <RowDefinition/>
             </Grid.RowDefinitions>
 
+             <!--// Place holders //-->
             <Label
                 x:Name="TimeLabel"
                 Grid.Row="0"
