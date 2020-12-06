@@ -103,7 +103,7 @@ namespace Salon_App_WPF
                 btnLeftBorder.Background = color;
 
                 //Change the color of the icon and the text of the button
-                IconBlock btnIcon = (IconBlock)currentBtn.Children[1];
+                MaterialDesignThemes.Wpf.PackIcon btnIcon = (MaterialDesignThemes.Wpf.PackIcon)currentBtn.Children[1];
                 btnIcon.Foreground = color;
 
                 TextBlock btnText = (TextBlock)currentBtn.Children[2];
@@ -121,7 +121,7 @@ namespace Salon_App_WPF
                 Grid btnLeftBorder = (Grid)currentBtn.Children[0];
                 btnLeftBorder.Background = new SolidColorBrush(Colors.Transparent);
 
-                IconBlock btnIcon = (IconBlock)currentBtn.Children[1];
+                MaterialDesignThemes.Wpf.PackIcon btnIcon = (MaterialDesignThemes.Wpf.PackIcon)currentBtn.Children[1];
                 btnIcon.Foreground = new SolidColorBrush(Colors.Gainsboro);
 
                 TextBlock btnText = (TextBlock)currentBtn.Children[2];
