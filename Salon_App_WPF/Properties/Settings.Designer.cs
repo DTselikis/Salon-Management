@@ -261,5 +261,53 @@ namespace Salon_App_WPF.Properties {
                 this["DBPath"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Visible")]
+        public string TimeDateEnabled {
+            get {
+                return ((string)(this["TimeDateEnabled"]));
+            }
+            set {
+                this["TimeDateEnabled"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Center")]
+        public string TimeHorizontalAlignment {
+            get {
+                return ((string)(this["TimeHorizontalAlignment"]));
+            }
+            set {
+                this["TimeHorizontalAlignment"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Center")]
+        public string TimeVerticalAlignment {
+            get {
+                return ((string)(this["TimeVerticalAlignment"]));
+            }
+            set {
+                this["TimeVerticalAlignment"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("41.0")]
+        public string TimeTextSize {
+            get {
+                return ((string)(this["TimeTextSize"]));
+            }
+            set {
+                this["TimeTextSize"] = value;
+            }
+        }
     }
 }

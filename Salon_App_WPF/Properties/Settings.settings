@@ -67,5 +67,17 @@
     <Setting Name="DBPath" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
+    <Setting Name="TimeDateEnabled" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Visible</Value>
+    </Setting>
+    <Setting Name="TimeHorizontalAlignment" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Center</Value>
+    </Setting>
+    <Setting Name="TimeVerticalAlignment" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Center</Value>
+    </Setting>
+    <Setting Name="TimeTextSize" Type="System.String" Scope="User">
+      <Value Profile="(Default)">41.0</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

@@ -28,12 +28,29 @@ namespace Salon_App_WPF
     {
         private Dictionary<string, string> previousValues;
         private Dictionary<string, string> labels;
+        private Dictionary<string, TimeAlignments> posAlignment;
+        private Dictionary<TimeAlignments, string> alignmentPos;
         private List<string> changedSettings;
         private Dictionary<string, ColorPicker> colorPickers;
         private Slider opacity;
+        private Slider timeSize;
+        private ComboBox positionBox;
+        private CheckBox timeCheckBox;
+
+        private Logger logger;
+
+        public struct TimeAlignments
+        {
+            public string hAlignment;
+            public string vAlignment;
+        }
 
         public ConfigurationControl(string activeUserContol)
         {
+            logger = new Logger();
+
+            logger.Section("ConfigurationControl: Constructor");
+
             InitializeComponent();
             previousValues = new Dictionary<string, string>();
 
@@ -44,8 +61,10 @@ namespace Salon_App_WPF
                 previousValues.Add(currentProperty.Name, Properties.Settings.Default[currentProperty.Name].ToString());
             }
             previousValues["HomeOpacity"] = previousValues["HomeOpacity"].Replace('.', ',');
+            previousValues["TimeTextSize"] = previousValues["TimeTextSize"].Replace('.', ',');
 
             List<string> clrPckrsNames = new List<string>();
+            changedSettings = new List<string>();
 
             labels = new Dictionary<string, string>();
             labels.Add("TopGrid", "Επάνω μέρος");
@@ -86,6 +105,9 @@ namespace Salon_App_WPF
                     {
                         labels.Add("HomeOpacity", "Διαφάνεια λογότυπου");
                         labels.Add("HomeText", "Ώρα - Ημ/νία");
+                        labels.Add("TimeDayEnabled", "Εμφάνιση Ώρας");
+                        labels.Add("TimeHorizontalAlignment", "Θέση ώρας");
+                        labels.Add("TimeTextSize", "Μέγεθος ώρας");
 
                         clrPckrsNames.Add("HomeText");
                         break;
@@ -117,6 +139,7 @@ namespace Salon_App_WPF
             if (labels.ContainsKey("HomeOpacity"))
             {
                 opacity = new Slider();
+                opacity.Name = "HomeOpacity";
                 opacity.Minimum = Double.Parse("0,0");
                 opacity.Maximum = Double.Parse("1,0"); ;
                 opacity.TickFrequency = Double.Parse("0,1"); ;
@@ -128,10 +151,86 @@ namespace Salon_App_WPF
                 tb.Style = style;
                 Controls.Children.Add(tb);
 
+
                 Controls.Children.Add(opacity);
             }
 
-            changedSettings = new List<string>();
+            if (labels.ContainsKey("TimeDayEnabled"))
+            {
+                timeCheckBox = new CheckBox();
+                timeCheckBox.Name = "TimeDateChkBox";
+                timeCheckBox.IsChecked = (previousValues["TimeDateEnabled"].Equals("Visible")) ? true : false;
+                timeCheckBox.Click += TimeCheckBox_Clicked;
+
+                TextBlock tb = new TextBlock();
+                tb.Text = labels["TimeDayEnabled"];
+                tb.Style = style;
+                Controls.Children.Add(tb);
+
+                Controls.Children.Add(timeCheckBox);
+            }
+
+            if (labels.ContainsKey("TimeHorizontalAlignment"))
+            {
+                TextBlock tb = new TextBlock();
+                tb.Text = labels["TimeHorizontalAlignment"];
+                tb.Style = style;
+                Controls.Children.Add(tb);
+
+                string[,] alignments = new string[9, 2]
+                {
+                    {"Left", "Top" },
+                    {"Center", "Top" },
+                    {"Right", "Top" },
+                    {"Left", "Center" },
+                    {"Center", "Center" },
+                    {"Right", "Center" },
+                    {"Left", "Bottom" },
+                    {"Center", "Bottom" },
+                    {"Right", "Bottom" }
+                };
+
+                List<string> positions = new List<string> { "Πάνω αριστερά", "Πάνω", "Πάνω δεξιά", "Μέση αριστερά", "Μέση", "Μέση δεξιά", "Κάτω αριστερά", "Κάτω", "Κάτω δεξιά" };
+
+                posAlignment = new Dictionary<string, TimeAlignments>();
+                alignmentPos = new Dictionary<TimeAlignments, string>();
+
+                for (int i = 0; i < positions.Count; i++)
+                {
+                    TimeAlignments alignment = new TimeAlignments();
+                    alignment.hAlignment = alignments[i, 0];
+                    alignment.vAlignment = alignments[i, 1];
+
+                    posAlignment.Add(positions.ElementAt(i), alignment);
+                    alignmentPos.Add(alignment, positions.ElementAt(i));
+                }
+
+                positionBox = new ComboBox();
+                positionBox.ItemsSource = positions;
+                positionBox.IsEditable = true;
+                positionBox.SelectionChanged += PosComboBox_SelectionChanged;
+                positionBox.Text = alignmentPos[new TimeAlignments() { hAlignment = previousValues["TimeHorizontalAlignment"], vAlignment = previousValues["TimeVerticalAlignment"] }];
+
+                Controls.Children.Add(positionBox);
+            }
+
+            if (labels.ContainsKey("TimeTextSize"))
+            {
+                TextBlock tb = new TextBlock();
+                tb.Text = labels["TimeTextSize"];
+                tb.Style = style;
+                Controls.Children.Add(tb);
+
+                timeSize = new Slider();
+                timeSize.Name = "TimeTextSize";
+                timeSize.Minimum = Double.Parse("0,0");
+                timeSize.Maximum = Double.Parse("100,0"); ;
+                timeSize.TickFrequency = Double.Parse("1,0"); ;
+                timeSize.Value = Double.Parse(previousValues["TimeTextSize"]);
+                timeSize.ValueChanged += Slider_ValueChanged;
+
+                Controls.Children.Add(timeSize);
+            }
 
         }
 
@@ -145,36 +244,73 @@ namespace Salon_App_WPF
 
         private void CancelBtn_Click(object sender, RoutedEventArgs e)
         {
-            foreach (string propertie in changedSettings.ToList())
+            logger.Section("ConfigurationControl: CancelBtn");
+
+            foreach (string property in changedSettings.ToList())
             {
                 try
                 {
-                    colorPickers[propertie].SelectedColor = (Color)ColorConverter.ConvertFromString(previousValues[propertie]);
-                    Properties.Settings.Default[propertie] = previousValues[propertie];
+                    colorPickers[property].SelectedColor = (Color)ColorConverter.ConvertFromString(previousValues[property]);
+                    Properties.Settings.Default[property] = previousValues[property];
                 }
                 catch(KeyNotFoundException ex)
                 {
-                    opacity.Value = Double.Parse(previousValues[propertie]);
+                    switch(property)
+                    {
+                        case "TimeTextSize":
+                            {
+                                timeSize.Value = Double.Parse(previousValues[property]);
+                                break;
+                            }
+                        case "HomeOpacity":
+                            {
+                                opacity.Value = Double.Parse(previousValues[property]);
+                                break;
+                            }
+                        case "TimeDateEnabled":
+                            {
+                                Properties.Settings.Default[property] = previousValues[property];
+                                timeCheckBox.IsChecked = (previousValues[property].Equals("Visible")) ? true : false;
+                                break;
+                            }
+                        case "TimeHorizontalAlignment":
+                            {
+                                Properties.Settings.Default.TimeHorizontalAlignment = previousValues["TimeHorizontalAlignment"];
+                                Properties.Settings.Default.TimeVerticalAlignment = previousValues["TimeVerticalAlignment"];
+
+                                string horizontal = previousValues["TimeHorizontalAlignment"];
+                                string vertical = previousValues["TimeVerticalAlignment"];
+                                positionBox.Text = alignmentPos[new TimeAlignments() { hAlignment = horizontal, vAlignment = vertical }];
+                                break;
+                            }
+                    }
+                    
                 }
             }
 
             changedSettings.Clear();
+
+            logger.Log("All changes canceled.");
         }
 
         private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            string s = string.Format("{0:0.00}", opacity.Value).Replace(',', '.');
+            Slider slider = (Slider)sender;
 
-            Properties.Settings.Default.HomeOpacity = s;
+            string s = string.Format("{0:0.00}", slider.Value).Replace(',', '.');
 
-            if (!changedSettings.Contains("HomeOpacity"))
+            Properties.Settings.Default[slider.Name] = s;
+
+            if (!changedSettings.Contains(slider.Name))
             {
-                changedSettings.Add("HomeOpacity");
+                changedSettings.Add(slider.Name);
             }
         }
 
         private void DefaultBtn_Click(object sender, RoutedEventArgs e)
         {
+            logger.Section("ConfigurationControl: DefaultBtn");
+
             foreach (string property in changedSettings.ToList())
             {
                 try
@@ -184,13 +320,45 @@ namespace Salon_App_WPF
                 }
                 catch (KeyNotFoundException ex)
                 {
-                    opacity.Value = Double.Parse(Properties.Settings.Default.HomeOpacity);
+                    switch(property)
+                    {
+                        case "TimeTextSize":
+                            {
+                                timeSize.Value = Double.Parse(previousValues[property]);
+                                break;
+                            }
+                        case "HomeOpacity":
+                            {
+                                opacity.Value = Double.Parse(Properties.Settings.Default.HomeOpacity);
+                                break;
+                            }
+                        case "TimeDateEnabled":
+                            {
+                                Properties.Settings.Default[property] = Properties.DefaultSettings.Default[property];
+                                break;
+                            }
+                        case "TimeHorizontalAlignment":
+                            {
+                                Properties.Settings.Default["TimeHorizontalAlignment"] = Properties.DefaultSettings.Default["TimeHorizontalAlignment"];
+                                Properties.Settings.Default["TimeVerticalAlignment"] = Properties.DefaultSettings.Default["TimeVerticalAlignment"];
+
+                                string horizontal = Properties.DefaultSettings.Default["TimeHorizontalAlignment"].ToString();
+                                string vertical = Properties.DefaultSettings.Default["TimeVerticalAlignment"].ToString();
+                                positionBox.Text = alignmentPos[new TimeAlignments() { hAlignment = horizontal, vAlignment = vertical }];
+                                break;
+                            }
+                    }
+                    
                 }
             }
+
+            logger.Log("All changed values restored to default values.");
         }
 
         private void DefaultAllBtn_Click(object sender, RoutedEventArgs e)
         {
+            logger.Section("ConfigurationControl: DefaultAllBtn");
+
             foreach (SettingsProperty property in Properties.DefaultSettings.Default.Properties)
             {
                 try
@@ -200,9 +368,36 @@ namespace Salon_App_WPF
                 }
                 catch (KeyNotFoundException ex)
                 {
-                    opacity.Value = Double.Parse(Properties.DefaultSettings.Default.HomeOpacity.Replace('.', ','));
+                    switch(property.Name)
+                    {
+                        case "TimeTextSize":
+                            {
+                                timeSize.Value = Double.Parse(Properties.DefaultSettings.Default.TimeTextSize.Replace('.', ','));
+                                break;
+                            }
+                        case "HomeOpacity":
+                            {
+                                opacity.Value = Double.Parse(Properties.DefaultSettings.Default.HomeOpacity.Replace('.', ','));
+                                break;
+                            }
+                        case "TimeDateEnabled":
+                            {
+                                Properties.Settings.Default[property.Name] = Properties.DefaultSettings.Default[property.Name];
+                                break;
+                            }
+                    }
+                    
                 }
             }
+
+            Properties.Settings.Default["TimeHorizontalAlignment"] = Properties.DefaultSettings.Default["TimeHorizontalAlignment"];
+            Properties.Settings.Default["TimeVerticalAlignment"] = Properties.DefaultSettings.Default["TimeVerticalAlignment"];
+
+            string horizontal = Properties.DefaultSettings.Default["TimeHorizontalAlignment"].ToString();
+            string vertical = Properties.DefaultSettings.Default["TimeVerticalAlignment"].ToString();
+            positionBox.Text = alignmentPos[new TimeAlignments() { hAlignment = horizontal, vAlignment = vertical }];
+
+            logger.Log("All values restored to default values");
         }
 
         private void SaveBtn_Click(object sender, RoutedEventArgs e)
@@ -211,6 +406,43 @@ namespace Salon_App_WPF
             MainWindow.ConfigurationPopupClose();
         }
 
-       
+        private void TimeCheckBox_Clicked(object sender, RoutedEventArgs e)
+        {
+            if (Properties.Settings.Default.TimeDateEnabled.ToString().Equals("Visible"))
+            {
+                Properties.Settings.Default.TimeDateEnabled = "Hidden";
+            }
+            else
+            {
+                Properties.Settings.Default.TimeDateEnabled = "Visible";
+            }
+
+            if (!changedSettings.Contains("TimeDateEnabled"))
+            {
+                changedSettings.Add("TimeDateEnabled");
+            }
+        }
+
+        private void PosComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            string position = Convert.ToString(positionBox.SelectedItem);
+
+            try
+            {
+                Properties.Settings.Default.TimeHorizontalAlignment = posAlignment[position].hAlignment;
+                Properties.Settings.Default.TimeVerticalAlignment = posAlignment[position].vAlignment;
+
+                if (!changedSettings.Contains("TimeHorizontalAlignment"))
+                {
+                    changedSettings.Add("TimeHorizontalAlignment");
+                }
+            }
+            catch
+            {
+
+            }
+
+            
+        }
     }
 }

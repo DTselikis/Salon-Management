@@ -15,12 +15,14 @@
             Opacity="{Binding Source={x:Static prs:Settings.Default}, Path=HomeOpacity}"
             />
 
-        <Grid Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Top">
+        <Grid Grid.Row="0" 
+              HorizontalAlignment="{Binding Source={x:Static prs:Settings.Default}, Path=TimeHorizontalAlignment}"
+              VerticalAlignment="{Binding Source={x:Static prs:Settings.Default}, Path=TimeVerticalAlignment}">
             <Grid.Resources>
                 <Style x:Key="Label" TargetType="Label">
                     <Setter Property="HorizontalAlignment" Value="Center" />
-                    <Setter Property="VerticalAlignment" Value="Top" />
-                    <Setter Property="FontSize" Value="41" />
+                    <Setter Property="VerticalAlignment" Value="Center" />
+                    <Setter Property="FontSize" Value="{Binding Source={x:Static prs:Settings.Default}, Path=TimeTextSize}" />
                     <Setter Property="Foreground" Value="{Binding Source={x:Static prs:Settings.Default}, Path=HomeText}" />
                 </Style>
             </Grid.Resources>
@@ -34,12 +36,14 @@
                 Grid.Row="0"
                 Style="{StaticResource Label}"
                 VerticalAlignment="Bottom"
+                Visibility="{Binding Source={x:Static prs:Settings.Default}, Path=TimeDateEnabled}"
                 />
             <Label
                 x:Name="DayLabel"
                 Grid.Row="1"
                 Style="{StaticResource Label}"
                 VerticalAlignment="Top"
+                Visibility="{Binding Source={x:Static prs:Settings.Default}, Path=TimeDateEnabled}"
                 />
         </Grid>
     </Grid>
