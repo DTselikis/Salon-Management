@@ -402,11 +402,14 @@ namespace Salon_App_WPF
             // Maximize window to working area
             if (this.Left != left || this.Top != top || this.Height != height || this.Width != width)
             {
-                Properties.Settings.Default.WindowTop = this.Top.ToString();
-                Properties.Settings.Default.WindowLeft = this.Left.ToString();
-                Properties.Settings.Default.WindowHeight = this.Height.ToString();
-                Properties.Settings.Default.WindowWidth = this.Width.ToString();
+                logger.Log("Maximizing window");
 
+                Properties.Settings.Default.WindowTopPrev = this.Top.ToString();
+                Properties.Settings.Default.WindowLeftPrev = this.Left.ToString();
+                Properties.Settings.Default.WindowHeightPrev = this.Height.ToString();
+                Properties.Settings.Default.WindowWidthPrev = this.Width.ToString();
+
+                // Will also update Settings because of TwoWay binding mode
                 this.Top = top;
                 this.Left = left;
                 this.Height = height;
@@ -415,10 +418,12 @@ namespace Salon_App_WPF
             // Restore window to previous state
             else
             {
-                this.Top = Double.Parse(Properties.Settings.Default.WindowTop);
-                this.Left = Double.Parse(Properties.Settings.Default.WindowLeft);
-                this.Height = Double.Parse(Properties.Settings.Default.WindowHeight);
-                this.Width = Double.Parse(Properties.Settings.Default.WindowWidth);
+                logger.Log("Restoring window");
+
+                this.Top = Double.Parse(Properties.Settings.Default.WindowTopPrev);
+                this.Left = Double.Parse(Properties.Settings.Default.WindowLeftPrev);
+                this.Height = Double.Parse(Properties.Settings.Default.WindowHeightPrev);
+                this.Width = Double.Parse(Properties.Settings.Default.WindowWidthPrev);
             }
         }
 

@@ -39,7 +39,7 @@ namespace Salon_App_WPF
 
         private void TimerTick(object sender, EventArgs e)
         {
-            TimeLabel.Content = DateTime.Now.ToString("HH:MM:ss tt");
+            TimeLabel.Content = DateTime.Now.ToString("HH:mm:ss tt");
             DayLabel.Content = DateTime.Now.ToLongDateString();
         }
 

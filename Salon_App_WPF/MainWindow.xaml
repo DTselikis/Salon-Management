@@ -15,7 +15,7 @@
         Height="{Binding Source={x:Static prs:Settings.Default}, Path=WindowHeight, Mode=TwoWay}" 
         Width="{Binding Source={x:Static prs:Settings.Default}, Path=WindowWidth, Mode=TwoWay}"
         MinHeight="685"
-        MinWidth="948"  
+        MinWidth="972"  
         WindowStyle="None"
         ResizeMode="CanResize"
         AllowsTransparency="True"
