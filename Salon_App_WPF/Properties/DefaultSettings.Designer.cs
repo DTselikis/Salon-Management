@@ -12,7 +12,7 @@ namespace Salon_App_WPF.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.7.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.8.1.0")]
     internal sealed partial class DefaultSettings : global::System.Configuration.ApplicationSettingsBase {
         
         private static DefaultSettings defaultInstance = ((DefaultSettings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new DefaultSettings())));
@@ -131,9 +131,9 @@ namespace Salon_App_WPF.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("0.4")]
-        public string HomeOpacity {
+        public double HomeOpacity {
             get {
-                return ((string)(this["HomeOpacity"]));
+                return ((double)(this["HomeOpacity"]));
             }
             set {
                 this["HomeOpacity"] = value;
@@ -201,10 +201,10 @@ namespace Salon_App_WPF.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("41.0")]
-        public string TimeTextSize {
+        [global::System.Configuration.DefaultSettingValueAttribute("41")]
+        public double TimeTextSize {
             get {
-                return ((string)(this["TimeTextSize"]));
+                return ((double)(this["TimeTextSize"]));
             }
             set {
                 this["TimeTextSize"] = value;

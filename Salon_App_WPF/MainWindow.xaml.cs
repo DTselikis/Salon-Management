@@ -54,6 +54,7 @@ namespace Salon_App_WPF
             catch (SqlException ex)
             {
                 logger.Log("Error while connecting to DB.");
+                logger.Log("Path: " + connStr);
                 logger.Log(ex.ToString());
 
                 MessageBox.Show("Παρουσιάστηκε πρόβλημα κατά στη σύνδεση. Παρακαλούμε επικοινωνήστε με το τεχνικό τμήμα.",
@@ -349,6 +350,78 @@ namespace Salon_App_WPF
             }
         }
 
+        private void ChangeDBBtn_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            logger.Section("DB import");
+
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+
+            openFileDialog.Title = "Επιλογή αρχείου βάσεις δεδομένων";
+            openFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            openFileDialog.Filter = "mdf Database (*.mdf)|*.mdf|All files (*.*)|*.*";
+            openFileDialog.FilterIndex = 1;
+
+            if (openFileDialog.ShowDialog() == true)
+            {
+                logger.Log("New file selected");
+
+                MessageBoxResult result = MessageBoxResult.Yes;
+                if (File.GetLastWriteTime(openFileDialog.FileName) < File.GetLastWriteTime(Properties.Settings.Default.DBPath))
+                {
+                    logger.Log("Older DB");
+
+                   result =  MessageBox.Show("Η βάση που προσπαθείτε να εισάγετε είναι παλαιότερη από την ήδη υπάρχουσα. Να επιτραπεί η εισαγωγή;",
+                        "Παλαιότερη βάση",
+                        MessageBoxButton.YesNo,
+                        MessageBoxImage.Question,
+                        MessageBoxResult.No);
+                }
+
+                if (result == MessageBoxResult.Yes)
+                {
+                    try
+                    {
+                        string oldPath = Properties.Settings.Default.DBPath;
+                        string newPath = Path.Combine(Path.GetDirectoryName(oldPath), Path.GetFileNameWithoutExtension(oldPath) + DateTime.Now.ToString("yyyy_MM_dd") + Path.GetExtension(oldPath));
+                        File.Move(oldPath, newPath);
+
+                        try
+                        {
+                            string newDBoldPath = openFileDialog.FileName;
+                            string newDBnewPath = Path.GetDirectoryName(Properties.Settings.Default.DBPath);
+                            File.Move(newDBoldPath, Path.Combine(newDBnewPath, Path.GetFileName(newDBoldPath)));
+                        }
+                        catch (Exception ex)
+                        {
+                            logger.Log("Error at changing database.");
+                            logger.Log(ex.ToString());
+
+                            MessageBox.Show("Πρόβλημα κατά την αλλαγή της βάσης. Επαναφορά προηγούμενης.",
+                                "Αναπάντεχο πρόβλημα",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Error,
+                                MessageBoxResult.OK);
+
+                            logger.Log("Restoring old DB");
+                            File.Move(newPath, oldPath);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.Log("Error at renaming.");
+                        logger.Log(ex.ToString());
+
+                        MessageBox.Show("Πρόβλημα κατά την μετονομασία της βάσης.",
+                                "Αναπάντεχο πρόβλημα",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Error,
+                                MessageBoxResult.OK);
+                    }
+
+                }
+            }
+        }
+
         private void ConfigurationBtn_MouseDown(object sender, MouseButtonEventArgs e)
         {
             logger.Section("MainWindow: Configuration");
@@ -394,6 +467,9 @@ namespace Salon_App_WPF
 
         private void WindowMaximize_MouseDown(object sender, MouseButtonEventArgs e)
         {
+            logger.Section("MainWindow: WindowMazimize");
+
+            // Get working area
             double left = SystemParameters.WorkArea.Left;
             double top = SystemParameters.WorkArea.Top;
             double height = SystemParameters.WorkArea.Height;
@@ -404,10 +480,10 @@ namespace Salon_App_WPF
             {
                 logger.Log("Maximizing window");
 
-                Properties.Settings.Default.WindowTopPrev = this.Top.ToString();
-                Properties.Settings.Default.WindowLeftPrev = this.Left.ToString();
-                Properties.Settings.Default.WindowHeightPrev = this.Height.ToString();
-                Properties.Settings.Default.WindowWidthPrev = this.Width.ToString();
+                Properties.Settings.Default.WindowTopPrev = this.Top;
+                Properties.Settings.Default.WindowLeftPrev = this.Left;
+                Properties.Settings.Default.WindowHeightPrev = this.Height;
+                Properties.Settings.Default.WindowWidthPrev = this.Width;
 
                 // Will also update Settings because of TwoWay binding mode
                 this.Top = top;
@@ -420,10 +496,10 @@ namespace Salon_App_WPF
             {
                 logger.Log("Restoring window");
 
-                this.Top = Double.Parse(Properties.Settings.Default.WindowTopPrev);
-                this.Left = Double.Parse(Properties.Settings.Default.WindowLeftPrev);
-                this.Height = Double.Parse(Properties.Settings.Default.WindowHeightPrev);
-                this.Width = Double.Parse(Properties.Settings.Default.WindowWidthPrev);
+                this.Top = Properties.Settings.Default.WindowTopPrev;
+                this.Left = Properties.Settings.Default.WindowLeftPrev;
+                this.Height = Properties.Settings.Default.WindowHeightPrev;
+                this.Width = Properties.Settings.Default.WindowWidthPrev;
             }
         }
 
@@ -452,10 +528,10 @@ namespace Salon_App_WPF
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             // Save new window location and size
-            Properties.Settings.Default.WindowTop = this.Top.ToString();
-            Properties.Settings.Default.WindowLeft = this.Left.ToString();
-            Properties.Settings.Default.WindowHeight = this.Height.ToString();
-            Properties.Settings.Default.WindowWidth = this.Width.ToString();
+            Properties.Settings.Default.WindowTop = this.Top;
+            Properties.Settings.Default.WindowLeft = this.Left;
+            Properties.Settings.Default.WindowHeight = this.Height;
+            Properties.Settings.Default.WindowWidth = this.Width;
         }
     }
 

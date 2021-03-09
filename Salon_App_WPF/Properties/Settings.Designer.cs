@@ -12,7 +12,7 @@ namespace Salon_App_WPF.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.7.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.8.1.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -158,9 +158,9 @@ namespace Salon_App_WPF.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("0.4")]
-        public string HomeOpacity {
+        public double HomeOpacity {
             get {
-                return ((string)(this["HomeOpacity"]));
+                return ((double)(this["HomeOpacity"]));
             }
             set {
                 this["HomeOpacity"] = value;
@@ -193,9 +193,9 @@ namespace Salon_App_WPF.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("142")]
-        public string WindowLeft {
+        public double WindowLeft {
             get {
-                return ((string)(this["WindowLeft"]));
+                return ((double)(this["WindowLeft"]));
             }
             set {
                 this["WindowLeft"] = value;
@@ -205,9 +205,9 @@ namespace Salon_App_WPF.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("238")]
-        public string WindowTop {
+        public double WindowTop {
             get {
-                return ((string)(this["WindowTop"]));
+                return ((double)(this["WindowTop"]));
             }
             set {
                 this["WindowTop"] = value;
@@ -217,9 +217,9 @@ namespace Salon_App_WPF.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("659")]
-        public string WindowHeight {
+        public double WindowHeight {
             get {
-                return ((string)(this["WindowHeight"]));
+                return ((double)(this["WindowHeight"]));
             }
             set {
                 this["WindowHeight"] = value;
@@ -229,9 +229,9 @@ namespace Salon_App_WPF.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("989")]
-        public string WindowWidth {
+        public double WindowWidth {
             get {
-                return ((string)(this["WindowWidth"]));
+                return ((double)(this["WindowWidth"]));
             }
             set {
                 this["WindowWidth"] = value;
@@ -300,13 +300,61 @@ namespace Salon_App_WPF.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("41.0")]
-        public string TimeTextSize {
+        [global::System.Configuration.DefaultSettingValueAttribute("41")]
+        public double TimeTextSize {
             get {
-                return ((string)(this["TimeTextSize"]));
+                return ((double)(this["TimeTextSize"]));
             }
             set {
                 this["TimeTextSize"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public double WindowLeftPrev {
+            get {
+                return ((double)(this["WindowLeftPrev"]));
+            }
+            set {
+                this["WindowLeftPrev"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public double WindowTopPrev {
+            get {
+                return ((double)(this["WindowTopPrev"]));
+            }
+            set {
+                this["WindowTopPrev"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public double WindowHeightPrev {
+            get {
+                return ((double)(this["WindowHeightPrev"]));
+            }
+            set {
+                this["WindowHeightPrev"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public double WindowWidthPrev {
+            get {
+                return ((double)(this["WindowWidthPrev"]));
+            }
+            set {
+                this["WindowWidthPrev"] = value;
             }
         }
     }

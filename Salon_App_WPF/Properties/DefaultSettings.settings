@@ -35,7 +35,7 @@
     <Setting Name="MainWindowText" Type="System.String" Scope="User">
       <Value Profile="(Default)">Gainsboro</Value>
     </Setting>
-    <Setting Name="HomeOpacity" Type="System.String" Scope="User">
+    <Setting Name="HomeOpacity" Type="System.Double" Scope="User">
       <Value Profile="(Default)">0.4</Value>
     </Setting>
     <Setting Name="HomeText" Type="System.String" Scope="User">
@@ -58,8 +58,8 @@
     <Setting Name="TimeVerticalAlignment" Type="System.String" Scope="User">
       <Value Profile="(Default)">Center</Value>
     </Setting>
-    <Setting Name="TimeTextSize" Type="System.String" Scope="User">
-      <Value Profile="(Default)">41.0</Value>
+    <Setting Name="TimeTextSize" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">41</Value>
     </Setting>
   </Settings>
 </SettingsFile>

@@ -53,9 +53,6 @@ namespace Salon_App_WPF
                 // even if the value has changed
                 previousValues.Add(currentProperty.Name, Properties.Settings.Default[currentProperty.Name].ToString());
             }
-            // XAML requires value with '.' but slider with ','
-            previousValues["HomeOpacity"] = previousValues["HomeOpacity"].Replace('.', ',');
-            previousValues["TimeTextSize"] = previousValues["TimeTextSize"].Replace('.', ',');
 
             // Keep track of which and how many color pickers were generated
             List<string> clrPckrsNames = new List<string>();
@@ -308,10 +305,8 @@ namespace Salon_App_WPF
         {
             Slider slider = (Slider)sender;
 
-            string s = string.Format("{0:0.00}", slider.Value).Replace(',', '.');
-
             // Change property so it can be updated to the UI by binding
-            Properties.Settings.Default[slider.Name] = s;
+            Properties.Settings.Default[slider.Name] = slider.Value;
 
             // Because each slider change will trigger this event
             if (!changedSettings.Contains(slider.Name))
@@ -347,7 +342,7 @@ namespace Salon_App_WPF
                         case "HomeOpacity":
                             {
                                 // Slider_ValueChanged will be called
-                                opacity.Value = Double.Parse(Properties.Settings.Default.HomeOpacity);
+                                opacity.Value = Properties.Settings.Default.HomeOpacity;
                                 break;
                             }
                         case "TimeDateEnabled":
@@ -397,13 +392,13 @@ namespace Salon_App_WPF
                         case "TimeTextSize":
                             {
                                 // Slider_ValueChanged will be called
-                                timeSize.Value = Double.Parse(Properties.DefaultSettings.Default.TimeTextSize.Replace('.', ','));
+                                timeSize.Value = Properties.DefaultSettings.Default.TimeTextSize;
                                 break;
                             }
                         case "HomeOpacity":
                             {
                                 // Slider_ValueChanged will be called
-                                opacity.Value = Double.Parse(Properties.DefaultSettings.Default.HomeOpacity.Replace('.', ','));
+                                opacity.Value = Properties.DefaultSettings.Default.HomeOpacity;
                                 break;
                             }
                         case "TimeDateEnabled":
