@@ -58,6 +58,8 @@ namespace Salon_App_WPF
         // This constructor calls only if user requested an export
         public BackUpManager(string destinationPath)
         {
+            logger = new Logger("BackUpManager");
+
             logger.Section("BackUpManager: General Constructor");
             logger.Log("Initializing.");
 
@@ -322,7 +324,7 @@ namespace Salon_App_WPF
                 fullPath = Path.Combine(destinationPath, fileName.ToString());
             }
 
-            using (FileStream stream = new FileStream(fullPath, FileMode.Create))
+            using (FileStream stream = new FileStream(fullPath + ".xml", FileMode.Create))
             {
                 try
                 {
