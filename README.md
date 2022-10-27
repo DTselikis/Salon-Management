@@ -25,6 +25,8 @@ If you want to add your business logo as the program icon, you should:
 ```xml
 Icon="Resources\Images\logo.ico"
 ```
+## Requirements
+You will need to install SQL Server Express LocalDB.
 
 ### Screenshots
 | <img src="https://i.imgur.com/3F8a301.png" width=420 alt="You can create a profile for each of your customers and include some basic information and notes"> | <img src="https://i.imgur.com/7nn9daa.png" width=420 alt="You can see and manage your customers"> |
