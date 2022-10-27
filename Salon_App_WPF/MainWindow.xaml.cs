@@ -11,6 +11,7 @@ using System.Collections.ObjectModel;
 using System.Threading;
 using System.IO;
 using Microsoft.Win32;
+using Microsoft.WindowsAPICodePack.Dialogs;
 
 namespace Salon_App_WPF
 {
@@ -350,6 +351,18 @@ namespace Salon_App_WPF
             }
         }
 
+        private void ImportRecords(object sender, MouseButtonEventArgs e)
+        {
+            CommonOpenFileDialog dialog = new CommonOpenFileDialog();
+            dialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            dialog.IsFolderPicker = true;
+
+            if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+            {
+
+            }
+        }
+
         private void ChangeDBBtn_MouseDown(object sender, MouseButtonEventArgs e)
         {
             logger.Section("DB import");
@@ -532,6 +545,39 @@ namespace Salon_App_WPF
             Properties.Settings.Default.WindowLeft = this.Left;
             Properties.Settings.Default.WindowHeight = this.Height;
             Properties.Settings.Default.WindowWidth = this.Width;
+        }
+
+        private void Window_KeyDown(object sender, KeyEventArgs e)
+        {
+                switch (e.Key)
+                {
+                    case Key.RightShift:
+                        {
+                            if (!e.IsRepeat)
+                            {
+                                ExportDBBtn.Kind = MaterialDesignThemes.Wpf.PackIconKind.DatabaseImport;
+                                ExportDBBtn.ToolTip = "Εισαγωγή εγγραφών";
+                                ExportDBBtn.MouseDown -= ExportDBBtn_MouseDown;
+                                ExportDBBtn.MouseDown += ImportRecords;
+                            }
+                            break;
+                        }
+                }
+        }
+
+        private void Window_KeyUp(object sender, KeyEventArgs e)
+        {
+            switch (e.Key)
+            {
+                case Key.RightShift:
+                    {
+                        ExportDBBtn.Kind = MaterialDesignThemes.Wpf.PackIconKind.DatabaseExport;
+                        ExportDBBtn.ToolTip = "Δημιουργία αντιγράφου ασφαλείας";
+                        ExportDBBtn.MouseDown -= ImportRecords;
+                        ExportDBBtn.MouseDown += ExportDBBtn_MouseDown;
+                        break;
+                    }
+            }
         }
     }
 

@@ -21,7 +21,10 @@
         AllowsTransparency="True"
         Background="Transparent"
         Icon="Resources\Images\logo.ico"
-        Closing="Window_Closing" SizeChanged="Window_SizeChanged"
+        Closing="Window_Closing"
+        SizeChanged="Window_SizeChanged"
+        KeyDown="Window_KeyDown"
+        KeyUp="Window_KeyUp"
         >
 
     <WindowChrome.WindowChrome>
