@@ -1,6 +1,6 @@
 # <div align="center">Salon Management</div>
 <div align="center"><img src="https://i.imgur.com/cjczqof.png" height="480"></div>
-<div><p>A simple desktop application to manage your customer base</p></div>
+<div align="center"><p>A simple desktop application to manage your customer base</p></div>
 
 <a name="readme-top"></a>
 ## Table of contents
